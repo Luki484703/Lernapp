@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathe-Lernapp</title>
+<link rel="icon" href="mathe.ico">
+<style>
+:root{
+  --orange:#6c4fd8; --orange-d:#4b31a8; --rot:#d6336c; --blau:#1f6fd1; --gruen:#2e9e4f;
+  --gelb:#ffd84d; --bg:#eef3ff; --karte:#ffffff; --text:#2b2b2b; --grau:#6b6b7b;
+  --tinte:#1f3c9a; --kaestchen:#c9daf3;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Verdana,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:20px}
+header{background:linear-gradient(90deg,#6c4fd8,#1f6fd1);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+header h1{margin:0;font-size:28px;flex:1;cursor:pointer;white-space:nowrap}
+.reiter{display:flex;gap:6px;flex-wrap:wrap}
+.reiter button{border:none;border-radius:999px;padding:8px 16px;font-size:18px;font-family:inherit;font-weight:bold;cursor:pointer;background:rgba(255,255,255,.2);color:#fff}
+.reiter button.an{background:#fff;color:var(--orange)}
+.sterne{background:rgba(255,255,255,.2);border-radius:999px;padding:6px 16px;font-weight:bold;font-size:22px}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+h2{color:var(--orange);margin:10px 0 12px}
+.hinweis{color:var(--grau);font-size:17px;margin:0 0 14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.chip{border:3px solid var(--orange);background:#fff;border-radius:999px;padding:8px 14px;font-size:17px;cursor:pointer;font-family:inherit}
+.chip.an{background:var(--orange);color:#fff}
+.modi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.modus{background:var(--karte);border:none;border-radius:20px;padding:22px 16px;text-align:center;cursor:pointer;box-shadow:0 4px 0 var(--orange-d),0 6px 14px rgba(0,0,0,.1);font-family:inherit;font-size:20px;transition:transform .1s}
+.modus:hover{transform:translateY(-3px)}
+.modus .ic{font-size:50px;display:block;margin-bottom:6px}
+.modus b{display:block;font-size:22px;color:var(--orange)}
+.modus small{color:var(--grau);font-size:16px}
+.leiste{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.btn{border:none;border-radius:14px;padding:12px 20px;font-size:20px;font-family:inherit;cursor:pointer;background:var(--orange);color:#fff;box-shadow:0 3px 0 var(--orange-d);font-weight:bold}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--orange-d)}
+.btn.grau{background:#ddd;color:#333;box-shadow:0 3px 0 #aaa}
+.btn.gruen{background:var(--gruen);box-shadow:0 3px 0 #1d6b34}
+.btn.blau{background:var(--blau);box-shadow:0 3px 0 #123c7a}
+.btn.gelb{background:var(--gelb);color:#5a4300;box-shadow:0 3px 0 #c9a514}
+.btn.klein{padding:8px 14px;font-size:17px}
+.fortschritt{flex:1;min-width:140px;height:16px;background:#fff;border-radius:999px;overflow:hidden;border:2px solid var(--orange)}
+.fortschritt div{height:100%;background:var(--gruen);transition:width .3s}
+.box{background:var(--karte);border-radius:22px;padding:24px;box-shadow:0 6px 16px rgba(0,0,0,.1)}
+.kapitel{font-size:15px;color:#fff;background:var(--blau);display:inline-block;padding:3px 10px;border-radius:999px;margin-bottom:10px}
+.frage{font-size:23px;font-weight:bold;margin:4px 0 14px;line-height:1.35}
+.feedback{font-size:22px;margin-top:14px;font-weight:bold;min-height:30px}
+.feedback.ok{color:var(--gruen)} .feedback.nein{color:var(--rot)} .feedback.tipp{color:#8a5a00}
+.mitte{display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+.ende{text-align:center;padding:30px 10px}
+.ende .gross{font-size:72px}
+.wackel{animation:wackel .35s}
+@keyframes wackel{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@media (max-width:600px){ body{font-size:18px} header h1{font-size:22px} .frage{font-size:20px} }
+
+/* ---------- Rechenheft (Kästchenpapier) ---------- */
+.heft{background-color:#fff;background-image:linear-gradient(var(--kaestchen) 1px,transparent 1px),linear-gradient(90deg,var(--kaestchen) 1px,transparent 1px);background-size:32px 32px;border-radius:16px;padding:20px 22px;border:2px solid #dbe6f7;overflow-x:auto}
+.mitneben{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+.mitneben.unten{grid-template-columns:minmax(0,1fr)}
+.mitneben.unten .neben{justify-self:start}
+@media (max-width:760px){.mitneben{grid-template-columns:minmax(0,1fr)}.mitneben .neben{justify-self:start}}
+.neben{max-width:100%;box-sizing:border-box;background:#fffdf3;border:2px solid #f0d98a;border-radius:16px;padding:10px 12px}
+.nkopf{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;font-size:17px;color:#7a5a00}
+.nweg{border:none;background:#fff;border-radius:10px;padding:4px 10px;font:inherit;font-size:15px;cursor:pointer;box-shadow:0 2px 0 #d8c37a}
+.nfeld{display:grid;background:#fff}
+.nfeld input{width:100%;min-width:0;height:34px;box-sizing:border-box;border:none;border-right:1px solid #c8d6f0;border-bottom:1px solid #c8d6f0;padding:0;margin:0;text-align:center;font-family:"Comic Sans MS","Segoe Print","Chalkboard SE",cursive;font-size:22px;color:var(--tinte);background:transparent;outline:none}
+.nfeld input:focus{background:#fff3c4}
+.nfeld input:nth-child(-n+10){border-top:1px solid #c8d6f0}
+.nfeld input:nth-child(10n+1){border-left:1px solid #c8d6f0}
+.packung b{white-space:nowrap}
+.heft .blk{margin:0 0 22px}
+.heft .blk:last-child{margin-bottom:0}
+.rg{display:inline-grid;align-items:stretch;font-family:"Comic Sans MS","Segoe Print","Chalkboard SE",cursive;font-size:30px;color:var(--tinte)}
+.rg .c{padding:6px 5px;text-align:right;white-space:nowrap;min-height:60px;display:flex;align-items:center;justify-content:flex-end}
+.rg .c.o{border-bottom:3px solid var(--tinte)}
+.rg .c.op{justify-content:center;padding:6px 3px}
+.flex{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:"Comic Sans MS","Segoe Print","Chalkboard SE",cursive;font-size:28px;color:var(--tinte)}
+.ein{font:inherit;font-size:28px;text-align:right;border:3px dashed #93aee0;border-radius:10px;background:rgba(255,255,255,.9);color:var(--tinte);padding:2px 6px;height:50px;outline:none}
+.ein:focus{border-style:solid;border-color:var(--orange);box-shadow:0 0 0 3px rgba(108,79,216,.2)}
+.ein.ok,.wahl.ok button.an,.wahl.gesperrt button.an{border:3px solid var(--gruen);background:#e3f6e8}
+.ein.falsch,.wahl.falsch button.an{border:3px solid var(--rot);background:#fde4e4}
+.ein.zeig{border:3px solid var(--gruen);background:#f2fbf4;color:var(--gruen)}
+.wahl{display:inline-flex;gap:6px}
+.wahl button{font:inherit;font-size:26px;min-width:52px;height:50px;border:3px dashed #93aee0;border-radius:10px;background:#fff;color:var(--tinte);cursor:pointer}
+.wahl button.an{border:3px solid var(--orange);background:#ece6ff}
+.kreuz{border-collapse:collapse;font-family:"Comic Sans MS","Segoe Print",cursive;font-size:28px;color:var(--tinte);background:rgba(255,255,255,.6)}
+.kreuz td{border:3px solid var(--tinte);padding:6px 10px;text-align:center;min-width:90px;height:62px}
+.kreuz tr:first-child td,.kreuz td:first-child{background:#ece6ff;font-weight:bold}
+.frei{opacity:.75}
+.packungen{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.packung{flex:1;min-width:220px;background:#fff8e6;border:3px solid #f2b84b;border-radius:16px;padding:12px 16px;font-size:20px;text-align:center}
+.packung .ic{font-size:40px;display:block}
+.packung b{font-size:22px;color:#8a5a00}
+.erkl{background:#fff8e6;border-left:6px solid var(--gelb);border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:19px;line-height:1.45}
+.eule{display:flex;align-items:center;gap:12px;margin-top:6px}
+.eule .tier{font-size:46px}
+.banner{display:flex;align-items:center;gap:16px;background:#fff;border-radius:20px;padding:16px 20px;box-shadow:0 4px 0 #c9a514,0 6px 14px rgba(0,0,0,.08);margin-top:28px;cursor:pointer;border:none;width:100%;font-family:inherit;font-size:19px;text-align:left}
+.banner .ic{font-size:46px}
+.ergebnis{font-size:26px;font-weight:bold}
+
+/* ---------- Prüfungen ---------- */
+.pliste{display:grid;gap:14px}
+.pkarte{background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 4px 12px rgba(0,0,0,.08);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pkarte .ic{font-size:44px}
+.pkarte .info{flex:1;min-width:220px}
+.pkarte .info b{font-size:21px;color:var(--orange)}
+.pkarte .info small{display:block;color:var(--grau);font-size:16px}
+.pkarte.an{outline:4px solid var(--orange)}
+.vorschau{overflow:auto;background:#d9dfea;border-radius:18px;padding:20px;margin-top:18px}
+.vorschau .blatt{background:#fff;margin:0 auto;box-shadow:0 4px 16px rgba(0,0,0,.2);padding:12mm}
+#druck{display:none}
+
+/* Druckblatt: 1 Kästchen = 6 mm */
+.blatt{width:210mm;font-family:"Segoe UI",Verdana,Arial,sans-serif;color:#111;font-size:4mm}
+.blatt *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pkopf{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:0.6mm solid #333;padding-bottom:2mm;margin-bottom:4mm}
+.pkopf h1{font-size:6mm;margin:0;color:#4b31a8}
+.pkopf .nr{font-size:3.4mm;color:#555;text-align:right}
+.pname{display:flex;gap:10mm;font-size:4.2mm;margin-bottom:5mm}
+.pname span{flex:1;border-bottom:0.3mm solid #333;padding-bottom:1mm}
+.pa{margin-bottom:5mm;break-inside:avoid;page-break-inside:avoid}
+.pa h3{font-size:4.6mm;margin:0 0 2mm;display:flex;justify-content:space-between;gap:4mm}
+.pa h3 small{font-weight:normal;font-size:3.6mm;white-space:nowrap}
+.kar{width:186mm;padding:6mm;background-color:#fff;background-image:linear-gradient(#b9cbe6 0.2mm,transparent 0.2mm),linear-gradient(90deg,#b9cbe6 0.2mm,transparent 0.2mm);background-size:6mm 6mm;display:grid;column-gap:6mm;row-gap:6mm;border:0.3mm solid #b9cbe6}
+.pk{break-inside:avoid;page-break-inside:avoid}
+.pl{height:6mm;margin-bottom:6mm;display:flex}
+.pl:last-child{margin-bottom:0}
+.pl.st{box-shadow:0 0.5mm 0 #222;width:max-content}
+.z{width:6mm;height:6mm;line-height:6mm;text-align:center;font-family:"Comic Sans MS","Segoe Print",cursive;font-size:4.6mm;flex:none}
+.z.e{font-size:3.8mm;letter-spacing:-0.2mm}
+.z.k{width:0;overflow:visible;text-align:left;text-indent:-1mm}
+.z.l,.pt .l{color:#d0021b;font-weight:bold}
+.pt{line-height:6mm;font-size:3.8mm;margin-bottom:6mm;background:#fff}
+.pt b{font-weight:bold}
+.pkreuz{border-collapse:collapse;margin-bottom:6mm}
+.pkreuz td{width:18mm;height:12mm;padding:0;text-align:center;font-family:"Comic Sans MS","Segoe Print",cursive;font-size:4.6mm;box-shadow:inset 0 0 0 0.35mm #222}
+.pfuss{display:flex;justify-content:space-between;align-items:center;margin-top:4mm;font-size:4.6mm;font-weight:bold}
+.pfuss .smile{font-size:7mm;letter-spacing:3mm}
+
+
+/* ---------- Neue Aufgabentypen ---------- */
+.bereich h3{margin:4px 0 8px;font-size:17px;color:var(--grau);text-transform:uppercase;letter-spacing:.06em}
+.bereich .chips{margin-bottom:14px}
+table.stellen{border-collapse:collapse;font-family:"Comic Sans MS","Segoe Print",cursive;font-size:30px;color:var(--tinte);background:rgba(255,255,255,.6)}
+table.stellen td{width:52px;height:52px;border:1px solid var(--kaestchen);text-align:center;padding:2px}
+table.stellen td.op{font-weight:bold}
+table.stellen tr.ue td{height:36px}
+table.stellen tr.erg td{border-top:4px solid var(--tinte)}
+.ein.zf{width:44px;height:46px;text-align:center;padding:0}
+.ein.zf.klein{width:30px;height:30px;font-size:18px;border-width:2px}
+.dreieck{position:relative;width:360px;height:310px;max-width:100%}
+.dreieck svg{position:absolute;left:0;top:0;width:360px;height:300px}
+.dreieck span{position:absolute;transform:translate(-50%,-50%);font-family:"Comic Sans MS","Segoe Print",cursive;font-size:28px;color:#fff;font-weight:bold}
+.dreieck span.aus{color:var(--tinte)}
+.ztab{border-collapse:collapse;background:#fff;font-size:19px}
+.ztab th,.ztab td{border:2px solid #b9c6e6;padding:6px 10px;text-align:left;white-space:nowrap}
+.ztab th{background:#ece6ff;color:var(--orange-d)}
+.ztab.fahrplan td{padding:3px 10px;font-size:17px}
+.ztab .ein{height:42px;font-size:24px}
+.karte{display:inline-block;background:#fff;border:3px solid #b9c6e6;border-radius:999px;padding:4px 14px;font-family:"Segoe UI",Verdana,sans-serif;font-size:19px;color:var(--text);min-width:150px}
+.tag{font-family:"Segoe UI",Verdana,sans-serif;font-size:17px;color:var(--grau);min-width:110px;display:inline-block}
+.wahl.bild button{height:auto;padding:8px;font-size:20px}
+.wahl.bild .uhr{display:block}
+.flex .wahl button{font-size:20px}
+/* Druck */
+.eng .pl{margin-bottom:0}
+.lk{display:inline-block;height:4.6mm;border-bottom:0.3mm solid #222;vertical-align:bottom}
+.puhr{display:inline-block;text-align:center;margin:0 4mm 2mm 0;vertical-align:middle}
+.ptab{border-collapse:collapse;margin:1mm 0 2mm;font-size:3.6mm}
+.ptab th,.ptab td{border:0.3mm solid #555;padding:0.6mm 2mm;line-height:5mm;text-align:left;white-space:nowrap}
+.ptab th{background:#eee}
+.pdreieck{width:70mm;height:58mm;display:block}
+.pdreieck text{font-family:"Comic Sans MS","Segoe Print",cursive;font-size:26px;text-anchor:middle;fill:#111}
+.pdreieck text.lt{fill:#d0021b;font-weight:bold}
+.pkarte2{display:inline-block;border:0.3mm solid #555;border-radius:4mm;padding:0 3mm;margin:1mm 2mm 1mm 0}
+@page{size:A4;margin:12mm}
+@media print{
+  body{background:#fff;font-size:12pt}
+  header,main{display:none!important}
+  #druck{display:block}
+  #druck .blatt{width:186mm;padding:0}
+}
+/* Spielecke */
+.preis{display:inline-block;background:var(--gelb);color:#5a4300;border-radius:999px;padding:2px 10px;font-size:16px;font-weight:bold;margin-top:6px}
+.modus:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.spielinfo{display:flex;gap:16px;justify-content:center;font-size:22px;font-weight:bold;margin-bottom:10px;flex-wrap:wrap}
+.himmel{position:relative;height:440px;border-radius:22px;overflow:hidden;background:linear-gradient(#8fd3ff,#e6f7ff);touch-action:manipulation;user-select:none}
+.ballon{position:absolute;font-size:58px;cursor:pointer;line-height:1;user-select:none}
+.memory{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:460px;margin:0 auto}
+.mkarte{aspect-ratio:1;border:none;border-radius:16px;font-size:44px;cursor:pointer;background:var(--orange);color:transparent;box-shadow:0 3px 0 var(--orange-d);font-family:inherit}
+.mkarte.offen{background:#fff;color:inherit;box-shadow:0 3px 0 #ccc}
+.mkarte.weg{background:#dff3e5;color:inherit;box-shadow:none;opacity:.6;cursor:default}
+.spielfeld{display:block;margin:0 auto;border-radius:14px;width:auto;height:auto;max-width:100%;max-height:calc(100vh - 230px);touch-action:none;user-select:none}
+.tetris{display:flex;gap:14px;justify-content:center;align-items:flex-start}
+.tetris .spielfeld{margin:0;min-width:0;max-width:calc(100% - 134px)}
+.tseite{flex:none;width:120px;font-size:16px;background:var(--karte);border-radius:16px;padding:10px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.tseite canvas{display:block;margin:6px auto 0;border-radius:10px}
+#snake{display:block;margin:0 auto;background:#1d3b2a;border-radius:14px;max-width:100%;touch-action:none}
+.steuer{display:grid;grid-template-columns:repeat(3,70px);gap:8px;justify-content:center;margin-top:12px}
+.steuer button{height:60px;font-size:28px;border:none;border-radius:14px;background:var(--blau);color:#fff;cursor:pointer}
+.code{font-family:Consolas,monospace;font-size:40px;letter-spacing:4px;background:#fff;border:4px dashed var(--orange);border-radius:16px;padding:12px 20px;display:inline-block;margin:10px 0}
+.codeeingabe{font-family:Consolas,monospace;font-size:30px;letter-spacing:3px;text-transform:uppercase;padding:10px 14px;border:3px solid var(--orange);border-radius:14px;width:260px;max-width:100%;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1 onclick="startseite()">🦉 Mathe-Lernapp</h1>
+  <nav class="reiter">
+    <button id="r_ueben" onclick="startseite()">📚 Üben</button>
+    <button id="r_pruef" onclick="pruefungen()">🖨️ Prüfungen</button>
+    <button id="r_spiel" onclick="spielecke()">🎮 Spielecke</button>
+  </nav>
+  <span class="sterne" id="sterne" style="cursor:pointer" title="Zur Spielecke" onclick="spielecke()">⭐ 0</span>
+</header>
+<main id="app"></main>
+<div id="druck"></div>
+
+<script>
+/* =====================================================================
+   MATHE-LERNAPP 4. KLASSE
+   Themen aus dem Heft: Teilen durch 10/100/Zehnerzahlen, halbschriftlich
+   malnehmen, halbschriftlich teilen, Euro und Cent teilen, Preisvergleich.
+   Alle Aufgaben werden zufällig erzeugt, es gehen also nie die Aufgaben aus.
+   ===================================================================== */
+
+/* ---------- Zufall (mit Startzahl, damit Prüfungen wiederholbar sind) ---------- */
+function zufall(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const R = zufall(Date.now() % 1000000007);
+function zz(r, a, b) { return a + Math.floor(r() * (b - a + 1)); }
+function eins(r, liste) { return liste[Math.floor(r() * liste.length)]; }
+function mischenR(r, a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function eu(c) { return (c / 100).toFixed(2).replace(".", ","); }
+
+/* ---------- Aufgaben-Erzeuger (liefern nur Zahlen) ---------- */
+function genZehner(r, sorte) {
+  sorte = sorte || eins(r, ["z10", "z100", "zz"]);
+  const liste = [], schon = new Set();
+  while (liste.length < 4) {
+    let a, b;
+    if (sorte === "z10") { const q = r() < 0.4 ? zz(r, 3, 9) : zz(r, 11, 99); a = q * 10; b = 10; }
+    else if (sorte === "z100") { const q = r() < 0.6 ? zz(r, 2, 9) : zz(r, 11, 49); a = q * 100; b = 100; }
+    else { b = zz(r, 2, 9) * 10; a = zz(r, 2, 9) * b; }
+    if (schon.has(a + ":" + b)) continue;
+    schon.add(a + ":" + b); liste.push([a, b]);
+  }
+  return { art: "zehner", sorte, liste };
+}
+function stellen(n) { // 125 -> [100, 20, 5]
+  const s = String(n), out = [];
+  for (let i = 0; i < s.length; i++) { const w = Number(s[i]) * Math.pow(10, s.length - 1 - i); if (w) out.push(w); }
+  return out;
+}
+function genMal(r, gross) {
+  const a = zz(r, 3, 9);
+  let b;
+  if (gross === undefined) gross = r() < 0.3;
+  do { b = gross ? zz(r, 102, 199) : zz(r, 13, 98); } while (b % 10 === 0 || stellen(b).length < 2);
+  return { art: "mal", a, b, teile: stellen(b) };
+}
+function genTeil(r, gross) {
+  let d, q, z;
+  do {
+    d = zz(r, 2, 9); q = zz(r, 11, 49); z = d * q;
+  } while (q % 10 === 0 || (gross === true && z < 100) || (gross === false && z > 99) || z > 400);
+  const zehner = Math.floor(q / 10) * 10;
+  return { art: "teil", z, d, q, teile: [d * zehner, d * (q % 10)] };
+}
+const DINGE = [
+  { mehr: "Bleistiften", ein: "ein Bleistift" }, { mehr: "Radiergummis", ein: "ein Radiergummi" },
+  { mehr: "Joghurts", ein: "ein Joghurt" }, { mehr: "Brezen", ein: "eine Breze" },
+  { mehr: "Heften", ein: "ein Heft" }, { mehr: "Äpfeln", ein: "ein Apfel" },
+  { mehr: "Muffins", ein: "ein Muffin" }, { mehr: "Stickern", ein: "ein Sticker" },
+  { mehr: "Tennisbällen", ein: "ein Tennisball" }, { mehr: "Filzstiften", ein: "ein Filzstift" }
+];
+function genGeld(r) {
+  let n, q, ct;
+  do { n = zz(r, 2, 8); q = zz(r, 11, 99); ct = n * q; } while (ct < 100 || ct > 999);
+  return { art: "geld", n, q, ct, ding: eins(r, DINGE) };
+}
+const WAREN = [
+  { name: "Kaffee", ic: "☕" }, { name: "Käse", ic: "🧀" }, { name: "Gummibärchen", ic: "🐻" },
+  { name: "Nudeln", ic: "🍝" }, { name: "Müsli", ic: "🥣" }, { name: "Kekse", ic: "🍪" },
+  { name: "Reis", ic: "🍚" }, { name: "Schokolade", ic: "🍫" }
+];
+function genPreis(r, sorte) {
+  sorte = sorte || eins(r, ["kg", "100g"]);
+  const ware = eins(r, WAREN);
+  if (sorte === "kg") {
+    const f = eins(r, [4, 4, 2, 5]), g = 1000 / f;
+    let packung, pB, pA;
+    do {
+      packung = zz(r, 12, 60) * 5; pB = packung * f;
+      pA = pB + (r() < 0.5 ? -1 : 1) * zz(r, 2, 15) * 10;
+    } while (pB < 200 || pB > 1500 || pA < 150);
+    return { art: "preis", sorte, ware, f, g, packung, pA, pB, sieger: pA < pB ? "A" : "B" };
+  }
+  let nA, nB, uA, uB;
+  do { nA = zz(r, 2, 9); nB = zz(r, 2, 9); uA = zz(r, 12, 60); uB = zz(r, 12, 60); } while (nA === nB || uA === uB);
+  return { art: "preis", sorte, ware, nA, nB, uA, uB, sieger: uA < uB ? "A" : "B" };
+}
+
+/* ---------- Themen ---------- */
+const THEMEN = [
+  { id: "zehner", titel: "Teilen durch 10, 100 und Zehnerzahlen", kurz: "Durch 10, 100, Zehner", icon: "🔟", gen: r => genZehner(r) },
+  { id: "mal", titel: "Halbschriftlich malnehmen", kurz: "Halbschriftlich mal", icon: "✖️", gen: r => genMal(r) },
+  { id: "teil", titel: "Halbschriftlich teilen", kurz: "Halbschriftlich teilen", icon: "➗", gen: r => genTeil(r) },
+  { id: "geld", titel: "Euro und Cent teilen", kurz: "Euro und Cent", icon: "💶", gen: r => genGeld(r) },
+  { id: "preis", titel: "Preisvergleich", kurz: "Preisvergleich", icon: "🛒", gen: r => genPreis(r) }
+];
+const ERKLAERUNG = {
+  zehner: "Beim Teilen durch <b>10</b> fällt hinten <b>eine Null</b> weg: 920 : 10 = 92. Beim Teilen durch <b>100</b> fallen <b>zwei Nullen</b> weg: 700 : 100 = 7. Bei <b>Zehnerzahlen</b> streichst du bei beiden Zahlen eine Null und rechnest das kleine Einmaleins: 480 : 60 → 48 : 6 = 8.",
+  mal: "Zerlege die große Zahl in <b>Zehner und Einer</b> (bei Hunderterzahlen auch in Hunderter). Rechne jeden Teil einzeln mal und zähle die Ergebnisse zusammen. Das Ergebnis schreibst du oben in die unterstrichene Zeile.",
+  teil: "Zerlege die Zahl in Teile, die du <b>leicht teilen</b> kannst. Zuerst einen großen Zehner-Teil (zum Beispiel 80 : 4), dann den Rest. Du darfst auch in drei Schritten zerlegen (96 : 3 → 60 : 3, 30 : 3, 6 : 3). Die Ergebnisse zählst du zusammen.",
+  geld: "Rechne die Euro zuerst in <b>Cent</b> um: 1,50 € = 150 ct. Dann teilst du: 150 ct : 3 = 50 ct. Zum Schluss schreibst du den Cent-Betrag wieder in Euro: 50 ct = 0,50 €.",
+  preis: "Damit du vergleichen kannst, müssen beide Packungen <b>gleich schwer</b> sein. Rechne beide auf <b>1 kg</b> hoch (250 g · 4 = 1000 g, also auch den Preis · 4) oder rechne aus, was <b>100 g</b> kosten (600 g : 6 = 100 g, also auch den Preis : 6). Kleiner Preis = preiswerter!"
+};
+
+/* ---------- Felder ---------- */
+let feldNr = 0;
+function F(soll, typ, opt) { return { feld: true, id: "f" + (++feldNr), soll, typ: typ || "zahl", opt }; }
+function S(x) { return String(x); }
+
+/* ---------- Aufgaben zum Rechnen am Bildschirm bauen ----------
+   modus: "hilfe" (Zerlegung steht schon da) | "frei" (selbst zerlegen) | "kreuz" (Malkreuz) */
+function bauen(d, modus) {
+  if (NEU_BAU[d.art]) return NEU_BAU[d.art](d, modus);
+  if (d.art === "zehner") return bauZehner(d);
+  if (d.art === "mal") return modus === "kreuz" ? bauKreuz(d) : bauMal(d, modus);
+  if (d.art === "teil") return bauTeil(d, modus);
+  if (d.art === "geld") return bauGeld(d, modus);
+  if (d.art === "preis") return bauPreis(d, modus);
+}
+const ZEHNER_TITEL = { z10: "Teile durch 10.", z100: "Teile durch 100.", zz: "Teile durch Zehnerzahlen." };
+const ZEHNER_TIPP = {
+  z10: "Beim Teilen durch 10 fällt hinten eine Null weg. Beispiel: 380 : 10 = 38",
+  z100: "Beim Teilen durch 100 fallen hinten zwei Nullen weg. Beispiel: 500 : 100 = 5",
+  zz: "Streiche bei beiden Zahlen eine Null weg und rechne das Einmaleins. Beispiel: 240 : 40 → 24 : 4 = 6"
+};
+function bauZehner(d) {
+  return {
+    daten: d, thema: "zehner", frage: ZEHNER_TITEL[d.sorte] + " Rechne im Kopf.",
+    bloecke: [{ art: "rechnung", zeilen: d.liste.map(([a, b]) => [S(a), ":", S(b), "=", F(a / b)]) }],
+    tipp: ZEHNER_TIPP[d.sorte]
+  };
+}
+function bauMal(d, modus) {
+  const { a, b, teile } = d, end = F(a * b);
+  if (modus === "frei") {
+    const reihen = [0, 1, 2].map(i => ({ teil: F(teile[i] ?? null), erg: F(teile[i] !== undefined ? a * teile[i] : null), frei: i >= teile.length }));
+    return {
+      daten: d, thema: "mal", frage: `Rechne halbschriftlich: ${a} · ${b}. Zerlege die Zahl ${b} selbst.`,
+      bloecke: [{ art: "rechnung", strich: true, zeilen: [[S(a), "·", S(b), "=", end]].concat(reihen.map(z => ({ frei: z.frei, zellen: [S(a), "·", z.teil, "=", z.erg] }))) },
+        { art: "klein", text: "Die letzte Zeile darfst du frei lassen, wenn du sie nicht brauchst." }],
+      pruefe: () => zerlegPruefen({ reihen, end, gesamt: b, ergebnis: a * b, rechne: t => a * t, name: "mal", a }),
+      tipp: `Zerlege ${b} in ${teile.join(" und ")}. Rechne ${teile.map(t => a + " · " + t).join(" und ")}. Dann zählst du zusammen.`
+    };
+  }
+  return {
+    daten: d, thema: "mal", frage: `Rechne halbschriftlich: ${a} · ${b}`,
+    bloecke: [{ art: "rechnung", strich: true, zeilen: [[S(a), "·", S(b), "=", end]].concat(teile.map(t => [S(a), "·", S(t), "=", F(a * t)])) }],
+    tipp: `Rechne zuerst die unteren Zeilen: ${teile.map(t => a + " · " + t).join(" und ")}. Zähle dann die Ergebnisse zusammen und schreibe das Ergebnis nach oben.`
+  };
+}
+function bauKreuz(d) {
+  const { a, b, teile } = d;
+  return {
+    daten: d, thema: "mal", frage: `Rechne mit dem Malkreuz: ${a} · ${b}`,
+    bloecke: [
+      { art: "kreuz", zeilen: [["·"].concat(teile.map(S)), [S(a)].concat(teile.map(t => F(a * t)))] },
+      { art: "klein", text: "Zähle die Ergebnisse im Malkreuz zusammen:" },
+      { art: "rechnung", strich: true, zeilen: [[S(a), "·", S(b), "=", F(a * b)]] }
+    ],
+    tipp: `Im Malkreuz steht oben die zerlegte Zahl (${teile.join(" und ")}), links die ${a}. In jedes Feld kommt das Ergebnis von „links mal oben“.`
+  };
+}
+function bauTeil(d, modus) {
+  const { z, d: t, q, teile } = d, end = F(q);
+  if (modus === "frei") {
+    const reihen = [0, 1, 2].map(i => ({ teil: F(teile[i] ?? null), erg: F(teile[i] !== undefined ? teile[i] / t : null), frei: i >= teile.length }));
+    return {
+      daten: d, thema: "teil", frage: `Rechne halbschriftlich: ${z} : ${t}. Zerlege die Zahl ${z} selbst.`,
+      bloecke: [{ art: "rechnung", strich: true, zeilen: [[S(z), ":", S(t), "=", end]].concat(reihen.map(r => ({ frei: r.frei, zellen: [r.teil, ":", S(t), "=", r.erg] }))) },
+        { art: "klein", text: "Die letzte Zeile darfst du frei lassen, wenn du sie nicht brauchst." }],
+      pruefe: () => zerlegPruefen({ reihen, end, gesamt: z, ergebnis: q, rechne: x => x / t, name: "teil", d: t }),
+      tipp: `Suche eine große Zahl, die du leicht durch ${t} teilen kannst, zum Beispiel ${teile[0]}. Der Rest ist dann ${z - teile[0]}.`
+    };
+  }
+  return {
+    daten: d, thema: "teil", frage: `Rechne halbschriftlich: ${z} : ${t}`,
+    bloecke: [{ art: "rechnung", strich: true, zeilen: [[S(z), ":", S(t), "=", end]].concat(teile.map(x => [S(x), ":", S(t), "=", F(x / t)])) }],
+    tipp: `Rechne zuerst die unteren Zeilen: ${teile.map(x => x + " : " + t).join(" und ")}. Zähle dann die Ergebnisse zusammen.`
+  };
+}
+function bauGeld(d, modus) {
+  const { n, q, ct, ding } = d;
+  return {
+    daten: d, thema: "geld", frage: `Ein Päckchen mit ${n} ${ding.mehr} kostet ${eu(ct)} €. Wie viel kostet ${ding.ein}?`,
+    bloecke: [
+      { art: "rechnung", strich: true, zeilen: [
+        [eu(ct), "€", ":", S(n), "=", F(q), "ct"],
+        [modus === "hilfe" ? S(ct) : F(ct), "ct", ":", S(n), "=", F(q), "ct"]
+      ] },
+      { art: "flex", zeilen: [[F(q), "ct =", F(q, "euro"), "€"]] }
+    ],
+    tipp: `Rechne zuerst in Cent um: ${eu(ct)} € = ${ct} ct. Dann teilst du ${ct} ct durch ${n}.`
+  };
+}
+function packungen(a, b) {
+  return `<div class="packungen"><div class="packung"><span class="ic">${a.ic}</span><b>Packung A</b><br>${a.text}</div><div class="packung"><span class="ic">${b.ic}</span><b>Packung B</b><br>${b.text}</div></div>`;
+}
+function bauPreis(d, modus) {
+  const w = d.ware, hilfe = modus === "hilfe";
+  const zeichen = d.sieger === "A" ? "<" : ">";
+  if (d.sorte === "kg") {
+    return {
+      daten: d, thema: "preis", frage: `Welche Packung ${w.name} ist preiswerter?`,
+      bloecke: [
+        { art: "text", html: packungen({ ic: w.ic, text: `1 kg kostet <b>${eu(d.pA)} €</b>` }, { ic: w.ic, text: `${d.g} g kosten <b>${eu(d.packung)} €</b>` }) },
+        { art: "klein", text: "Rechne Packung B auf 1 kg hoch:" },
+        { art: "rechnung", zeilen: [
+          ["B:", S(d.g), "g", "·", hilfe ? S(d.f) : F(d.f), "=", F(1000), "g = 1 kg"],
+          ["", eu(d.packung), "€", "·", hilfe ? S(d.f) : F(d.f), "=", F(d.pB, "euro"), "€"]
+        ] },
+        { art: "klein", text: "Vergleiche die Preise für 1 kg:" },
+        { art: "flex", zeilen: [["A:", eu(d.pA), "€", F(zeichen, "wahl", ["<", "=", ">"]), "B:", F(d.pB, "euro"), "€"], ["Packung", F(d.sieger, "wahl", ["A", "B"]), "ist preiswerter."]] }
+      ],
+      tipp: `Wie oft passen ${d.g} g in 1 kg (1000 g)? ${d.f}-mal! Dann musst du auch den Preis mal ${d.f} nehmen.`
+    };
+  }
+  const gA = d.nA * 100, gB = d.nB * 100, pA = d.nA * d.uA, pB = d.nB * d.uB;
+  return {
+    daten: d, thema: "preis", frage: `Welche Packung ${w.name} ist preiswerter? Rechne aus, was 100 g kosten.`,
+    bloecke: [
+      { art: "text", html: packungen({ ic: w.ic, text: `${gA} g kosten <b>${eu(pA)} €</b>` }, { ic: w.ic, text: `${gB} g kosten <b>${eu(pB)} €</b>` }) },
+      { art: "rechnung", zeilen: [
+        ["A:", S(gA), "g", ":", hilfe ? S(d.nA) : F(d.nA), "=", "100", "g"],
+        ["", eu(pA), "€", ":", hilfe ? S(d.nA) : F(d.nA), "=", F(d.uA), "ct"]
+      ] },
+      { art: "rechnung", zeilen: [
+        ["B:", S(gB), "g", ":", hilfe ? S(d.nB) : F(d.nB), "=", "100", "g"],
+        ["", eu(pB), "€", ":", hilfe ? S(d.nB) : F(d.nB), "=", F(d.uB), "ct"]
+      ] },
+      { art: "klein", text: "Vergleiche die Preise für 100 g:" },
+      { art: "flex", zeilen: [["A:", F(d.uA), "ct", F(zeichen, "wahl", ["<", "=", ">"]), "B:", F(d.uB), "ct"], ["Packung", F(d.sieger, "wahl", ["A", "B"]), "ist preiswerter."]] }
+    ],
+    tipp: `Durch welche Zahl musst du ${gA} g teilen, damit 100 g herauskommen? Durch ${d.nA}! Dann teilst du auch den Preis durch ${d.nA}. Tipp: ${eu(pA)} € = ${pA} ct.`
+  };
+}
+
+/* ---------- Felder einsammeln, lesen, prüfen ---------- */
+function alleFelder(t) {
+  const out = [];
+  const nimm = x => { if (Array.isArray(x)) x.forEach(nimm); else if (x && x.feld) out.push(x); else if (x && x.zellen) nimm(x.zellen); };
+  t.bloecke.forEach(b => { nimm(b.zeilen || []); nimm(b.felder || []); });
+  return out;
+}
+function lesen(f) {
+  const el = document.getElementById(f.id);
+  if (!el) return null;
+  if (f.typ === "wahl") return el.dataset.v || null;
+  let v = el.value.trim().replace(/\s/g, "").replace(/€|ct/gi, "");
+  if (v === "") return null;
+  if (f.typ === "euro") {
+    v = v.replace(".", ",");
+    const m = v.match(/^(\d*)(?:,(\d{0,2}))?$/);
+    if (!m || (m[1] === "" && !m[2])) return NaN;
+    return Number(m[1] || 0) * 100 + Number(((m[2] || "") + "00").slice(0, 2));
+  }
+  v = v.replace(/\./g, "");
+  return /^\d+$/.test(v) ? Number(v) : NaN;
+}
+function zeigeWert(f, wert) {
+  if (wert === null || wert === undefined) return "";
+  return f.typ === "euro" ? eu(wert) : String(wert);
+}
+function standardPruefen(t) {
+  const erg = {}; let leer = false;
+  alleFelder(t).forEach(f => { const v = lesen(f); if (v === null && !f.optional) leer = true; erg[f.id] = f.pruef ? f.pruef(v) : v === f.soll; });
+  const falsch = Object.values(erg).filter(x => !x).length;
+  return { erg, meldung: falsch ? (leer ? "Es sind noch Kästchen leer. Rechne sie noch aus!" : (falsch === 1 ? "Ein Kästchen stimmt noch nicht. Schau es dir nochmal an!" : `${falsch} Kästchen stimmen noch nicht. Schau sie dir nochmal an!`)) : "" };
+}
+/* Selbst zerlegt: Jeder richtige Weg zählt. */
+function zerlegPruefen(o) {
+  const erg = {}; let meldung = "";
+  const sag = m => { if (!meldung) meldung = m; };
+  const benutzt = [];
+  o.reihen.forEach(r => {
+    const tv = lesen(r.teil), ev = lesen(r.erg);
+    if (tv === null && ev === null) { erg[r.teil.id] = null; erg[r.erg.id] = null; return; }
+    benutzt.push({ r, tv, ev });
+  });
+  const endWert = lesen(o.end);
+  if (benutzt.length < 2) {
+    o.reihen.slice(0, 2).forEach(r => { erg[r.teil.id] = false; erg[r.erg.id] = false; });
+    sag("Zerlege die Zahl in mindestens zwei Teile, so wie im Heft.");
+  } else {
+    let summe = 0, alleDa = true;
+    benutzt.forEach(({ tv }) => { if (typeof tv === "number" && !isNaN(tv)) summe += tv; else alleDa = false; });
+    benutzt.forEach(({ r, tv, ev }) => {
+      let teilOk = typeof tv === "number" && !isNaN(tv) && tv > 0;
+      if (tv === null) sag("Es sind noch Kästchen leer. Rechne sie noch aus!");
+      if (teilOk && o.name === "teil" && tv % o.d !== 0) { teilOk = false; sag(`${tv} kann man nicht ohne Rest durch ${o.d} teilen. Nimm eine andere Zahl.`); }
+      erg[r.teil.id] = teilOk;
+      erg[r.erg.id] = teilOk && ev === o.rechne(tv);
+      if (ev === null) sag("Es sind noch Kästchen leer. Rechne sie noch aus!");
+    });
+    if (alleDa && summe !== o.gesamt) {
+      benutzt.forEach(({ r }) => { erg[r.teil.id] = false; });
+      sag(`Deine Teile ergeben zusammen ${summe}. Sie müssen zusammen ${o.gesamt} ergeben.`);
+    }
+  }
+  erg[o.end.id] = endWert === o.ergebnis;
+  if (endWert === null) sag("Oben fehlt noch das Ergebnis.");
+  const falsch = Object.values(erg).filter(x => x === false).length;
+  if (falsch && !meldung) sag(falsch === 1 ? "Ein Kästchen stimmt noch nicht. Schau es dir nochmal an!" : `${falsch} Kästchen stimmen noch nicht.`);
+  return { erg, meldung: falsch ? meldung : "" };
+}
+
+/* ---------- Aufgabe anzeigen ---------- */
+function feldHtml(f, zeig) {
+  if (f.typ === "wahl") {
+    return `<span class="wahl${f.optHtml ? " bild" : ""}${zeig ? " gesperrt" : ""}" id="${f.id}${zeig ? "_z" : ""}" data-v="${zeig ? esc(f.soll) : ""}">${f.opt.map((o, i) => `<button type="button" data-w="${esc(o)}" class="${zeig && o === f.soll ? "an" : ""}" onclick="wahlKlick(this)">${f.optHtml ? f.optHtml[i] : esc(o)}</button>`).join("")}</span>`;
+  }
+  if (f.typ === "ziffer") {
+    return `<input class="ein zf${f.klein ? " klein" : ""}${zeig ? " zeig" : ""}" id="${f.id}${zeig ? "_z" : ""}" inputmode="numeric" maxlength="1" autocomplete="off" ${f.weiter && !zeig ? `data-weiter="${f.weiter}"` : ""} value="${zeig ? zeigeWert(f, f.soll) : ""}" ${zeig ? "readonly" : ""}>`;
+  }
+  const breite = f.typ === "euro" ? 5 : Math.max(2, String(f.soll ?? "000").length) + 1;
+  return `<input class="ein${zeig ? " zeig" : ""}" id="${f.id}${zeig ? "_z" : ""}" inputmode="${f.typ === "euro" ? "decimal" : "numeric"}" autocomplete="off" style="width:${breite + 1.2}ch" value="${zeig ? zeigeWert(f, f.soll) : ""}" ${zeig ? "readonly" : ""}>`;
+}
+function zelleHtml(x, zeig) { return x && x.feld ? feldHtml(x, zeig) : x && x.html !== undefined ? x.html : esc(x); }
+function blockHtml(b, zeig) {
+  if (b.art === "text") return `<div class="blk">${b.html}</div>`;
+  if (NEUE_BLOECKE[b.art]) return NEUE_BLOECKE[b.art](b, zeig);
+  if (b.art === "klein") return `<div class="blk hinweis" style="margin-bottom:8px">${b.text}</div>`;
+  if (b.art === "flex") return `<div class="blk">${b.zeilen.map(z => `<div class="flex" style="margin-bottom:10px">${z.map(x => `<span>${zelleHtml(x, zeig)}</span>`).join("")}</div>`).join("")}</div>`;
+  if (b.art === "kreuz") return `<div class="blk"><table class="kreuz">${b.zeilen.map(z => `<tr>${z.map(x => `<td>${zelleHtml(x, zeig)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+  // rechnung: untereinander wie im Heft
+  const zeilen = b.zeilen.map(z => Array.isArray(z) ? { zellen: z } : z);
+  const n = Math.max(...zeilen.map(z => z.zellen.length));
+  const OPS = [":", "·", "=", "€", "ct", "g", "<", ">"];
+  return `<div class="blk"><div class="rg" style="grid-template-columns:repeat(${n},auto)">${zeilen.map((z, i) => {
+    const zellen = z.zellen.concat(Array(n - z.zellen.length).fill(""));
+    return zellen.map(x => `<div class="c${i === 0 && b.strich ? " o" : ""}${typeof x === "string" && OPS.includes(x) ? " op" : ""}${z.frei ? " frei" : ""}">${zelleHtml(x, zeig)}</div>`).join("");
+  }).join("")}</div></div>`;
+}
+function aufgabeHtml(t, zeig) { return `<div class="heft">${t.bloecke.map(b => blockHtml(b, zeig)).join("")}</div>`; }
+function wahlKlick(btn) {
+  const w = btn.parentElement;
+  if (w.classList.contains("gesperrt")) return;
+  [...w.children].forEach(c => c.classList.remove("an"));
+  btn.classList.add("an"); w.dataset.v = btn.dataset.w;
+  w.classList.remove("ok", "falsch");
+}
+
+/* =====================================================================
+   NEUE THEMEN (Heftseiten vom Oktober): Rechnen bis 1000, schriftlich
+   addieren und subtrahieren, Rechendreiecke, Punkt vor Strich,
+   Zahlenrätsel, Uhrzeiten, Zeitspannen, Umwandeln, Fahrpläne.
+   Nur Aufgabentypen, die so im Heft vorkommen – mit wechselnden Zahlen.
+   ===================================================================== */
+const NEU_BAU = {}, NEU_DRUCK = {}, NEUE_BLOECKE = {};
+function zw(n) { return String(n).padStart(2, "0"); }
+function uhrzeit(min, trenner) { min = ((min % 1440) + 1440) % 1440; return zw(Math.floor(min / 60)) + (trenner || ":") + zw(min % 60); }
+function dauerText(min) { const h = Math.floor(min / 60), m = min % 60; return h ? (m ? `${h} h ${m} min` : `${h} h`) : `${m} min`; }
+/* Feld, das leer bleiben oder 0 sein darf (z. B. „1 h 0 min“, führende Null) */
+function FU(u) { const f = F(u || null, "ziffer"); f.optional = true; f.klein = true; f.pruef = v => v === null || v === (u || 0); return f; }
+function F0(soll, typ) { const f = F(soll, typ); f.optional = !soll; f.pruef = v => soll ? v === soll : (v === null || v === 0); return f; }
+
+/* ---------- 1. Rechnen bis 1000 im Kopf ---------- */
+function genKopf(r, sorte) {
+  sorte = sorte || eins(r, ["plus", "minus", "mal", "geteilt", "platz", "umkehr"]);
+  const zeilen = [];
+  if (sorte === "umkehr") {
+    for (let i = 0; i < 2; i++) { const a = zz(r, 2, 9), b = zz(r, 2, 9) * 10; zeilen.push([S(a), "·", S(b), "=", L(a * b)], [S(a * b), ":", S(b), "=", L(a)]); }
+    return { art: "kopf", sorte, zeilen };
+  }
+  const schon = new Set();
+  while (zeilen.length < 4) {
+    let z;
+    if (sorte === "plus") {
+      const t = zz(r, 1, 3); let a, b;
+      if (t === 1) { a = zz(r, 10, 90) * 10; b = zz(r, 1, 9) * 10 + (r() < 0.5 ? 0 : zz(r, 1, 9) * 100); }
+      else if (t === 2) { a = zz(r, 10, 90) * 10; b = zz(r, 30, 600); }
+      else { a = zz(r, 100, 800); b = zz(r, 12, 99); }
+      if (a + b > 1000) continue;
+      z = [S(a), "+", S(b), "=", L(a + b)];
+    } else if (sorte === "minus") {
+      const t = zz(r, 1, 3); let a, b;
+      if (t === 1) { a = zz(r, 20, 99) * 10; b = zz(r, 1, 9) * 100; }
+      else if (t === 2) { a = zz(r, 20, 99) * 10; b = zz(r, 12, 99); }
+      else { a = zz(r, 300, 999); b = zz(r, 100, 500); }
+      if (b >= a) continue;
+      z = [S(a), "−", S(b), "=", L(a - b)];
+    } else if (sorte === "mal") {
+      const t = zz(r, 1, 3); let a, b;
+      if (t === 1) { a = zz(r, 2, 10); b = zz(r, 2, 10); }
+      else if (t === 2) { a = zz(r, 2, 10); b = zz(r, 2, 9) * 10; }
+      else { a = zz(r, 11, 19); b = zz(r, 2, 9); }
+      if (r() < 0.5) [a, b] = [b, a];
+      z = [S(a), "·", S(b), "=", L(a * b)];
+    } else if (sorte === "geteilt") {
+      const t = zz(r, 1, 3); let d, q;
+      if (t === 1) { d = zz(r, 2, 10); q = zz(r, 2, 10); }
+      else if (t === 2) { d = zz(r, 2, 9) * 10; q = zz(r, 2, 9); }
+      else { d = zz(r, 2, 9); q = zz(r, 2, 9) * 10; }
+      z = [S(d * q), ":", S(d), "=", L(q)];
+    } else { // Platzhalter
+      const t = zz(r, 1, 5);
+      if (t === 1) { const c = zz(r, 30, 99) * 10, b = zz(r, 1, 9) * 10 + (r() < 0.5 ? 0 : zz(r, 1, 3) * 100); if (b >= c) continue; z = [L(c - b), "+", S(b), "=", S(c)]; }
+      else if (t === 2) { const c = zz(r, 20, 90) * 10, b = zz(r, 2, 9) * 10; if (c + b > 1000) continue; z = [L(c + b), "−", S(b), "=", S(c)]; }
+      else if (t === 3) { const a = zz(r, 2, 9), b = zz(r, 2, 9) * 10, x = zz(r, 1, 9) * 10; z = [S(a), "·", S(b), "+", L(x), "=", S(a * b + x)]; }
+      else if (t === 4) { const a = zz(r, 2, 9) * 10, b = zz(r, 2, 9), x = zz(r, 1, 9) * 10; if (x >= a * b) continue; z = [S(a), "·", S(b), "−", L(x), "=", S(a * b - x)]; }
+      else { const d = zz(r, 2, 9) * 10, q = zz(r, 2, 9), x = zz(r, 2, 30); z = [S(d * q), ":", S(d), "+", L(x), "=", S(q + x)]; }
+    }
+    const k = z.map(txt).join("");
+    if (schon.has(k)) continue;
+    schon.add(k); zeilen.push(z);
+  }
+  return { art: "kopf", sorte, zeilen };
+}
+const KOPF_TITEL = { plus: "Rechne im Kopf.", minus: "Rechne im Kopf.", mal: "Rechne im Kopf.", geteilt: "Rechne im Kopf.", platz: "Welche Zahl fehlt?", umkehr: "Rechne die Aufgabe und die Umkehraufgabe." };
+const KOPF_TIPP = {
+  plus: "Rechne zuerst die Hunderter, dann die Zehner, dann die Einer. Beispiel: 460 + 345 → 460 + 300 = 760, 760 + 45 = 805",
+  minus: "Ziehe zuerst die Hunderter ab, dann den Rest. Beispiel: 620 − 78 → 620 − 70 = 550, 550 − 8 = 542",
+  mal: "Denke an das Einmaleins. Bei Zehnerzahlen hängst du eine Null an: 6 · 80 → 6 · 8 = 48, also 480",
+  geteilt: "Denke an die Umkehraufgabe: 320 : 40 = ?, weil ? · 40 = 320",
+  platz: "Rechne zuerst den Teil aus, den du schon kennst. Was fehlt dann noch bis zum Ergebnis?",
+  umkehr: "Die Umkehraufgabe von 6 · 80 = 480 ist 480 : 80 = 6."
+};
+NEU_BAU.kopf = d => ({
+  daten: d, thema: "kopf", frage: KOPF_TITEL[d.sorte],
+  bloecke: [{ art: "rechnung", zeilen: d.zeilen.map(z => z.map(x => typeof x === "string" ? x : F(Number(x.l)))) }],
+  tipp: KOPF_TIPP[d.sorte]
+});
+/* Druck: einfache Päckchen, Lösungsfelder leer lassen */
+function druckPaeckchen(zeilen, lsg) {
+  const z = ausrichten(zeilen.map(row => row.map(x => typeof x === "string" ? x : (lsg ? x : " ".repeat(Math.max(3, x.l.length))))));
+  return z.map(x => druckZeile(x)).join("");
+}
+NEU_DRUCK.kopf = (d, lsg) => `<div class="pk">${druckPaeckchen(d.zeilen, lsg)}</div>`;
+
+/* ---------- 2. Schriftlich addieren und subtrahieren ---------- */
+function ziffern(n, breite) { const s = String(n).padStart(breite, " "); return [...s].map(c => c === " " ? null : Number(c)); }
+function genSchrift(r, sorte) {
+  sorte = sorte || eins(r, ["plus", "plus", "minus", "minus", "sinnvoll"]);
+  let a, b;
+  if (sorte === "plus") {
+    do { a = zz(r, 100, 899); b = zz(r, r() < 0.2 ? 12 : 100, 899); } while (a + b > 999 || ((a % 10) + (b % 10) < 10 && (Math.floor(a / 10) % 10) + (Math.floor(b / 10) % 10) < 10));
+  } else {
+    do { a = zz(r, 300, 999); b = zz(r, r() < 0.2 ? 12 : 100, 899); } while (b >= a || ((a % 10) >= (b % 10) && (Math.floor(a / 10) % 10) >= (Math.floor(b / 10) % 10)));
+  }
+  return { art: "schrift", sorte, a, b, erg: sorte === "plus" ? a + b : a - b, tausch: sorte === "sinnvoll" && r() < 0.5 };
+}
+/* Überträge: für Plus und für Minus (Abziehen mit Übertrag, wie im Heft) */
+function uebertraege(a, b, plus) {
+  const da = ziffern(a, 3).map(x => x || 0), db = ziffern(b, 3).map(x => x || 0), c = [0, 0, 0];
+  let u = 0;
+  for (let i = 2; i >= 0; i--) {
+    if (plus) { const s = da[i] + db[i] + u; u = s >= 10 ? 1 : 0; }
+    else { const unten = db[i] + u; u = da[i] < unten ? 1 : 0; }
+    if (i > 0) c[i - 1] = u;
+  }
+  return c;
+}
+NEU_BAU.schrift = (d, modus) => {
+  const plus = d.sorte === "plus", n = 3;
+  const oben = ziffern(d.a, n), unten = ziffern(d.b, n), erg = ziffern(d.erg, n), ue = uebertraege(d.a, d.b, plus);
+  const zeile = (zif, felder) => zif.map(z => felder ? (z === null ? F0(null, "ziffer") : F(z, "ziffer")) : (z === null ? "" : S(z)));
+  const sinn = d.sorte === "sinnvoll";
+  const r1 = zeile(oben, sinn), r2 = zeile(unten, sinn);
+  const uer = [FU(ue[0]), FU(ue[1]), ""];
+  const res = erg.map(z => z === null ? F0(null, "ziffer") : F(z, "ziffer"));
+  for (let i = 1; i < res.length; i++) res[i].weiter = res[i - 1].id;   // Ergebnis von rechts nach links
+  const op = plus ? "+" : "−";
+  const zeilen = plus ? [["", ...r1], [op, ...r2], ["", ...uer], ["", ...res]] : [["", ...r1], ["", ...uer], [op, ...r2], ["", ...res]];
+  const ue_zeile = plus ? 2 : 1;
+  const [g, k] = d.tausch ? [d.b, d.a] : [d.a, d.b];
+  return {
+    daten: d, thema: "schrift",
+    frage: sinn ? `Bilde aus den Zahlen ${g} und ${k} eine sinnvolle Minusaufgabe. Rechne schriftlich.` : `Rechne schriftlich: ${d.a} ${op} ${d.b}`,
+    bloecke: [{ art: "stellen", zeilen, ueZeile: ue_zeile }, { art: "klein", text: "Die kleinen Kästchen sind für die Überträge. Du darfst sie benutzen, musst aber nicht." }],
+    tipp: sinn ? "Die größere Zahl kommt nach oben. Schreibe Einer unter Einer, Zehner unter Zehner, Hunderter unter Hunderter." :
+      plus ? "Fange hinten bei den Einern an. Wird es 10 oder mehr, schreibst du die Einer hin und den Übertrag 1 in die nächste Spalte." :
+        "Fange hinten bei den Einern an. Ist die obere Ziffer zu klein, rechnest du mit 10 mehr und schreibst einen Übertrag 1 in die nächste Spalte."
+  };
+};
+NEUE_BLOECKE.stellen = (b, zeig) => `<div class="blk"><table class="stellen">${b.zeilen.map((z, i) => `<tr class="${i === b.ueZeile ? "ue" : ""}${i === b.zeilen.length - 1 ? " erg" : ""}">${z.map((x, j) => `<td class="${j === 0 ? "op" : ""}">${zelleHtml(x, zeig)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+NEU_DRUCK.schrift = (d, lsg) => {
+  const plus = d.sorte === "plus", op = plus ? "+" : "−", ue = uebertraege(d.a, d.b, plus);
+  const zahl = n => String(n).padStart(3, " ");
+  const ueZ = druckZeile([" "].concat([ue[0], ue[1]].map(u => u && lsg ? L("1") : " ")).concat([" "]), plus);
+  let h = "";
+  if (d.sorte === "sinnvoll") {
+    const [g, k] = d.tausch ? [d.b, d.a] : [d.a, d.b];
+    h += `<div class="pt">Bilde aus ${g} und ${k} eine sinnvolle Minusaufgabe.</div>`;
+    if (!lsg) return `<div class="pk">${h}<div class="eng">${'<div class="pl"></div>'.repeat(2)}<div class="pl st" style="width:24mm"></div><div class="pl"></div></div></div>`;
+  }
+  const kl = lsg || d.sorte !== "sinnvoll";
+  const z1 = druckZeile([" " + (kl ? zahl(d.a) : "   ")]), z2 = druckZeile([op + zahl(d.b)], !plus);
+  const erg = druckZeile([" ", lsg ? L(zahl(d.erg)) : "   "]);
+  h += `<div class="eng">${plus ? z1 + z2 + ueZ : z1 + ueZ.replace(" st", "") + z2}${erg}</div>`;
+  return `<div class="pk">${h}</div>`;
+};
+
+/* ---------- 3. Rechendreiecke ---------- */
+function genDreieck(r, sorte) {
+  sorte = sorte || eins(r, ["innen", "innen", "gemischt"]);
+  const werte = mischenR(r, [zz(r, 1, 9) * 10, zz(r, 2, 9), zz(r, 2, 9)]);
+  const [o, l, re] = werte;
+  return { art: "dreieck", sorte, o, l, re, aussen: { links: o * l, rechts: o * re, unten: l * re }, gegeben: eins(r, ["o", "l", "re"]) };
+}
+NEU_BAU.dreieck = d => {
+  const inn = d.sorte === "innen", g = d.gegeben;
+  const innen = { o: d.o, l: d.l, re: d.re };
+  // Bei „gemischt“: eine Innenzahl und die beiden Außenzahlen daneben sind gegeben
+  const nachbarn = { o: ["links", "rechts"], l: ["links", "unten"], re: ["rechts", "unten"] }[g];
+  const fi = {}, fa = {};
+  ["o", "l", "re"].forEach(k => fi[k] = inn || k === g ? S(innen[k]) : F(innen[k]));
+  ["links", "rechts", "unten"].forEach(k => fa[k] = !inn && nachbarn.includes(k) ? S(d.aussen[k]) : F(d.aussen[k]));
+  return {
+    daten: d, thema: "dreieck", frage: inn ? "Rechendreieck: Außen steht immer das Ergebnis der beiden Zahlen innen daneben (mal)." : "Rechendreieck: Finde die fehlenden Zahlen innen und außen.",
+    bloecke: [{ art: "dreieck", fi, fa, felder: [fi.o, fi.l, fi.re, fa.links, fa.rechts, fa.unten] }],
+    tipp: inn ? "Multipliziere die zwei Innenzahlen, die neben dem Außenfeld liegen." : "Teile die Außenzahl durch die Innenzahl daneben. Dann bekommst du die fehlende Innenzahl."
+  };
+};
+NEUE_BLOECKE.dreieck = (b, zeig) => {
+  const z = x => zelleHtml(x, zeig);
+  return `<div class="blk"><div class="dreieck">
+    <svg viewBox="0 0 360 300" aria-hidden="true"><polygon points="180,8 40,250 320,250" fill="#9d8cf0" stroke="#6c4fd8" stroke-width="3" stroke-linejoin="round"/>
+    <g stroke="#fff" stroke-width="3"><line x1="180" y1="170" x2="110" y2="129"/><line x1="180" y1="170" x2="250" y2="129"/><line x1="180" y1="170" x2="180" y2="250"/></g><circle cx="180" cy="170" r="6" fill="#fff"/></svg>
+    <span style="left:180px;top:105px">${z(b.fi.o)}</span><span style="left:130px;top:212px">${z(b.fi.l)}</span><span style="left:230px;top:212px">${z(b.fi.re)}</span>
+    <span class="aus" style="left:62px;top:105px">${z(b.fa.links)}</span><span class="aus" style="left:298px;top:105px">${z(b.fa.rechts)}</span><span class="aus" style="left:180px;top:280px">${z(b.fa.unten)}</span>
+  </div></div>`;
+};
+NEU_DRUCK.dreieck = (d, lsg) => {
+  const inn = d.sorte === "innen", nachbarn = { o: ["links", "rechts"], l: ["links", "unten"], re: ["rechts", "unten"] }[d.gegeben];
+  const t = (x, y, wert, gegeben, cls) => gegeben ? `<text x="${x}" y="${y}" class="${cls || ""}">${wert}</text>` : lsg ? `<text x="${x}" y="${y}" class="lt">${wert}</text>` : `<line x1="${x - 26}" y1="${y + 6}" x2="${x + 26}" y2="${y + 6}" stroke="#222" stroke-width="2"/>`;
+  return `<div class="pk"><svg class="pdreieck" viewBox="0 0 360 300"><polygon points="180,8 40,250 320,250" fill="#e4dffb" stroke="#4b31a8" stroke-width="3"/>
+    <g stroke="#4b31a8" stroke-width="2"><line x1="180" y1="170" x2="110" y2="129"/><line x1="180" y1="170" x2="250" y2="129"/><line x1="180" y1="170" x2="180" y2="250"/></g>
+    ${t(180, 115, d.o, inn || d.gegeben === "o")}${t(130, 222, d.l, inn || d.gegeben === "l")}${t(230, 222, d.re, inn || d.gegeben === "re")}
+    ${t(55, 115, d.aussen.links, !inn && nachbarn.includes("links"))}${t(305, 115, d.aussen.rechts, !inn && nachbarn.includes("rechts"))}${t(180, 288, d.aussen.unten, !inn && nachbarn.includes("unten"))}</svg></div>`;
+};
+
+/* ---------- 4. Punkt- vor Strichrechnung ---------- */
+function genPunkt(r) {
+  const liste = [];
+  while (liste.length < 3) {
+    const t = zz(r, 1, 8); let a, b, c, ausdruck, z, e, punkt;
+    if (t === 1) { a = zz(r, 1, 99); b = zz(r, 2, 9); c = r() < 0.6 ? zz(r, 1, 9) * 10 : zz(r, 2, 9); z = b * c; e = a + z; ausdruck = `${a} + ${b} · ${c}`; punkt = `${b} · ${c}`; }
+    else if (t === 2) { a = r() < 0.6 ? zz(r, 2, 9) * 10 : zz(r, 2, 9); b = zz(r, 2, 9); c = zz(r, 1, 9); z = a * b; e = z + c; ausdruck = `${a} · ${b} + ${c}`; punkt = `${a} · ${b}`; }
+    else if (t === 3) { c = zz(r, 2, 9); const q = zz(r, 2, 9) * 10; b = q * c; a = zz(r, 10, 200); z = q; e = a + z; ausdruck = `${a} + ${b} : ${c}`; punkt = `${b} : ${c}`; }
+    else if (t === 4) { b = zz(r, 2, 9) * 10; const q = zz(r, 2, 9); a = q * b; c = zz(r, 10, 300); z = q; e = z + c; ausdruck = `${a} : ${b} + ${c}`; punkt = `${a} : ${b}`; }
+    else if (t === 5) { c = eins(r, [2, 4, 5, 10, 20, 30, 40, 50, 60, 80]); const q = zz(r, 2, 9) * (c >= 20 ? 1 : 5); b = q * c; a = zz(r, 2, 60) * 10; z = q; e = a - z; ausdruck = `${a} − ${b} : ${c}`; punkt = `${b} : ${c}`; }
+    else if (t === 6) { b = zz(r, 2, 9); c = zz(r, 2, 9); a = zz(r, 2, 10) * 10; z = b * c; e = a - z; ausdruck = `${a} − ${b} · ${c}`; punkt = `${b} · ${c}`; }
+    else if (t === 7) { a = zz(r, 2, 9) * 10; b = zz(r, 2, 9); c = zz(r, 1, 9); z = a * b; e = z - c; ausdruck = `${a} · ${b} − ${c}`; punkt = `${a} · ${b}`; }
+    else { b = eins(r, [2, 5, 10, 20, 50]); const q = zz(r, 2, 9) * (b <= 5 ? 10 : 1); a = q * b; c = zz(r, 1, 9); z = q; e = z - c; ausdruck = `${a} : ${b} − ${c}`; punkt = `${a} : ${b}`; }
+    if (e < 0) continue;
+    liste.push({ ausdruck, punkt, z, e });
+  }
+  return { art: "punkt", liste };
+}
+NEU_BAU.punkt = (d, modus) => ({
+  daten: d, thema: "punkt", frage: "Punktrechnung (· und :) kommt vor Strichrechnung (+ und −).",
+  bloecke: [{ art: "flex", zeilen: d.liste.flatMap(x => modus === "hilfe" ? [[x.ausdruck, "=", F(x.e)], [{ html: `<span class="hinweis" style="font-size:17px">↳ zuerst:</span>` }, x.punkt, "=", F(x.z)]] : [[x.ausdruck, "=", F(x.e)]]) }],
+  tipp: "Rechne zuerst die Mal- oder Geteiltaufgabe aus. Mit diesem Ergebnis rechnest du dann plus oder minus."
+});
+NEU_DRUCK.punkt = (d, lsg) => `<div class="pk">${d.liste.map(x => druckZeile([x.ausdruck.replace(/ /g, "") + "=", lsg ? L(String(x.e)) : ""])).join("")}</div>`;
+
+/* ---------- 5. Zahlenrätsel ---------- */
+function genRaetsel(r) {
+  const t = zz(r, 1, 7); let text, rech, erg, satz = "Die Zahl ist";
+  if (t === 1) { let a, b; do { a = zz(r, 120, 700); b = zz(r, 100, 400); } while (a + b > 999); text = `Addiere zur Zahl ${a} die Zahl ${b}. Welche Summe erhältst du?`; erg = a + b; rech = `${a} + ${b} = ${erg}`; satz = "Die Summe ist"; }
+  else if (t === 2) { const a = zz(r, 2, 8) * 100, x = zz(r, 1, 9) * 50; text = `Welche Zahl musst du zu ${a} addieren, um ${a + x} zu erhalten?`; erg = x; rech = `${a + x} − ${a} = ${x}`; }
+  else if (t === 3) { let a, d; do { a = zz(r, 400, 999); d = zz(r, 150, 700); } while (d >= a); text = `Welche Zahl musst du von ${a} subtrahieren, um die Differenz ${d} zu erhalten?`; erg = a - d; rech = `${a} − ${d} = ${erg}`; }
+  else if (t === 4) { const b = zz(r, 1, 5) * 50, d = zz(r, 1, 8) * 50; text = `Von welcher Zahl musst du ${b} subtrahieren, um die Differenz ${d} zu erhalten?`; erg = b + d; rech = `${d} + ${b} = ${erg}`; }
+  else if (t === 5) { const b = zz(r, 2, 9) * 10, q = zz(r, 2, 9); text = `Dividiere die Zahl ${b * q} durch ${b}. Welches Ergebnis erhältst du?`; erg = q; rech = `${b * q} : ${b} = ${q}`; satz = "Das Ergebnis ist"; }
+  else if (t === 6) { const a = zz(r, 2, 9) * 10, x = zz(r, 2, 9); text = `Mit welcher Zahl musst du ${a} multiplizieren, um ${a * x} zu erhalten?`; erg = x; rech = `${a} · ${x} = ${a * x}`; }
+  else { const x = zz(r, 2, 9) * 10, q = zz(r, 2, 9), s = x * q, a = zz(r, 1, Math.floor(s / 10) - 1) * 10, b = s - a; text = `Durch welche Zahl musst du die Summe aus ${a} und ${b} dividieren, um ${q} zu erhalten?`; erg = x; rech = `${a} + ${b} = ${s}, ${s} : ${x} = ${q}`; }
+  return { art: "raetsel", text, rech, erg, satz };
+}
+NEU_BAU.raetsel = d => ({
+  daten: d, thema: "raetsel", frage: d.text,
+  bloecke: [{ art: "klein", text: "Rechne auf deinem Block oder im Kopf." }, { art: "flex", zeilen: [[d.satz, F(d.erg), "."]] }],
+  tipp: "Lies genau: Wird etwas dazugezählt, abgezogen, malgenommen oder geteilt? Oft hilft die Umkehraufgabe."
+});
+NEU_DRUCK.raetsel = (d, lsg) => `<div class="pk"><div class="pt">${d.text}</div><div class="pt">Rechnung: ${lsg ? `<span class="l">${d.rech}</span>` : '<span class="lk" style="width:55mm"></span>'}</div><div class="pt">${d.satz} ${lsg ? `<span class="l">${d.erg}</span>` : '<span class="lk"></span>'}.</div></div>`;
+
+/* ---------- Halbschriftlich teilen als Sachaufgabe (135 Bücher für 5 Klassen) ---------- */
+const SACH_TEILEN = [{ was: "Bücher", fuer: "Klassen", jede: "jede Klasse", satz: "Jede Klasse bekommt" }, { was: "Hefte", fuer: "Klassen", jede: "jede Klasse", satz: "Jede Klasse bekommt" }, { was: "Stifte", fuer: "Gruppen", jede: "jede Gruppe", satz: "Jede Gruppe bekommt" }];
+function genTeilSach(r) { let d; do { d = genTeil(r, true); } while (d.d < 3); d.sach = eins(r, SACH_TEILEN); return d; }
+function sachFrage(d) { return `Die Schule hat ${d.z} ${d.sach.was} für ${d.d} ${d.sach.fuer} bekommen. Wie viele ${d.sach.was} bekommt ${d.sach.jede}?`; }
+NEU_BAU.teil = (d, modus) => {
+  const t = bauTeil(d, modus);
+  if (!d.sach) return t;
+  const ant = F(d.q);
+  t.frage = sachFrage(d) + " Rechne halbschriftlich.";
+  t.bloecke.push({ art: "flex", zeilen: [["Antwort:", d.sach.satz, ant, d.sach.was + "."]] });
+  const alt = t.pruefe || (() => standardPruefen(Object.assign({}, t, { bloecke: t.bloecke.slice(0, -1) })));
+  t.pruefe = () => { const a = alt(); const ok = lesen(ant) === d.q; a.erg[ant.id] = ok; if (!a.meldung && !ok) a.meldung = "Im Antwortsatz fehlt noch die richtige Zahl."; return a; };
+  return t;
+};
+NEU_DRUCK.teil = (d, lsg, opt) => {
+  if (!d.sach) return null;
+  const innen = druckItem(Object.assign({}, d, { sach: null }), lsg, opt).replace(/^<div class="pk">/, "").replace(/<\/div>$/, "");
+  return `<div class="pk"><div class="pt">${sachFrage(d)}</div>${innen}<div class="pt">Antwort: ${lsg ? `<span class="l">${d.sach.satz} ${d.q} ${d.sach.was}.</span>` : "_".repeat(40)}</div></div>`;
+};
+
+/* ---------- Preisvergleich mit drei Packungen (Preis für 50 g) ---------- */
+function genPreis3(r) {
+  const ware = eins(r, [{ name: "Marmelade", ic: "🍓" }, { name: "Honig", ic: "🍯" }, { name: "Apfelmus", ic: "🍎" }]);
+  let n, u;
+  do { n = mischenR(r, [3, 4, 5, 6, 7, 8, 10]).slice(0, 3); u = [zz(r, 25, 45), zz(r, 25, 45), zz(r, 25, 45)]; } while (new Set(u).size < 3);
+  const best = u.indexOf(Math.min(...u));
+  return { art: "preis3", ware, n, u, sieger: "ABC"[best] };
+}
+NEU_BAU.preis3 = (d, modus) => {
+  const hilfe = modus === "hilfe", w = d.ware;
+  const rows = d.n.flatMap((n, i) => [["ABC"[i] + ":", S(n * 50), "g", ":", hilfe ? S(n) : F(n), "=", "50", "g"], ["", eu(n * d.u[i]), "€", ":", hilfe ? S(n) : F(n), "=", F(d.u[i]), "ct"]]);
+  return {
+    daten: d, thema: "preis", frage: `Welche ${w.name} ist am preiswertesten? Rechne aus, was 50 g kosten.`,
+    bloecke: [
+      { art: "text", html: `<div class="packungen">${d.n.map((n, i) => `<div class="packung"><span class="ic">${w.ic}</span><b>Packung ${"ABC"[i]}</b><br>${n * 50} g kosten <b>${eu(n * d.u[i])} €</b></div>`).join("")}</div>` },
+      { art: "rechnung", zeilen: rows },
+      { art: "flex", zeilen: [["Am preiswertesten ist Packung", F(d.sieger, "wahl", ["A", "B", "C"]), "."]] }
+    ],
+    tipp: `Durch welche Zahl musst du ${d.n[0] * 50} g teilen, damit 50 g herauskommen? Durch ${d.n[0]}! Dann teilst du auch den Preis durch ${d.n[0]}.`
+  };
+};
+NEU_DRUCK.preis3 = (d, lsg) => {
+  const frage = `<b>${d.ware.ic} Welche ${d.ware.name} ist am preiswertesten?</b><br>${d.n.map((n, i) => `Packung ${"ABC"[i]}: ${n * 50} g kosten ${eu(n * d.u[i])} €.`).join(" &nbsp; ")}`;
+  const rech = d.n.flatMap((n, i) => [["ABC"[i] + ":" + n * 50 + "g", ":", L(n), "=", L("50g")], [eu(n * d.u[i]) + "€", ":", L(n), "=", L(d.u[i] + "ct")]]);
+  const h = lsg ? ausrichten(rech).map(z => druckZeile(z)).join("") : '<div class="pl"></div>'.repeat(rech.length);
+  return `<div class="pk"><div class="pt">${frage}</div>${h}<div class="pt">Antwort: ${lsg ? `<span class="l">Packung ${d.sieger} ist am preiswertesten.</span>` : "_".repeat(60)}</div></div>`;
+};
+
+/* ---------- 6. Uhrzeiten ---------- */
+function uhrSvg(h, m, px) {
+  const rad = g => (g - 90) * Math.PI / 180, p = (g, l) => [60 + l * Math.cos(rad(g)), 60 + l * Math.sin(rad(g))];
+  let s = `<svg class="uhr" viewBox="0 0 120 120" width="${px}" height="${px}" role="img" aria-label="Uhr"><circle cx="60" cy="60" r="56" fill="#fff" stroke="#2b2b3b" stroke-width="3"/>`;
+  for (let i = 0; i < 60; i++) { const [x1, y1] = p(i * 6, i % 5 ? 52 : 48), [x2, y2] = p(i * 6, 55); s += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#2b2b3b" stroke-width="${i % 5 ? 1 : 2.2}"/>`; }
+  for (let i = 1; i <= 12; i++) { const [x, y] = p(i * 30, 39); s += `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" font-size="12" font-family="Verdana,Arial" fill="#2b2b3b">${i}</text>`; }
+  const [mx, my] = p(m * 6, 46), [hx, hy] = p((h % 12) * 30 + m * 0.5, 29);
+  s += `<line x1="60" y1="60" x2="${hx.toFixed(1)}" y2="${hy.toFixed(1)}" stroke="#d0021b" stroke-width="5" stroke-linecap="round"/><line x1="60" y1="60" x2="${mx.toFixed(1)}" y2="${my.toFixed(1)}" stroke="#1f3c9a" stroke-width="3.5" stroke-linecap="round"/><circle cx="60" cy="60" r="4" fill="#2b2b3b"/></svg>`;
+  return s;
+}
+const STUNDE_WORT = ["zwölf", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf"];
+function genUhr(r, sorte) {
+  sorte = sorte || eins(r, ["ablesen", "ablesen", "worte", "waehle"]);
+  if (sorte === "worte") {
+    const liste = [];
+    while (liste.length < 3) {
+      const t = eins(r, ["halb", "viertel nach", "viertel vor", "fünf nach", "zehn nach", "zwanzig nach", "fünf vor", "zehn vor", "zwanzig vor"]);
+      let H, h, m;
+      if (t === "halb" || t.endsWith("vor")) { H = zz(r, 2, 12); h = H - 1; m = { halb: 30, "viertel vor": 45, "fünf vor": 55, "zehn vor": 50, "zwanzig vor": 40 }[t]; }
+      else { H = zz(r, 1, 11); h = H; m = { "viertel nach": 15, "fünf nach": 5, "zehn nach": 10, "zwanzig nach": 20 }[t]; }
+      const satz = `Es ist ${t} ${STUNDE_WORT[H]}.`;
+      if (liste.some(x => x.satz === satz)) continue;
+      liste.push({ satz, h, m });
+    }
+    return { art: "uhr", sorte, liste };
+  }
+  const liste = [];
+  while (liste.length < (sorte === "waehle" ? 1 : 2)) {
+    const h = zz(r, 1, 11), m = r() < 0.7 ? zz(r, 0, 11) * 5 : zz(r, 1, 59);
+    if (liste.some(x => x.h === h)) continue;
+    liste.push({ h, m });
+  }
+  if (sorte === "waehle") {
+    const x = liste[0], nachm = r() < 0.5, gleich = (a, b) => a.h === b.h && a.m === b.m;
+    const kandidaten = [{ h: Math.round(x.m / 5) % 12 || 12, m: (x.h % 12) * 5 }, { h: x.h, m: (x.m + 30) % 60 }, { h: x.h % 12 + 1, m: x.m }, { h: (x.h + 1) % 12 + 1, m: (x.m + 15) % 60 }];
+    const falsche = [];
+    kandidaten.forEach(k => { if (!gleich(k, x) && !falsche.some(f => gleich(f, k)) && falsche.length < 2) falsche.push(k); });
+    const opt = mischenR(r, [x, ...falsche]);
+    return { art: "uhr", sorte, ziel: x, nachm, opt, richtig: "ABC"[opt.indexOf(x)] };
+  }
+  return { art: "uhr", sorte, liste };
+}
+NEU_BAU.uhr = d => {
+  if (d.sorte === "worte") return {
+    daten: d, thema: "uhr", frage: "Schreibe die Uhrzeit als Zahl: einmal vormittags und einmal nachmittags.",
+    bloecke: [{ art: "flex", zeilen: d.liste.flatMap(x => [[{ html: `<b style="font-family:'Segoe UI',Verdana,sans-serif;font-size:21px">💬 ${x.satz}</b>` }], [F(x.h), ":", F(x.m), "Uhr", { html: "&nbsp;&nbsp;oder&nbsp;&nbsp;" }, F(x.h + 12), ":", F(x.m), "Uhr"]]) }],
+    tipp: "„Halb sieben“ heißt: die halbe Stunde vor sieben, also 6:30 Uhr. „Viertel vor vier“ ist 3:45 Uhr. Nachmittags rechnest du 12 Stunden dazu."
+  };
+  if (d.sorte === "waehle") {
+    const ziel = d.ziel, zeit = zw(ziel.h + (d.nachm ? 12 : 0)) + ":" + zw(ziel.m);
+    return {
+      daten: d, thema: "uhr", frage: `Welche Uhr zeigt ${zeit} Uhr?`,
+      bloecke: [{ art: "flex", zeilen: [[F(d.richtig, "wahl", ["A", "B", "C"])]] }],
+      tipp: "Der kurze rote Zeiger zeigt die Stunde, der lange blaue Zeiger die Minuten. Nachmittags ist die Uhrzeit 12 Stunden mehr.",
+      opt: d.opt
+    };
+  }
+  return {
+    daten: d, thema: "uhr", frage: "Wie spät ist es? Schreibe die Uhrzeit vormittags und nachmittags.",
+    bloecke: d.liste.map(x => ({ art: "flex", zeilen: [[{ html: uhrSvg(x.h, x.m, 150) }], [{ html: '<span class="tag">vormittags</span>' }, F(x.h), ":", F(x.m), "Uhr"], [{ html: '<span class="tag">nachmittags</span>' }, F(x.h + 12), ":", F(x.m), "Uhr"]] })),
+    tipp: "Schau zuerst auf den kurzen roten Zeiger (Stunde), dann auf den langen blauen Zeiger (Minuten). Jeder Strich ist eine Minute."
+  };
+};
+NEU_DRUCK.uhr = (d, lsg) => {
+  const lk = (x, w) => lsg ? `<span class="l">${x}</span>` : `<span class="lk" style="width:${w || 9}mm"></span>`;
+  if (d.sorte === "worte") return `<div class="pk"><div class="pt">${d.liste.map(x => `${x.satz}<br>${lk(zw(x.h) + ":" + zw(x.m), 16)} Uhr &nbsp; ${lk(zw(x.h + 12) + ":" + zw(x.m), 16)} Uhr`).join("<br>")}</div></div>`;
+  if (d.sorte === "waehle") return `<div class="pk"><div class="pt">Welche Uhr zeigt ${zw(d.ziel.h + (d.nachm ? 12 : 0))}:${zw(d.ziel.m)} Uhr? Kreuze an.<br>${d.opt.map((o, i) => `<span class="puhr">${uhrSvg(o.h, o.m, 70)}<br>${"ABC"[i]} ${lsg && "ABC"[i] === d.richtig ? '<span class="l">✔</span>' : "☐"}</span>`).join("")}</div></div>`;
+  return `<div class="pk"><div class="pt">${d.liste.map(x => `<span class="puhr">${uhrSvg(x.h, x.m, 80)}<br>${lk(zw(x.h) + ":" + zw(x.m), 16)} Uhr<br>${lk(zw(x.h + 12) + ":" + zw(x.m), 16)} Uhr</span>`).join("")}</div></div>`;
+};
+/* Wahl-Knöpfe mit Uhren-Bildern */
+const _bauUhr = NEU_BAU.uhr;
+NEU_BAU.uhr = (d, m) => { const t = _bauUhr(d, m); if (t.opt) { const f = t.bloecke[0].zeilen[0][0]; f.optHtml = t.opt.map((o, i) => `${uhrSvg(o.h, o.m, 110)}<br><b>${"ABC"[i]}</b>`); } return t; };
+
+/* ---------- 7. Zeitspannen ---------- */
+function genSpanne(r, sorte) {
+  sorte = sorte || eins(r, ["vonbis", "plus", "digital", "uhren", "sekunden", "tabelle", "punktspanne"]);
+  const start = () => zz(r, 7 * 12, 21 * 12) * 5;
+  if (sorte === "vonbis") return { art: "spanne", sorte, liste: [0, 1, 2].map(() => { const a = r() < 0.7 ? start() : zz(r, 7 * 60, 21 * 60); return { a, d: zz(r, 3, 36) * 5 + (r() < 0.3 ? zz(r, 1, 4) : 0) }; }) };
+  if (sorte === "plus") return { art: "spanne", sorte, liste: [0, 1, 2].map(() => ({ a: start(), d: zz(r, 2, 30) * 5 + (r() < 0.5 ? zz(r, 1, 3) * 60 : 0) })) };
+  if (sorte === "digital") return { art: "spanne", sorte, liste: [0, 1, 2].map(() => ({ a: zz(r, 7 * 60, 23 * 60), d: eins(r, [12, 15, 20, 25, 30, 35, 45]), rueck: r() < 0.5 })) };
+  if (sorte === "uhren") { const a = zz(r, 1 * 12, 10 * 12) * 5; return { art: "spanne", sorte, a, d: zz(r, 2, 36) * 5 }; }
+  if (sorte === "sekunden") return { art: "spanne", sorte, liste: mischenR(r, [5, 10, 13, 15, 20, 25, 30, 35, 40, 45, 50, 55, 59]).slice(0, 4) };
+  if (sorte === "tabelle") {
+    const AGS = mischenR(r, ["Spiele", "Computer", "Sport", "Flöte", "Kunst", "Chor", "Theater", "Schach"]).slice(0, 4);
+    return { art: "spanne", sorte, liste: AGS.map(ag => ({ ag, a: zz(r, 13 * 12, 15 * 12) * 5, d: zz(r, 4, 26) * 5, fehlt: eins(r, ["a", "d", "d", "e"]) })) };
+  }
+  // Zeitpunkt oder Zeitspanne
+  const h = zz(r, 7, 18), m = eins(r, [0, 15, 30, 45]);
+  const alle = [
+    [`${zz(r, 10, 55)} min`, "Zeitspanne"], [`${zz(r, 8, 17)} Uhr Zahnarzt`, "Zeitpunkt"], [`${zz(r, 2, 6)} h`, "Zeitspanne"], [`${zw(h)}:${zw(m)}`, "Zeitpunkt"],
+    [`${zz(r, 2, 4)} Stunden`, "Zeitspanne"], [`Endlich: ${zz(r, 2, 14)} Tage Ferien!`, "Zeitspanne"], [`Ballett: ${h}.00 – ${h + 2}.00 Uhr`, "Zeitspanne"],
+    [`${zz(r, 13, 20)}.${zw(eins(r, [15, 30, 45]))} Uhr`, "Zeitpunkt"], [`1 h ${zz(r, 10, 50)} min`, "Zeitspanne"], [`Um ${zz(r, 14, 17)}.00 Uhr beginnt das Training.`, "Zeitpunkt"]
+  ];
+  return { art: "spanne", sorte, liste: mischenR(r, alle).slice(0, 6) };
+}
+function hmFelder(min) { return [F0(Math.floor(min / 60), "zahl"), "h", F(min % 60), "min"]; }
+function uhrFelder(min) { const t = ((min % 1440) + 1440) % 1440; return [F(Math.floor(t / 60)), ":", F(t % 60), "Uhr"]; }
+NEU_BAU.spanne = d => {
+  const s = d.sorte;
+  if (s === "vonbis") return { daten: d, thema: "spanne", frage: "Wie viel Zeit ist vergangen?", bloecke: [{ art: "flex", zeilen: d.liste.map(x => [uhrzeit(x.a, ".") + " Uhr", "⟶", ...hmFelder(x.d), "⟶", uhrzeit(x.a + x.d, ".") + " Uhr"]) }], tipp: "Rechne in Schritten: zuerst bis zur vollen Stunde, dann die ganzen Stunden, dann die restlichen Minuten." };
+  if (s === "plus") return { daten: d, thema: "spanne", frage: "Wann ist es zu Ende? Rechne die Zeitspanne dazu.", bloecke: [{ art: "flex", zeilen: d.liste.map(x => [uhrzeit(x.a, ".") + " Uhr", `+ ${dauerText(x.d)} =`, ...uhrFelder(x.a + x.d)]) }], tipp: "Rechne zuerst die Stunden dazu, dann die Minuten. 60 Minuten sind 1 Stunde." };
+  if (s === "digital") return { daten: d, thema: "spanne", frage: "Rechne vorwärts oder rückwärts. Achte auf die Pfeile!", bloecke: [{ art: "flex", zeilen: d.liste.map(x => x.rueck ? [...uhrFelder(x.a - x.d).slice(0, 3), `⟵ ${x.d} min ⟵`, uhrzeit(x.a)] : [uhrzeit(x.a), `⟶ ${x.d} min ⟶`, ...uhrFelder(x.a + x.d).slice(0, 3)]) }], tipp: "Rechne bis zur vollen Stunde und dann weiter. Beispiel: 22:20 + 45 min → 22:20 + 40 min = 23:00, + 5 min = 23:05." };
+  if (s === "uhren") { const e = d.a + d.d; return { daten: d, thema: "spanne", frage: "Wie viel Zeit ist vergangen?", bloecke: [{ art: "flex", zeilen: [[{ html: uhrSvg(Math.floor(d.a / 60), d.a % 60, 140) }, "⟶", ...hmFelder(d.d), "⟶", { html: uhrSvg(Math.floor(e / 60), e % 60, 140) }]] }], tipp: "Lies zuerst beide Uhrzeiten ab. Rechne dann von der ersten bis zur zweiten Uhrzeit." }; }
+  if (s === "sekunden") return { daten: d, thema: "spanne", frage: "Wie viele Sekunden fehlen bis zu 1 Minute?", bloecke: [{ art: "rechnung", zeilen: d.liste.map(x => [`${x} s`, "+", F(60 - x), "s", "=", "1 min"]) }], tipp: "1 Minute hat 60 Sekunden." };
+  if (s === "tabelle") return {
+    daten: d, thema: "spanne", frage: "Ergänze die Tabelle der AGs.",
+    bloecke: [{ art: "tabelle", kopf: ["AG", "Beginn", "Dauer", "Ende"], zeilen: d.liste.map(x => [x.ag, x.fehlt === "a" ? uhrFelder(x.a) : uhrzeit(x.a, ".") + " Uhr", x.fehlt === "d" ? hmFelder(x.d) : dauerText(x.d), x.fehlt === "e" ? uhrFelder(x.a + x.d) : uhrzeit(x.a + x.d, ".") + " Uhr"]) }],
+    tipp: "Ende = Beginn + Dauer. Beginn = Ende − Dauer. Die Dauer ist die Zeit von Beginn bis Ende."
+  };
+  return { daten: d, thema: "spanne", frage: "Zeitpunkt oder Zeitspanne?", bloecke: [{ art: "flex", zeilen: d.liste.map(([t, l]) => [{ html: `<span class="karte">${esc(t)}</span>` }, F(l, "wahl", ["Zeitpunkt", "Zeitspanne"])]) }], tipp: "Ein Zeitpunkt sagt, WANN etwas ist (11 Uhr). Eine Zeitspanne sagt, WIE LANGE etwas dauert (45 min)." };
+};
+NEUE_BLOECKE.tabelle = (b, zeig) => `<div class="blk" style="overflow-x:auto"><table class="ztab"><tr>${b.kopf.map(k => `<th>${esc(k)}</th>`).join("")}</tr>${b.zeilen.map(z => `<tr>${z.map(c => `<td>${(Array.isArray(c) ? c : [c]).map(x => zelleHtml(x, zeig)).join(" ")}</td>`).join("")}</tr>`).join("")}</table></div>`;
+function lk(x, lsg, w) { return lsg ? `<span class="l">${x}</span>` : `<span class="lk" style="width:${w || 10}mm"></span>`; }
+NEU_DRUCK.spanne = (d, lsg) => {
+  const s = d.sorte, hm = min => lsg ? `<span class="l">${dauerText(min)}</span>` : `<span class="lk" style="width:7mm"></span> h <span class="lk" style="width:9mm"></span> min`;
+  const uz = min => `${lk(uhrzeit(min), lsg, 16)} Uhr`;
+  let h;
+  if (s === "vonbis") h = "Wie viel Zeit ist vergangen?<br>" + d.liste.map(x => `${uhrzeit(x.a, ".")} Uhr ⟶ ${hm(x.d)} ⟶ ${uhrzeit(x.a + x.d, ".")} Uhr`).join("<br>");
+  else if (s === "plus") h = "Wann ist es zu Ende?<br>" + d.liste.map(x => `${uhrzeit(x.a, ".")} Uhr + ${dauerText(x.d)} = ${uz(x.a + x.d)}`).join("<br>");
+  else if (s === "digital") h = "Rechne vorwärts oder rückwärts.<br>" + d.liste.map(x => x.rueck ? `${lk(uhrzeit(x.a - x.d), lsg, 16)} ⟵ ${x.d} min ⟵ ${uhrzeit(x.a)}` : `${uhrzeit(x.a)} ⟶ ${x.d} min ⟶ ${lk(uhrzeit(x.a + x.d), lsg, 16)}`).join("<br>");
+  else if (s === "uhren") h = `Wie viel Zeit ist vergangen?<br><span class="puhr">${uhrSvg(Math.floor(d.a / 60), d.a % 60, 75)}</span> ⟶ ${hm(d.d)} ⟶ <span class="puhr">${uhrSvg(Math.floor((d.a + d.d) / 60), (d.a + d.d) % 60, 75)}</span>`;
+  else if (s === "sekunden") h = "Wie viele Sekunden fehlen bis zu 1 Minute?<br>" + d.liste.map(x => `${x} s + ${lk(60 - x, lsg, 9)} s = 1 min`).join("<br>");
+  else if (s === "tabelle") h = `Ergänze die Tabelle.<table class="ptab"><tr><th>AG</th><th>Beginn</th><th>Dauer</th><th>Ende</th></tr>${d.liste.map(x => `<tr><td>${x.ag}</td><td>${x.fehlt === "a" ? lk(uhrzeit(x.a, ".") + " Uhr", lsg, 18) : uhrzeit(x.a, ".") + " Uhr"}</td><td>${x.fehlt === "d" ? lk(dauerText(x.d), lsg, 18) : dauerText(x.d)}</td><td>${x.fehlt === "e" ? lk(uhrzeit(x.a + x.d, ".") + " Uhr", lsg, 18) : uhrzeit(x.a + x.d, ".") + " Uhr"}</td></tr>`).join("")}</table>`;
+  else h = "Kreise ein: Zeitpunkt (rot) oder Zeitspanne (blau)?<br>" + d.liste.map(([t, l]) => `<span class="pkarte2">${esc(t)}${lsg ? ` <span class="l">${l}</span>` : ""}</span>`).join(" ");
+  return `<div class="pk"><div class="pt">${h}</div></div>`;
+};
+
+/* ---------- 8. Zeitspannen umwandeln ---------- */
+function genUmwandeln(r, sorte) {
+  sorte = sorte || eins(r, ["hmin", "minh", "mins", "smin"]);
+  const liste = [], schon = new Set();
+  while (liste.length < 4) {
+    let x;
+    if (sorte === "hmin") x = eins(r, [{ t: "½ h", w: 30 }, { t: "1½ h", w: 90 }, { t: "2½ h", w: 150 }, ...[1, 2, 3, 4, 5, 6, 8, 10].map(h => ({ t: `${h} h`, w: h * 60 }))]);
+    else if (sorte === "minh") { const w = r() < 0.3 ? zz(r, 1, 5) * 60 : zz(r, 61, 299); x = { t: `${w} min`, w }; }
+    else if (sorte === "mins") { const mi = zz(r, 1, 9), se = r() < 0.4 ? 0 : zz(r, 1, 59); x = { t: se ? `${mi} min ${se} s` : `${mi} min`, w: mi * 60 + se }; }
+    else { const w = r() < 0.3 ? zz(r, 1, 5) * 60 : zz(r, 61, 299); x = { t: `${w} s`, w }; }
+    if (schon.has(x.t)) continue;
+    schon.add(x.t); liste.push(x);
+  }
+  return { art: "umwandeln", sorte, liste };
+}
+const UMW = {
+  hmin: { frage: "Wie viele Minuten sind es?", tipp: "1 h = 60 min. ½ h = 30 min." },
+  minh: { frage: "Wie viele Stunden und Minuten sind es?", tipp: "Nimm so viele ganze 60 min weg, wie es geht. Das sind die Stunden. Der Rest sind die Minuten. Beispiel: 145 min = 2 h 25 min" },
+  mins: { frage: "Wie viele Sekunden sind es?", tipp: "1 min = 60 s. Beispiel: 5 min 10 s = 300 s + 10 s = 310 s" },
+  smin: { frage: "Wie viele Minuten und Sekunden sind es?", tipp: "Nimm so viele ganze 60 s weg, wie es geht. Das sind die Minuten. Der Rest sind die Sekunden. Beispiel: 263 s = 4 min 23 s" }
+};
+NEU_BAU.umwandeln = d => {
+  const s = d.sorte;
+  const z = x => s === "hmin" ? [x.t, "=", F(x.w), "min"] : s === "mins" ? [x.t, "=", F(x.w), "s"] :
+    s === "minh" ? [x.t, "=", F(Math.floor(x.w / 60)), "h", F0(x.w % 60), "min"] : [x.t, "=", F(Math.floor(x.w / 60)), "min", F0(x.w % 60), "s"];
+  return { daten: d, thema: "umwandeln", frage: UMW[s].frage, bloecke: [{ art: "rechnung", zeilen: d.liste.map(z) }], tipp: UMW[s].tipp };
+};
+NEU_DRUCK.umwandeln = (d, lsg) => {
+  const s = d.sorte;
+  const z = x => s === "hmin" ? `${x.t} = ${lk(x.w + " min", lsg, 18)}` : s === "mins" ? `${x.t} = ${lk(x.w + " s", lsg, 18)}` :
+    s === "minh" ? `${x.t} = ${lk(dauerText(x.w), lsg, 24)}` : `${x.t} = ${lk(Math.floor(x.w / 60) + " min" + (x.w % 60 ? " " + (x.w % 60) + " s" : ""), lsg, 24)}`;
+  return `<div class="pk"><div class="pt">${UMW[s].frage}<br>${d.liste.map(z).join("<br>")}</div></div>`;
+};
+
+/* ---------- 9. Fahrplan, Abfahrt/Ankunft, Triathlon ---------- */
+const HALTESTELLEN = ["Busbahnhof", "Rathaus", "Marktplatz", "Schulstraße", "Schwimmbad", "Kirchplatz", "Lindenallee", "Feuerwehr", "Stadtpark", "Bücherei", "Sportplatz", "Krankenhaus", "Mühlweg", "Gartenstraße", "Zoo"];
+const KINDER = ["Emil", "Laurenz", "Luca", "Moritz", "Tom", "Linus", "Lea", "Mia", "Jonas", "Hanna", "Ben", "Sophie"];
+function genFahrplan(r, sorte) {
+  sorte = sorte || eins(r, ["bus", "bus", "reise", "triathlon"]);
+  if (sorte === "bus") {
+    const namen = mischenR(r, HALTESTELLEN).slice(0, 10); let t = zz(r, 7 * 60 + 5, 7 * 60 + 20);
+    const plan = namen.map((n, i) => { if (i) t += zz(r, 2, 13); return { n, t }; });
+    const fragen = [];
+    for (let k = 0; k < 2; k++) { let i, j; do { i = zz(r, 0, 6); j = zz(r, i + 2, 9); } while (fragen.some(f => f.i === i)); fragen.push({ art: "ziel", i, j, wer: eins(r, KINDER), opt: mischenR(r, [j, j - 1 > i ? j - 1 : (j + 1 <= 9 ? j + 1 : i + 1), j + 1 <= 9 ? j + 1 : j - 2]).filter((x, p, a) => a.indexOf(x) === p) }); }
+    for (let k = 0; k < 2; k++) { const i = zz(r, 0, 6), j = zz(r, i + 2, 9); fragen.push({ art: "dauer", i, j }); }
+    return { art: "fahrplan", sorte, linie: zz(r, 2, 99), plan, fragen };
+  }
+  if (sorte === "reise") return { art: "fahrplan", sorte, liste: [0, 1, 2, 3, 4].map(() => ({ ab: zz(r, 7 * 12, 14 * 12) * 5 + (r() < 0.3 ? zz(r, 1, 4) : 0), d: zz(r, 9, 94) * 5 + (r() < 0.3 ? zz(r, 1, 4) : 0), fehlt: eins(r, ["d", "d", "an", "ab"]) })) };
+  const kinder = mischenR(r, KINDER).slice(0, 6);
+  let zeiten; do { zeiten = kinder.map(() => zz(r, 21 * 60, 26 * 60)); } while (new Set(zeiten).size < 6);
+  const sortiert = zeiten.slice().sort((a, b) => a - b);
+  const p = mischenR(r, [0, 1, 2, 3, 4, 5]);
+  return { art: "fahrplan", sorte, kinder, zeiten, platz: zeiten.map(z => sortiert.indexOf(z) + 1), paare: [[p[0], p[1]], [p[2], p[3]]] };
+}
+function msText(s) { return `${Math.floor(s / 60)} min ${s % 60} s`; }
+NEU_BAU.fahrplan = d => {
+  if (d.sorte === "bus") {
+    const tab = `<table class="ztab fahrplan"><tr><th colspan="2">🚌 Linie ${d.linie}</th></tr>${d.plan.map(p => `<tr><td>${p.n}</td><td>${uhrzeit(p.t)} Uhr</td></tr>`).join("")}</table>`;
+    const zeilen = d.fragen.map(f => f.art === "ziel"
+      ? [`${f.wer} steigt an der Haltestelle ${d.plan[f.i].n} ein. Nach ${d.plan[f.j].t - d.plan[f.i].t} min steigt ${["Lea", "Mia", "Hanna", "Sophie"].includes(f.wer) ? "sie" : "er"} aus bei:`, F(d.plan[f.j].n, "wahl", mischen(f.opt.map(x => d.plan[x].n)))]
+      : [`Wie lange braucht der Bus von ${d.plan[f.i].n} bis ${d.plan[f.j].n}?`, F(d.plan[f.j].t - d.plan[f.i].t), "min"]);
+    return { daten: d, thema: "fahrplan", frage: "Lies im Busfahrplan nach.", bloecke: [{ art: "text", html: `<div style="overflow-x:auto">${tab}</div>` }, { art: "flex", zeilen }], tipp: "Suche die Abfahrtszeit der ersten Haltestelle und rechne die Minuten dazu. Welche Haltestelle hat diese Uhrzeit?" };
+  }
+  if (d.sorte === "reise") return {
+    daten: d, thema: "fahrplan", frage: "Ergänze die Tabelle: Abfahrt + Fahrzeit = Ankunft.",
+    bloecke: [{ art: "tabelle", kopf: ["Abfahrt", "Fahrzeit", "Ankunft"], zeilen: d.liste.map(x => [x.fehlt === "ab" ? uhrFelder(x.ab).slice(0, 3) : uhrzeit(x.ab), x.fehlt === "d" ? hmFelder(x.d) : dauerText(x.d), x.fehlt === "an" ? uhrFelder(x.ab + x.d).slice(0, 3) : uhrzeit(x.ab + x.d)]) }],
+    tipp: "Fahrzeit = Ankunft − Abfahrt. Rechne zuerst bis zur vollen Stunde, dann weiter."
+  };
+  const fz = d.kinder.map((k, i) => [k, msText(d.zeiten[i]), F(d.platz[i])]);
+  return {
+    daten: d, thema: "fahrplan", frage: "Beim Schul-Triathlon wurden diese Zeiten erreicht. Wer ist welcher Platz? Berechne auch den Zeitunterschied.",
+    bloecke: [{ art: "tabelle", kopf: ["Name", "Zeit", "Platz"], zeilen: fz },
+      { art: "flex", zeilen: d.paare.map(([a, b]) => { const u = Math.abs(d.zeiten[a] - d.zeiten[b]); return [`${d.kinder[a]} und ${d.kinder[b]}:`, F0(Math.floor(u / 60)), "min", F(u % 60), "s"]; }) }],
+    tipp: "Die kürzeste Zeit ist Platz 1. Für den Unterschied: Rechne von der kleineren Zeit bis zur größeren. 1 min = 60 s."
+  };
+};
+NEU_DRUCK.fahrplan = (d, lsg) => {
+  if (d.sorte === "bus") {
+    const tab = `<table class="ptab"><tr><th colspan="2">Linie ${d.linie}</th></tr>${d.plan.map(p => `<tr><td>${p.n}</td><td>${uhrzeit(p.t)} Uhr</td></tr>`).join("")}</table>`;
+    const fr = d.fragen.map(f => f.art === "ziel" ? `${f.wer} steigt an der Haltestelle ${d.plan[f.i].n} ein und fährt ${d.plan[f.j].t - d.plan[f.i].t} min. Wo steigt ${["Lea", "Mia", "Hanna", "Sophie"].includes(f.wer) ? "sie" : "er"} aus? ${lk(d.plan[f.j].n, lsg, 30)}`
+      : `Wie lange braucht der Bus von ${d.plan[f.i].n} bis ${d.plan[f.j].n}? ${lk(d.plan[f.j].t - d.plan[f.i].t + " min", lsg, 14)}`).join("<br>");
+    return `<div class="pk"><div class="pt" style="display:flex;gap:6mm;align-items:flex-start">${tab}<div>${fr}</div></div></div>`;
+  }
+  if (d.sorte === "reise") return `<div class="pk"><div class="pt">Ergänze die Tabelle.<table class="ptab"><tr><th>Abfahrt</th>${d.liste.map(x => `<td>${x.fehlt === "ab" ? lk(uhrzeit(x.ab), lsg, 14) : uhrzeit(x.ab)}</td>`).join("")}</tr><tr><th>Fahrzeit</th>${d.liste.map(x => `<td>${x.fehlt === "d" ? lk(dauerText(x.d), lsg, 18) : dauerText(x.d)}</td>`).join("")}</tr><tr><th>Ankunft</th>${d.liste.map(x => `<td>${x.fehlt === "an" ? lk(uhrzeit(x.ab + x.d), lsg, 14) : uhrzeit(x.ab + x.d)}</td>`).join("")}</tr></table></div></div>`;
+  return `<div class="pk"><div class="pt">Schul-Triathlon: Schreibe die Platznummer in die Tabelle und berechne den Zeitunterschied.<table class="ptab"><tr><th>Platz</th><th>Name</th><th>Zeit</th></tr>${d.kinder.map((k, i) => `<tr><td>${lk(d.platz[i], lsg, 8)}</td><td>${k}</td><td>${msText(d.zeiten[i])}</td></tr>`).join("")}</table>${d.paare.map(([a, b]) => `${d.kinder[a]} und ${d.kinder[b]}: ${lk(msText(Math.abs(d.zeiten[a] - d.zeiten[b])), lsg, 24)}`).join("<br>")}</div></div>`;
+};
+
+/* ---------- Neue Themen anmelden ---------- */
+THEMEN.forEach(t => t.bereich = { zehner: "Malnehmen und Teilen", mal: "Malnehmen und Teilen", teil: "Malnehmen und Teilen", geld: "Sachrechnen", preis: "Sachrechnen" }[t.id]);
+THEMEN.find(t => t.id === "teil").gen = r => r() < 0.25 ? genTeilSach(r) : genTeil(r);
+THEMEN.find(t => t.id === "preis").gen = r => r() < 0.25 ? genPreis3(r) : genPreis(r);
+THEMEN.unshift(
+  { id: "kopf", bereich: "Rechnen bis 1000", titel: "Rechnen bis 1000 im Kopf", icon: "🧠", gen: r => genKopf(r) },
+  { id: "schrift", bereich: "Rechnen bis 1000", titel: "Schriftlich addieren und subtrahieren", icon: "📝", gen: r => genSchrift(r) },
+  { id: "dreieck", bereich: "Rechnen bis 1000", titel: "Rechendreiecke", icon: "🔺", gen: r => genDreieck(r) },
+  { id: "punkt", bereich: "Rechnen bis 1000", titel: "Punkt vor Strich", icon: "⚫", gen: r => genPunkt(r) },
+  { id: "raetsel", bereich: "Rechnen bis 1000", titel: "Zahlenrätsel", icon: "🧩", gen: r => genRaetsel(r) }
+);
+THEMEN.push(
+  { id: "uhr", bereich: "Zeit", titel: "Uhrzeiten", icon: "🕒", gen: r => genUhr(r) },
+  { id: "spanne", bereich: "Zeit", titel: "Zeitspannen", icon: "⏱️", gen: r => genSpanne(r) },
+  { id: "umwandeln", bereich: "Zeit", titel: "h, min und s umwandeln", icon: "🔄", gen: r => genUmwandeln(r) },
+  { id: "fahrplan", bereich: "Zeit", titel: "Fahrpläne und Tabellen", icon: "🚌", gen: r => genFahrplan(r) }
+);
+const BEREICHE = ["Rechnen bis 1000", "Malnehmen und Teilen", "Sachrechnen", "Zeit"];
+Object.assign(ERKLAERUNG, {
+  kopf: "Rechne geschickt im Kopf: zuerst die Hunderter, dann die Zehner, dann die Einer. Bei einer Platzhalter-Aufgabe (□ + 50 = 510) hilft die Umkehraufgabe: 510 − 50 = 460. Die Umkehraufgabe von 6 · 80 = 480 ist 480 : 80 = 6.",
+  schrift: "Schreibe die Zahlen genau untereinander: Einer unter Einer, Zehner unter Zehner, Hunderter unter Hunderter. Fange immer hinten bei den <b>Einern</b> an. Wird es beim Plus 10 oder mehr, schreibst du einen <b>Übertrag</b> in die nächste Spalte. Beim Minus kommt immer die <b>größere Zahl nach oben</b>.",
+  dreieck: "Im Rechendreieck steht außen immer das Ergebnis der <b>zwei Zahlen innen daneben</b>, malgenommen. Fehlt innen eine Zahl, teilst du die Außenzahl durch die bekannte Innenzahl.",
+  punkt: "<b>Punktrechnung vor Strichrechnung:</b> Mal (·) und Geteilt (:) rechnest du zuerst, erst danach Plus (+) und Minus (−). Beispiel: 5 + 5 · 50 = 5 + 250 = 255.",
+  raetsel: "Lies das Rätsel genau. „Addiere“ heißt plus, „subtrahiere“ heißt minus, „multipliziere“ heißt mal, „dividiere“ heißt geteilt. Bei „Welche Zahl musst du …?“ hilft die Umkehraufgabe.",
+  uhr: "Der <b>kurze rote Zeiger</b> zeigt die Stunde, der <b>lange blaue Zeiger</b> die Minuten. Jede Uhrzeit gibt es zweimal am Tag: vormittags (7:00 Uhr) und nachmittags (19:00 Uhr). „Halb sieben“ ist 6:30 Uhr, „viertel vor vier“ ist 3:45 Uhr.",
+  spanne: "Eine <b>Zeitspanne</b> sagt, wie lange etwas dauert (45 min). Ein <b>Zeitpunkt</b> sagt, wann etwas ist (11 Uhr). Rechne Zeitspannen in Schritten: erst bis zur vollen Stunde, dann weiter. 1 h = 60 min, 1 min = 60 s.",
+  umwandeln: "<b>1 h = 60 min</b> und <b>1 min = 60 s</b>. ½ h sind 30 min. 145 min = 2 h 25 min, weil 2 · 60 min = 120 min und noch 25 min übrig sind.",
+  fahrplan: "Im Fahrplan stehen die Haltestellen mit ihren Uhrzeiten. Die Fahrzeit ist die Zeit zwischen Abfahrt und Ankunft. Beim Triathlon ist die <b>kürzeste Zeit Platz 1</b>."
+});
+
+/* ========================== APP-LOGIK ========================== */
+const app = document.getElementById("app");
+let gewaehlt = new Set(THEMEN.map(k => k.id));
+let sterne = 0;
+try { sterne = parseInt(localStorage.getItem("ma_sterne") || "0", 10) || 0; } catch (e) {}
+try { const g = JSON.parse(localStorage.getItem("ma_themen") || "null"); if (Array.isArray(g) && g.length) gewaehlt = new Set(g.filter(id => THEMEN.some(k => k.id === id))); } catch (e) {}
+if (!gewaehlt.size) gewaehlt = new Set(THEMEN.map(k => k.id));
+
+function speichern() {
+  try { localStorage.setItem("ma_sterne", sterne); localStorage.setItem("ma_themen", JSON.stringify([...gewaehlt])); } catch (e) {}
+}
+function sternDazu(n) { sterne += n || 1; zeigeSterne(); speichern(); }
+function zeigeSterne() { document.getElementById("sterne").textContent = "⭐ " + sterne; }
+function mischen(a) { return mischenR(Math.random, a); }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function reiter(id) { ["r_ueben", "r_pruef", "r_spiel"].forEach(r => document.getElementById(r).classList.toggle("an", r === id)); }
+function kopfleiste(titel, anteil) {
+  return `<div class="leiste"><button class="btn grau klein" onclick="startseite()">⬅ Zurück</button><h2 style="margin:0">${titel}</h2>${anteil != null ? `<div class="fortschritt"><div style="width:${Math.round(anteil * 100)}%"></div></div>` : ""}</div>`;
+}
+function fertig(titel, text, nochmal, extra) {
+  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🏆</div><h2>${text}</h2>${extra || ""}<p>Du hast jetzt insgesamt ⭐ ${sterne} Sterne.</p><div class="mitte"><button class="btn gruen" onclick="${nochmal}">Nochmal!</button><button class="btn grau" onclick="startseite()">Zur Übersicht</button></div></div>`;
+}
+const LOB = ["Super gemacht! 🎉", "Klasse! 🌟", "Spitze, du Rechenprofi! 💪", "Toll gerechnet! 🦉", "Richtig! Weiter so! 🚀", "Wunderbar! ✨"];
+
+/* ---------- Startseite (Reiter Üben) ---------- */
+function startseite() {
+  if (typeof spielStop === "function") spielStop();
+  reiter("r_ueben");
+  const alle = gewaehlt.size === THEMEN.length;
+  app.innerHTML = `
+    <div class="eule"><span class="tier">🦉</span><p style="margin:0;font-size:21px">Hallo! Ich bin <b>Zahlix</b>. Lass uns zusammen rechnen!</p></div>
+    <h2>1. Was möchtest du üben?</h2>
+    <p class="hinweis">Tippe auf die Themen, die du üben willst.</p>
+    <div class="chips">
+      <button class="chip ${alle ? "an" : ""}" onclick="alleThemen()">✅ Alles</button>
+    </div>
+    ${BEREICHE.map(b => `<div class="bereich"><h3>${esc(b)}</h3><div class="chips">${THEMEN.filter(k => k.bereich === b).map(k => `<button class="chip ${gewaehlt.has(k.id) && !alle ? "an" : ""}" onclick="themaUmschalten('${k.id}')">${k.icon} ${esc(k.titel)}</button>`).join("")}</div></div>`).join("")}
+    <h2>2. Wie möchtest du üben?</h2>
+    <div class="modi">
+      <button class="modus" onclick="soGehts()"><span class="ic">📖</span><b>So geht's</b><small>Erklärung mit Beispiel</small></button>
+      <button class="modus" onclick="ueben('hilfe')"><span class="ic">🧩</span><b>Mit Hilfe</b><small>Zwischenschritte und Zerlegung stehen schon da.</small></button>
+      <button class="modus" onclick="ueben('frei')"><span class="ic">✏️</span><b>Ohne Hilfe</b><small>Du rechnest alles selbst. Jeder richtige Weg zählt!</small></button>
+      <button class="modus" onclick="ueben('kreuz')"><span class="ic">✖️</span><b>Malkreuz</b><small>Eine andere Methode zum Malnehmen</small></button>
+      <button class="modus" onclick="probeTest()"><span class="ic">🏁</span><b>Probe-Test</b><small>8 gemischte Aufgaben, wie bei einer Probe</small></button>
+    </div>
+    <button class="banner" onclick="pruefungen()"><span class="ic">🖨️</span><span><b style="color:var(--orange);font-size:22px">Prüfungen zum Ausdrucken</b><br><span class="hinweis">Fertige Prüfungsblätter mit Lösungsblatt für jedes Thema</span></span></button>
+    <h2 style="margin-top:28px">3. Pause machen?</h2>
+    <div class="modi">
+      <button class="modus" onclick="spielecke()"><span class="ic">🎮</span><b>Spielecke</b><small>Mit deinen Sternen spielen</small></button>
+      <button class="modus" onclick="sterneUebertragen()"><span class="ic">🔑</span><b>Sterne-Code</b><small>Sterne auf ein anderes Gerät mitnehmen</small></button>
+    </div>`;
+}
+function alleThemen() { gewaehlt = new Set(THEMEN.map(k => k.id)); speichern(); startseite(); }
+function themaUmschalten(id) {
+  if (gewaehlt.size === THEMEN.length) gewaehlt = new Set([id]);
+  else if (gewaehlt.has(id)) { gewaehlt.delete(id); if (!gewaehlt.size) gewaehlt = new Set(THEMEN.map(k => k.id)); }
+  else gewaehlt.add(id);
+  speichern(); startseite();
+}
+function themenListe() { return THEMEN.filter(k => gewaehlt.has(k.id)); }
+function thema(id) { return THEMEN.find(k => k.id === id); }
+
+/* ---------- So geht's ---------- */
+function soGehts() {
+  const r = zufall(7);
+  app.innerHTML = kopfleiste("📖 So geht's") + themenListe().map(k => {
+    const t = bauen(k.gen(r), "hilfe");
+    return `<div class="box" style="margin-bottom:18px"><span class="kapitel">${k.icon} ${esc(k.titel)}</span><div class="erkl">${ERKLAERUNG[k.id]}</div><div class="frage">Beispiel: ${t.frage}</div>${aufgabeHtml(t, true)}</div>`;
+  }).join("") + `<div class="mitte"><button class="btn gruen" onclick="ueben('hilfe')">🧩 Jetzt mit Hilfe üben</button></div>`;
+}
+
+/* ---------- Üben ---------- */
+let runde = null;
+const RUNDE_LAENGE = 6;
+function ueben(modus) {
+  let themen = themenListe().map(k => k.id);
+  if (modus === "kreuz") themen = ["mal"];
+  const liste = [];
+  let vorrat = [];
+  for (let i = 0; i < RUNDE_LAENGE; i++) {
+    if (!vorrat.length) vorrat = mischen(themen);
+    const id = vorrat.pop();
+    liste.push(bauen(thema(id).gen(R), modus));
+  }
+  runde = { modus, liste, i: 0, test: false, richtig: 0 };
+  zeigeAufgabe();
+}
+function probeTest() {
+  const themen = themenListe().map(k => k.id), liste = [];
+  let vorrat = [];
+  for (let i = 0; i < 8; i++) {
+    if (!vorrat.length) vorrat = mischen(themen);
+    liste.push(bauen(thema(vorrat.pop()).gen(R), "frei"));
+  }
+  runde = { modus: "frei", liste, i: 0, test: true, richtig: 0 };
+  zeigeAufgabe();
+}
+const MODUS_TITEL = { hilfe: "🧩 Mit Hilfe", frei: "✏️ Ohne Hilfe", kreuz: "✖️ Malkreuz" };
+function zeigeAufgabe() {
+  const t = runde.liste[runde.i];
+  runde.versuche = 0; runde.geloest = false; runde.gezeigt = false;
+  const k = thema(t.thema);
+  const titel = runde.test ? "🏁 Probe-Test" : MODUS_TITEL[runde.modus];
+  app.innerHTML = kopfleiste(titel, runde.i / runde.liste.length) + `
+    <div class="box">
+      <span class="kapitel">${k.icon} ${esc(k.titel)} · Aufgabe ${runde.i + 1} von ${runde.liste.length}</span>
+      <div class="frage">${t.frage}</div>
+      ${OHNE_NEBEN.includes(t.thema) ? aufgabeHtml(t, false) : `<div class="mitneben"><div class="haupt">${aufgabeHtml(t, false)}</div>${nebenHtml()}</div>`}
+      <div class="feedback" id="fb"></div>
+      <div class="mitte" id="knoepfe"></div>
+    </div>`;
+  knoepfe();
+  const mn = app.querySelector(".mitneben"), hf = mn && mn.querySelector(".heft");
+  if (hf && [hf, ...hf.querySelectorAll("div")].some(e => e.scrollWidth > e.clientWidth + 2)) mn.classList.add("unten");
+  const erstes = app.querySelector("input.ein");
+  if (erstes) erstes.focus();
+  app.querySelector(".heft").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); if (!runde.geloest) pruefen(); else weiter(); } });
+  app.querySelector(".heft").addEventListener("input", e => { const z = e.target.dataset && e.target.dataset.weiter; if (z && e.target.value.length >= 1) { const n = document.getElementById(z); if (n) n.focus(); } });
+}
+/* Nebenrechnung: freie Kästchen zum selbst Rechnen, wird nicht geprüft */
+const OHNE_NEBEN = ["schrift", "uhr"];
+const NEBEN_SP = 10, NEBEN_ZE = 6;
+function nebenHtml() {
+  let z = "";
+  for (let i = 0; i < NEBEN_ZE * NEBEN_SP; i++) z += `<input class="nz" maxlength="1" autocomplete="off" data-i="${i}" aria-label="Nebenrechnung">`;
+  return `<div class="neben"><div class="nkopf"><b>✏️ Nebenrechnung</b><button class="nweg" onclick="nebenLeeren()" title="Alles löschen">🧽 Löschen</button></div><div class="nfeld" style="grid-template-columns:repeat(${NEBEN_SP},minmax(0,34px))" onkeydown="nebenTaste(event)" oninput="nebenEingabe(event)">${z}</div></div>`;
+}
+function nebenZelle(i) { return document.querySelector(`.nfeld input[data-i="${i}"]`); }
+function nebenEingabe(e) {
+  const el = e.target; if (!el.value) return;
+  el.value = el.value.replace("*", "·").replace("/", ":").replace("-", "−");
+  const n = nebenZelle(+el.dataset.i + 1); if (n && (+el.dataset.i + 1) % NEBEN_SP) n.focus();
+}
+function nebenTaste(e) {
+  const i = +e.target.dataset.i, w = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -NEBEN_SP, ArrowDown: NEBEN_SP, Enter: NEBEN_SP }[e.key];
+  if (e.key === "Backspace" && !e.target.value) { const n = nebenZelle(i - 1); if (n) { e.preventDefault(); n.value = ""; n.focus(); } return; }
+  if (w === undefined) return;
+  e.preventDefault(); e.stopPropagation();
+  const n = nebenZelle(e.key === "Enter" ? (Math.floor(i / NEBEN_SP) + 1) * NEBEN_SP : i + w); if (n) n.focus();
+}
+function nebenLeeren() { document.querySelectorAll(".nfeld input").forEach(x => x.value = ""); }
+function knoepfe() {
+  const k = document.getElementById("knoepfe");
+  if (runde.geloest) { k.innerHTML = `<button class="btn gruen" onclick="weiter()">Weiter ➜</button>`; return; }
+  if (runde.test) { k.innerHTML = `<button class="btn" onclick="pruefen()">✔ Abgeben</button>`; return; }
+  k.innerHTML = `<button class="btn" onclick="pruefen()">✔ Prüfen</button><button class="btn gelb" onclick="tipp()">💡 Tipp</button>${runde.versuche >= 2 ? `<button class="btn grau" onclick="loesungZeigen()">👀 Lösung zeigen</button>` : ""}`;
+}
+function markieren(t, erg, sperren) {
+  alleFelder(t).forEach(f => {
+    const el = document.getElementById(f.id); if (!el) return;
+    el.classList.remove("ok", "falsch");
+    if (erg[f.id] === true) el.classList.add("ok");
+    else if (erg[f.id] === false) el.classList.add("falsch");
+    if (sperren) { if (el.tagName === "INPUT") el.readOnly = true; else el.classList.add("gesperrt"); }
+  });
+}
+function pruefen() {
+  const t = runde.liste[runde.i];
+  const { erg, meldung } = t.pruefe ? t.pruefe() : standardPruefen(t);
+  const fb = document.getElementById("fb");
+  runde.versuche++;
+  if (!meldung) {
+    runde.geloest = true;
+    markieren(t, erg, true);
+    if (runde.test) { runde.richtig++; sternDazu(); fb.className = "feedback ok"; fb.textContent = "✔ Richtig! ⭐"; }
+    else {
+      const stern = !runde.gezeigt && runde.versuche <= 2;
+      if (stern) { runde.richtig++; sternDazu(); }
+      fb.className = "feedback ok"; fb.textContent = eins(Math.random, LOB) + (stern ? " ⭐" : "");
+    }
+  } else if (runde.test) {
+    runde.geloest = true;
+    markieren(t, erg, true);
+    fb.className = "feedback nein"; fb.innerHTML = "✘ Leider nicht ganz richtig. So wäre es richtig:<div style='margin-top:10px;font-weight:normal;color:var(--text)'>" + aufgabeHtml(t, true) + "</div>";
+  } else {
+    markieren(t, erg, false);
+    fb.className = "feedback nein"; fb.textContent = meldung;
+    const box = app.querySelector(".heft"); box.classList.remove("wackel"); void box.offsetWidth; box.classList.add("wackel");
+  }
+  knoepfe();
+}
+function tipp() {
+  const fb = document.getElementById("fb");
+  fb.className = "feedback tipp"; fb.textContent = "💡 " + runde.liste[runde.i].tipp;
+}
+function loesungZeigen() {
+  const t = runde.liste[runde.i];
+  runde.gezeigt = true;
+  alleFelder(t).forEach(f => {
+    const el = document.getElementById(f.id); if (!el) return;
+    if (f.typ === "wahl") { [...el.children].forEach(c => c.classList.toggle("an", c.dataset.w === f.soll)); el.dataset.v = f.soll; }
+    else el.value = zeigeWert(f, f.soll);
+  });
+  const fb = document.getElementById("fb");
+  fb.className = "feedback tipp"; fb.textContent = "👀 So ist es richtig. Schau es dir genau an und drücke dann auf „Prüfen“.";
+}
+function weiter() {
+  runde.i++;
+  if (runde.i < runde.liste.length) return zeigeAufgabe();
+  const n = runde.liste.length;
+  if (runde.test) {
+    const anteil = runde.richtig / n;
+    const smiley = anteil === 1 ? "🤩" : anteil >= 0.75 ? "😀" : anteil >= 0.5 ? "🙂" : "💪";
+    const text = anteil === 1 ? "Alles richtig! Du bist bereit für die Probe!" : anteil >= 0.75 ? "Sehr gut! Fast alles richtig." : anteil >= 0.5 ? "Gut! Übe noch ein bisschen weiter." : "Nicht aufgeben! Übe nochmal mit Hilfe.";
+    fertig("🏁 Probe-Test", text, "probeTest()", `<p class="ergebnis">${smiley} ${runde.richtig} von ${n} Aufgaben richtig</p>`);
+  } else {
+    fertig(MODUS_TITEL[runde.modus], "Geschafft! Du hast alle Aufgaben gerechnet.", `ueben('${runde.modus}')`, `<p class="ergebnis">⭐ ${runde.richtig} neue Sterne</p>`);
+  }
+}
+
+/* ========================== PRÜFUNGEN ZUM AUSDRUCKEN ==========================
+   Jede Prüfung wird mit einer Nummer erzeugt. Gleiche Nummer = gleiche Aufgaben,
+   so passt das Lösungsblatt immer zum Prüfungsblatt. */
+function L(x) { return { l: String(x) }; }      // Lösung (rot, nur auf dem Lösungsblatt)
+function txt(x) { return typeof x === "string" ? x : x.l; }
+function lang(x) { return txt(x).replace(/,/g, "").replace(/ct|kg/g, "c").length; } // Komma bekommt kein eigenes Kästchen
+/* Spalten untereinander ausrichten: Zahlen rechtsbündig, wie im Heft */
+function ausrichten(zeilen) {
+  const n = Math.max(...zeilen.map(z => z.length)), breite = [];
+  for (let s = 0; s < n; s++) breite[s] = Math.max(...zeilen.map(z => z[s] === undefined ? 0 : lang(z[s])));
+  return zeilen.map(z => z.map((x, s) => {
+    const fehlt = breite[s] - lang(x);
+    return [" ".repeat(fehlt), x];
+  }).flat());
+}
+function druckZeile(teile, strich) {
+  let h = "";
+  teile.forEach(x => {
+    const loes = typeof x !== "string", s = txt(x);
+    for (const ch of s.match(/ct|kg|./g) || []) h += `<span class="z${loes ? " l" : ""}${ch === "," ? " k" : ch.length > 1 ? " e" : ""}">${ch === " " ? "" : esc(ch)}</span>`;
+  });
+  return `<div class="pl${strich ? " st" : ""}">${h}</div>`;
+}
+/* Ein Rechenpäckchen: oben die Aufgabe (unterstrichen), darunter die Zwischenschritte.
+   Ohne Lösung bleiben die Zeilen darunter leer zum Selbstrechnen. */
+function druckRechnung(zeilen, lsg, opt) {
+  opt = opt || {};
+  const ausg = ausrichten(zeilen);
+  let h = "";
+  const leer = opt.leer ?? (zeilen.length - 1);
+  if (lsg) h += ausg.map((z, i) => druckZeile(z, i === 0 && opt.strich !== false)).join("");
+  else {
+    h += druckZeile(ausg[0].filter(x => typeof x === "string"), opt.strich !== false);
+    for (let i = 0; i < leer; i++) h += `<div class="pl"></div>`;
+  }
+  if (lsg) for (let i = zeilen.length - 1; i < leer; i++) h += `<div class="pl"></div>`;
+  return h;
+}
+function druckItem(d, lsg, opt) {
+  opt = opt || {};
+  if (NEU_DRUCK[d.art]) { const h = NEU_DRUCK[d.art](d, lsg, opt); if (h) return h; }
+  if (d.art === "zehner") {
+    const z = ausrichten(d.liste.map(([a, b]) => [S(a), ":", S(b), "=", L(a / b)]));
+    return `<div class="pk">${z.map(x => druckZeile(lsg ? x : x.filter(y => typeof y === "string"))).join("")}</div>`;
+  }
+  if (d.art === "mal" && opt.kreuz) {
+    const kopf = ["·"].concat(d.teile.map(t => lsg ? `<span class="l">${t}</span>` : ""));
+    const unten = [S(d.a)].concat(d.teile.map(t => lsg ? `<span class="l">${d.a * t}</span>` : ""));
+    return `<div class="pk"><table class="pkreuz"><tr>${kopf.map(x => `<td>${x}</td>`).join("")}</tr><tr>${unten.map(x => `<td>${x}</td>`).join("")}</tr></table>${druckRechnung([[S(d.a), "·", S(d.b), "=", L(d.a * d.b)]], lsg, { leer: 0 })}</div>`;
+  }
+  if (d.art === "mal") {
+    return `<div class="pk">${druckRechnung([[S(d.a), "·", S(d.b), "=", L(d.a * d.b)]].concat(d.teile.map(t => [S(d.a), "·", L(t), "=", L(d.a * t)])), lsg, { leer: d.teile.length })}</div>`;
+  }
+  if (d.art === "teil") {
+    return `<div class="pk">${druckRechnung([[S(d.z), ":", S(d.d), "=", L(d.q)]].concat(d.teile.map(t => [L(t), ":", S(d.d), "=", L(t / d.d)])), lsg, { leer: 3 })}</div>`;
+  }
+  if (d.art === "geld") {
+    const frage = `<div class="pt">Ein Päckchen mit ${d.n} ${d.ding.mehr} kostet ${eu(d.ct)}&nbsp;€. Wie viel kostet ${d.ding.ein}?</div>`;
+    const oben = ausrichten([[eu(d.ct) + "€", ":", S(d.n), "=", L(d.q + "ct")], [L(d.ct + "ct"), ":", S(d.n), "=", L(d.q + "ct")]]);
+    let h = lsg ? druckZeile(oben[0], true) + druckZeile(oben[1]) + druckZeile([L(" " + d.q + "ct=" + eu(d.q) + "€")])
+      : opt && opt.frei ? `<div class="pl"></div><div class="pl"></div><div class="pl"></div>`
+      : druckZeile(oben[0].filter(x => typeof x === "string"), true) + `<div class="pl"></div><div class="pl"></div>`;
+    return `<div class="pk">${frage}${h}</div>`;
+  }
+  if (d.art === "preis") {
+    const w = d.ware.name;
+    let frage, rech, vergl;
+    if (d.sorte === "kg") {
+      frage = `<b>${d.ware.ic} Welche Packung ${w} ist preiswerter?</b><br>Packung A: 1 kg kostet ${eu(d.pA)} €. &nbsp; Packung B: ${d.g} g kosten ${eu(d.packung)} €.`;
+      rech = [["B:" + d.g + "g", "·", L(d.f), "=", L("1000g=1kg")], [eu(d.packung) + "€", "·", L(d.f), "=", L(eu(d.pB) + "€")]];
+      vergl = [L(eu(d.pA) + "€" + (d.sieger === "A" ? "<" : ">") + eu(d.pB) + "€")];
+    } else {
+      frage = `<b>${d.ware.ic} Welche Packung ${w} ist preiswerter?</b><br>Packung A: ${d.nA * 100} g kosten ${eu(d.nA * d.uA)} €. &nbsp; Packung B: ${d.nB * 100} g kosten ${eu(d.nB * d.uB)} €.`;
+      rech = [["A:" + d.nA * 100 + "g", ":", L(d.nA), "=", L("100g")], [eu(d.nA * d.uA) + "€", ":", L(d.nA), "=", L(d.uA + "ct")],
+        ["B:" + d.nB * 100 + "g", ":", L(d.nB), "=", L("100g")], [eu(d.nB * d.uB) + "€", ":", L(d.nB), "=", L(d.uB + "ct")]];
+      vergl = [L(d.uA + "ct" + (d.sieger === "A" ? "<" : ">") + d.uB + "ct")];
+    }
+    const zeilen = ausrichten(rech);
+    let h = "";
+    if (lsg) { h += zeilen.map(z => druckZeile(z)).join("") + druckZeile(vergl); }
+    else for (let i = 0; i < rech.length + 1; i++) h += `<div class="pl"></div>`;
+    return `<div class="pk"><div class="pt">${frage}</div>${h}<div class="pt">Antwort: ${lsg ? `<span class="l">Packung ${d.sieger} ist preiswerter.</span>` : "_".repeat(60)}</div></div>`;
+  }
+}
+
+/* Aufgaben einer Prüfung: { text, punkte (pro Teil), spalten, items: [daten], opt } */
+const PRUEFUNGEN = [
+  { id: "p1", icon: "🔟", titel: "Teilen durch 10, 100 und Zehnerzahlen", start: 11,
+    bauen: r => [
+      { text: "Teile durch 10 und durch 100. Rechne im Kopf.", punkte: 4, spalten: 2, items: [genZehner(r, "z10"), genZehner(r, "z100")] },
+      { text: "Teile durch Zehnerzahlen.", punkte: 4, spalten: 2, items: [genZehner(r, "zz"), genZehner(r, "zz")] }
+    ] },
+  { id: "p2", icon: "✖️", titel: "Halbschriftlich malnehmen", start: 22,
+    bauen: r => [
+      { text: "Rechne halbschriftlich. Schreibe die Zwischenschritte untereinander.", punkte: 2, spalten: 2, items: [genMal(r, false), genMal(r, false), genMal(r, false), genMal(r, false)] },
+      { text: "Jetzt mit großen Zahlen. Rechne halbschriftlich.", punkte: 2, spalten: 2, items: [genMal(r, true), genMal(r, true)] },
+      { text: "Rechne mit dem Malkreuz.", punkte: 2, spalten: 2, opt: { kreuz: true }, items: [genMal(r, false), genMal(r, false)] }
+    ] },
+  { id: "p3", icon: "➗", titel: "Halbschriftlich teilen", start: 33,
+    bauen: r => [
+      { text: "Rechne halbschriftlich. Schreibe die Zwischenschritte untereinander.", punkte: 2, spalten: 2, items: [genTeil(r, false), genTeil(r, false), genTeil(r, false), genTeil(r, false)] },
+      { text: "Jetzt mit großen Zahlen. Zerlege geschickt.", punkte: 2, spalten: 2, items: [genTeil(r, true), genTeil(r, true), genTeil(r, true), genTeil(r, true)] }
+    ] },
+  { id: "p4", icon: "💶", titel: "Rechnen mit Geld", start: 44,
+    bauen: r => [
+      { text: "Rechne in Cent um und teile. Schreibe das Ergebnis auch in Euro.", punkte: 3, spalten: 2, items: [genGeld(r), genGeld(r), genGeld(r), genGeld(r)] },
+      { text: "Preisvergleich: Rechne auf 1 kg hoch.", punkte: 4, spalten: 1, items: [genPreis(r, "kg")] },
+      { text: "Preisvergleich: Rechne aus, was 100 g kosten.", punkte: 4, spalten: 1, items: [genPreis(r, "100g")] }
+    ] },
+  { id: "p5", icon: "🏆", titel: "Große Mathe-Prüfung (alles gemischt)", start: 55,
+    bauen: r => [
+      { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genZehner(r, eins(r, ["z10", "z100"])), genZehner(r, "zz")] },
+      { text: "Rechne halbschriftlich.", punkte: 2, spalten: 2, items: [genMal(r, false), genMal(r, true)] },
+      { text: "Rechne halbschriftlich.", punkte: 2, spalten: 2, items: [genTeil(r, false), genTeil(r, true)] },
+      { text: "Rechne in Cent um und teile.", punkte: 3, spalten: 2, items: [genGeld(r), genGeld(r)] },
+      { text: "Preisvergleich", punkte: 4, spalten: 1, items: [genPreis(r)] }
+    ] }
+];
+const SPALTEN_MM = { 1: "174mm", 2: "84mm", 3: "54mm" };
+let pruefNr = {};
+try { pruefNr = JSON.parse(localStorage.getItem("ma_pruefnr") || "{}") || {}; } catch (e) {}
+let pruefAuswahl = "p1";
+function nummer(p) { return pruefNr[p.id] || p.start; }
+function blattHtml(p, lsg) {
+  const nr = nummer(p), r = zufall(nr * 7919 + p.start);
+  const aufgaben = p.bauen(r);
+  let gesamt = 0;
+  const teile = aufgaben.map((a, i) => {
+    const punkte = a.punkte * a.items.length; gesamt += punkte;
+    return `<div class="pa"><h3><span>${i + 1}. ${a.text}</span><small>___ / ${punkte} Punkte</small></h3>
+      <div class="kar" style="grid-template-columns:repeat(${a.spalten},${SPALTEN_MM[a.spalten]})">${a.items.map(d => druckItem(d, lsg, a.opt)).join("")}</div></div>`;
+  }).join("");
+  return `<div class="blatt">
+    <div class="pkopf"><h1>🦉 ${lsg ? "Lösungen" : "Mathe-Prüfung"}: ${esc(p.titel)}</h1><div class="nr">4. Klasse<br>Prüfung Nr. ${nr}</div></div>
+    ${lsg ? "" : `<div class="pname"><span>Name:</span><span>Datum:</span></div>`}
+    ${teile}
+    <div class="pfuss"><span>Punkte: ${lsg ? gesamt : "______"} von ${gesamt}</span><span class="smile">😀🙂😐</span></div>
+  </div>`;
+}
+function pruefungen() {
+  if (typeof spielStop === "function") spielStop();
+  reiter("r_pruef");
+  const p = PRUEFUNGEN.find(x => x.id === pruefAuswahl);
+  app.innerHTML = `
+    <h2>🖨️ Prüfungen zum Ausdrucken</h2>
+    ${IM_WEB ? `<div class="erkl">🖥️ In dieser Online-Version kannst du die Prüfungen ansehen, aber nicht drucken. Zum Ausdrucken öffne die Mathe-Lernapp am PC über die Desktop-Verknüpfung.</div>` : ""}
+    <p class="hinweis">${IM_WEB ? "Wähle eine Prüfung aus und drücke auf „Ansehen“." : "Wähle eine Prüfung aus und drücke auf „Drucken“."} Das Lösungsblatt passt immer zur gleichen Prüfungsnummer. Mit „Neue Aufgaben“ bekommst du eine neue Prüfung zum gleichen Thema.</p>
+    <div class="pliste">${PRUEFUNGEN.map(x => `
+      <div class="pkarte ${x.id === pruefAuswahl ? "an" : ""}">
+        <span class="ic">${x.icon}</span>
+        <div class="info"><b>${esc(x.titel)}</b><small>Prüfung Nr. ${nummer(x)}</small></div>
+        ${IM_WEB ? "" : `<button class="btn klein" onclick="drucken('${x.id}',false)">🖨️ Drucken</button>
+        <button class="btn klein gruen" onclick="drucken('${x.id}',true)">✅ Lösungen drucken</button>`}
+        <button class="btn klein grau" onclick="neueAufgaben('${x.id}')">🔀 Neue Aufgaben</button>
+        <button class="btn klein blau" onclick="vorschau('${x.id}')">👁️ Ansehen</button>
+      </div>`).join("")}</div>
+    <h2 style="margin-top:26px">👁️ Vorschau: ${esc(p.titel)}</h2>
+    <div class="leiste"><button class="btn klein ${pruefLsg ? "grau" : ""}" onclick="pruefLsg=false;pruefungen()">Prüfungsblatt</button><button class="btn klein ${pruefLsg ? "" : "grau"}" onclick="pruefLsg=true;pruefungen()">Lösungsblatt</button></div>
+    <div class="vorschau">${blattHtml(p, pruefLsg)}</div>`;
+}
+let pruefLsg = false;
+function vorschau(id) { pruefAuswahl = id; pruefungen(); document.querySelector(".vorschau").scrollIntoView({ behavior: "smooth" }); }
+function neueAufgaben(id) {
+  let n;
+  do { n = zz(Math.random, 100, 9999); } while (n === pruefNr[id]);
+  pruefNr[id] = n; pruefAuswahl = id;
+  try { localStorage.setItem("ma_pruefnr", JSON.stringify(pruefNr)); } catch (e) {}
+  pruefungen();
+}
+const IM_WEB = /*IM_WEB*/false; // Web-Version: Drucken geht dort nicht
+function drucken(id, lsg) {
+  const p = PRUEFUNGEN.find(x => x.id === id);
+  document.getElementById("druck").innerHTML = blattHtml(p, lsg);
+  setTimeout(() => window.print(), 50);
+}
+
+/* ---------- Prüfungen zu den neuen Themen ---------- */
+PRUEFUNGEN.splice(4, 0,
+  { id: "p6", icon: "🧠", titel: "Rechnen bis 1000", start: 66,
+    bauen: r => [
+      { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genKopf(r, "plus"), genKopf(r, "minus")] },
+      { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genKopf(r, "mal"), genKopf(r, "geteilt")] },
+      { text: "Welche Zahl fehlt? Rechne auch die Umkehraufgaben.", punkte: 4, spalten: 2, items: [genKopf(r, "platz"), genKopf(r, "umkehr")] },
+      { text: "Zahlenrätsel", punkte: 2, spalten: 2, items: [genRaetsel(r), genRaetsel(r)] }
+    ] },
+  { id: "p7", icon: "📝", titel: "Schriftlich addieren und subtrahieren", start: 77,
+    bauen: r => [
+      { text: "Rechne schriftlich.", punkte: 2, spalten: 3, items: [genSchrift(r, "plus"), genSchrift(r, "plus"), genSchrift(r, "plus")] },
+      { text: "Rechne schriftlich.", punkte: 2, spalten: 3, items: [genSchrift(r, "minus"), genSchrift(r, "minus"), genSchrift(r, "minus")] },
+      { text: "Bilde eine sinnvolle Minusaufgabe und rechne schriftlich.", punkte: 2, spalten: 3, items: [genSchrift(r, "sinnvoll"), genSchrift(r, "sinnvoll"), genSchrift(r, "sinnvoll")] }
+    ] },
+  { id: "p8", icon: "🔺", titel: "Rechendreiecke und Punkt vor Strich", start: 88,
+    bauen: r => [
+      { text: "Rechendreiecke: Ergänze die fehlenden Zahlen.", punkte: 3, spalten: 2, items: [genDreieck(r, "innen"), genDreieck(r, "gemischt")] },
+      { text: "Punkt vor Strich: Rechne.", punkte: 3, spalten: 2, items: [genPunkt(r), genPunkt(r)] }
+    ] },
+  { id: "p9", icon: "🕒", titel: "Uhrzeiten und Zeitspannen", start: 99,
+    bauen: r => [
+      { text: "Wie spät ist es? Schreibe vormittags und nachmittags.", punkte: 4, spalten: 1, items: [genUhr(r, "ablesen")] },
+      { text: "Schreibe die Uhrzeit als Zahl.", punkte: 6, spalten: 1, items: [genUhr(r, "worte")] },
+      { text: "Wie viel Zeit ist vergangen?", punkte: 3, spalten: 2, items: [genSpanne(r, "vonbis"), genSpanne(r, "plus")] },
+      { text: "Rechne vorwärts oder rückwärts.", punkte: 3, spalten: 2, items: [genSpanne(r, "digital"), genSpanne(r, "digital")] },
+      { text: "Wandle um.", punkte: 4, spalten: 2, items: [genUmwandeln(r, "minh"), genUmwandeln(r, "smin")] },
+      { text: "Zeitpunkt oder Zeitspanne?", punkte: 6, spalten: 1, items: [genSpanne(r, "punktspanne")] }
+    ] },
+  { id: "p10", icon: "🚌", titel: "Fahrpläne und Tabellen", start: 111,
+    bauen: r => [
+      { text: "Lies im Busfahrplan nach.", punkte: 4, spalten: 1, items: [genFahrplan(r, "bus")] },
+      { text: "Abfahrt, Fahrzeit und Ankunft", punkte: 5, spalten: 1, items: [genFahrplan(r, "reise")] },
+      { text: "AG-Zeiten", punkte: 4, spalten: 1, items: [genSpanne(r, "tabelle")] },
+      { text: "Schul-Triathlon", punkte: 8, spalten: 1, items: [genFahrplan(r, "triathlon")] }
+    ] }
+);
+/* Die große Prüfung enthält jetzt auch die neuen Themen */
+const _grossBauen = PRUEFUNGEN.find(p => p.id === "p5").bauen;
+PRUEFUNGEN.find(p => p.id === "p5").bauen = r => _grossBauen(r).concat([
+  { text: "Rechne schriftlich.", punkte: 2, spalten: 3, items: [genSchrift(r, "plus"), genSchrift(r, "minus"), genSchrift(r, "minus")] },
+  { text: "Punkt vor Strich", punkte: 3, spalten: 2, items: [genPunkt(r), genDreieck(r, "innen")] },
+  { text: "Uhrzeit und Zeitspannen", punkte: 4, spalten: 2, items: [genUmwandeln(r, "minh"), genSpanne(r, "vonbis")] }
+]);
+
+/* ---------- Bereichs-Prüfungen: jeder Themenbereich komplett ---------- */
+PRUEFUNGEN.splice(PRUEFUNGEN.findIndex(p => p.id === "p5"), 0,
+  { id: "p11", icon: "🧠", titel: "Bereich: Rechnen bis 1000 (alles)", start: 121,
+    bauen: r => [
+      { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genKopf(r, "plus"), genKopf(r, "minus")] },
+      { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genKopf(r, "mal"), genKopf(r, "geteilt")] },
+      { text: "Welche Zahl fehlt? Rechne auch die Umkehraufgaben.", punkte: 4, spalten: 2, items: [genKopf(r, "platz"), genKopf(r, "umkehr")] },
+      { text: "Rechne schriftlich.", punkte: 2, spalten: 3, items: [genSchrift(r, "plus"), genSchrift(r, "minus"), genSchrift(r, "sinnvoll")] },
+      { text: "Rechendreiecke: Ergänze die fehlenden Zahlen.", punkte: 3, spalten: 2, items: [genDreieck(r, "innen"), genDreieck(r, "gemischt")] },
+      { text: "Punkt vor Strich: Rechne.", punkte: 3, spalten: 1, items: [genPunkt(r)] },
+      { text: "Zahlenrätsel", punkte: 2, spalten: 2, items: [genRaetsel(r), genRaetsel(r)] }
+    ] },
+  { id: "p12", icon: "✖️", titel: "Bereich: Malnehmen und Teilen (alles)", start: 132,
+    bauen: r => [
+      { text: "Teile durch 10 und durch 100. Rechne im Kopf.", punkte: 4, spalten: 2, items: [genZehner(r, "z10"), genZehner(r, "z100")] },
+      { text: "Teile durch Zehnerzahlen.", punkte: 4, spalten: 1, items: [genZehner(r, "zz")] },
+      { text: "Rechne halbschriftlich. Schreibe die Zwischenschritte untereinander.", punkte: 2, spalten: 2, items: [genMal(r, false), genMal(r, true)] },
+      { text: "Rechne halbschriftlich. Schreibe die Zwischenschritte untereinander.", punkte: 2, spalten: 2, items: [genTeil(r, false), genTeil(r, true)] },
+      { text: "Sachaufgabe: Rechne halbschriftlich und schreibe einen Antwortsatz.", punkte: 3, spalten: 1, items: [genTeilSach(r)] }
+    ] },
+  { id: "p13", icon: "🛒", titel: "Bereich: Sachrechnen (alles)", start: 143,
+    bauen: r => [
+      { text: "Rechne in Cent um und teile. Schreibe das Ergebnis auch in Euro.", punkte: 3, spalten: 2, items: [genGeld(r), genGeld(r)] },
+      { text: "Preisvergleich: Rechne auf 1 kg hoch.", punkte: 4, spalten: 1, items: [genPreis(r, "kg")] },
+      { text: "Preisvergleich: Rechne aus, was 100 g kosten.", punkte: 4, spalten: 1, items: [genPreis(r, "100g")] },
+      { text: "Preisvergleich mit drei Packungen", punkte: 4, spalten: 1, items: [genPreis3(r)] }
+    ] },
+  { id: "p14", icon: "🕒", titel: "Bereich: Zeit (alles)", start: 154,
+    bauen: r => [
+      { text: "Wie spät ist es? Schreibe vormittags und nachmittags.", punkte: 4, spalten: 1, items: [genUhr(r, "ablesen")] },
+      { text: "Schreibe die Uhrzeit als Zahl.", punkte: 6, spalten: 1, items: [genUhr(r, "worte")] },
+      { text: "Welche Uhr passt?", punkte: 1, spalten: 1, items: [genUhr(r, "waehle")] },
+      { text: "Zeitspannen", punkte: 3, spalten: 2, items: [genSpanne(r, "vonbis"), genSpanne(r, "plus")] },
+      { text: "Zeitspannen", punkte: 3, spalten: 2, items: [genSpanne(r, "digital"), genSpanne(r, "sekunden")] },
+      { text: "Wie viel Zeit ist vergangen?", punkte: 2, spalten: 1, items: [genSpanne(r, "uhren")] },
+      { text: "Wandle um.", punkte: 4, spalten: 2, items: [genUmwandeln(r, "hmin"), genUmwandeln(r, "minh")] },
+      { text: "Wandle um.", punkte: 4, spalten: 2, items: [genUmwandeln(r, "mins"), genUmwandeln(r, "smin")] },
+      { text: "Zeitpunkt oder Zeitspanne?", punkte: 6, spalten: 1, items: [genSpanne(r, "punktspanne")] },
+      { text: "Lies im Busfahrplan nach.", punkte: 4, spalten: 1, items: [genFahrplan(r, "bus")] },
+      { text: "Abfahrt, Fahrzeit und Ankunft", punkte: 5, spalten: 1, items: [genFahrplan(r, "reise")] },
+      { text: "AG-Zeiten", punkte: 4, spalten: 1, items: [genSpanne(r, "tabelle")] },
+      { text: "Schul-Triathlon", punkte: 8, spalten: 1, items: [genFahrplan(r, "triathlon")] }
+    ] }
+);
+/* Die große Prüfung deckt jetzt jedes Thema ab */
+const _grossBauen2 = PRUEFUNGEN.find(p => p.id === "p5").bauen;
+PRUEFUNGEN.find(p => p.id === "p5").bauen = r => _grossBauen2(r).concat([
+  { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genKopf(r, "plus"), genKopf(r, "platz")] },
+  { text: "Zahlenrätsel", punkte: 2, spalten: 1, items: [genRaetsel(r)] },
+  { text: "Wie spät ist es? Schreibe vormittags und nachmittags.", punkte: 4, spalten: 1, items: [genUhr(r, "ablesen")] },
+  { text: "Abfahrt, Fahrzeit und Ankunft", punkte: 5, spalten: 1, items: [genFahrplan(r, "reise")] }
+]);
+
+/* ---------- Gemischte Prüfung: aus jedem Bereich ein paar Aufgaben ---------- */
+PRUEFUNGEN.push(
+  { id: "p15", icon: "🎲", titel: "Gemischte Prüfung (aus jedem Bereich etwas)", start: 165,
+    bauen: r => [
+      { text: "Rechne im Kopf.", punkte: 4, spalten: 2, items: [genKopf(r, "minus"), genKopf(r, "mal")] },
+      { text: "Rechne schriftlich.", punkte: 2, spalten: 3, items: [genSchrift(r, "plus"), genSchrift(r, "minus"), genSchrift(r, "minus")] },
+      { text: "Rechendreieck und Punkt vor Strich", punkte: 3, spalten: 2, items: [genDreieck(r, "gemischt"), genPunkt(r)] },
+      { text: "Teile durch Zehnerzahlen.", punkte: 4, spalten: 1, items: [genZehner(r, "zz")] },
+      { text: "Rechne halbschriftlich. Schreibe die Zwischenschritte untereinander.", punkte: 2, spalten: 2, items: [genMal(r, true), genTeil(r, false)] },
+      { text: "Rechne in Cent um und teile. Schreibe das Ergebnis auch in Euro.", punkte: 3, spalten: 2, opt: { frei: true }, items: [genGeld(r), genGeld(r)] },
+      { text: "Preisvergleich mit drei Packungen", punkte: 4, spalten: 1, items: [genPreis3(r)] },
+      { text: "Uhrzeiten und Zeitspannen", punkte: 3, spalten: 2, items: [genSpanne(r, "digital"), genUmwandeln(r, "mins")] },
+      { text: "Lies im Busfahrplan nach.", punkte: 4, spalten: 1, items: [genFahrplan(r, "bus")] }
+    ] }
+);
+
+/* ========================== SPIELECKE ==========================
+   Jede Spielrunde kostet Sterne. Sterne gibt es nur fürs Lernen.
+   Preis hier ändern: */
+const SPIEL_PREIS = 5;
+const SPIELE = [
+  { id: "bounce", name: "Bounceball", icon: "🏓", text: "Halte den Ball mit dem Balken in der Luft und zerschlage alle Steine. Jedes Level wird schneller!", start: () => bounceStart() },
+  { id: "block", name: "Blockfall", icon: "🧱", text: "Drehe die fallenden Blöcke und mache volle Reihen. Wie Tetris, mit Levels.", start: () => blockStart() },
+  { id: "weltraum", name: "Weltraum-Abwehr", icon: "🚀", text: "Schieße Meteore und Aliens ab und weiche ihren Laserschüssen aus.", start: () => weltraumStart() },
+  { id: "ballon", name: "Ballonplatzen", icon: "🎈", text: "Platze in 30 Sekunden so viele Ballons wie du kannst!", start: () => ballonStart() },
+  { id: "memory", name: "Memory", icon: "🐶", text: "Finde alle Tier-Paare mit möglichst wenigen Zügen.", start: () => memoryStart() },
+  { id: "snake", name: "Snake", icon: "🐍", text: "Friss Äpfel und werde immer länger. Nicht gegen die Wand!", start: () => snakeStart() }
+];
+let spielTimer = [], spielTasten = null;
+function spielStop() {
+  spielTimer.forEach(t => { clearInterval(t); clearTimeout(t); cancelAnimationFrame(t); });
+  spielTimer = [];
+  if (spielTasten) { document.removeEventListener("keydown", spielTasten); document.removeEventListener("keyup", spielTasten); spielTasten = null; }
+}
+function rekord(id, wert, kleinerBesser) {
+  let alt = null;
+  try { const v = localStorage.getItem("ma_rekord_" + id); alt = v === null ? null : Number(v); } catch (e) {}
+  const neu = alt === null || (kleinerBesser ? wert < alt : wert > alt);
+  if (neu) { try { localStorage.setItem("ma_rekord_" + id, wert); } catch (e) {} }
+  return { neu, rekord: neu ? wert : alt };
+}
+function rekordLesen(id) { try { const v = localStorage.getItem("ma_rekord_" + id); return v === null ? null : Number(v); } catch (e) { return null; } }
+
+function spielecke() {
+  spielStop();
+  reiter("r_spiel");
+  const genug = sterne >= SPIEL_PREIS;
+  app.innerHTML = kopfleiste("🎮 Spielecke") + `
+    <div class="box" style="text-align:center;margin-bottom:18px">
+      <div style="font-size:26px">Du hast <b>⭐ ${sterne}</b> Sterne.</div>
+      <p class="hinweis" style="margin:6px 0 0">${genug ? `Jede Spielrunde kostet ⭐ ${SPIEL_PREIS} Sterne.` : `Du brauchst ⭐ ${SPIEL_PREIS} Sterne für eine Runde. Lerne weiter, dann kannst du spielen! 📚`}</p>
+    </div>
+    <div class="modi">
+      ${SPIELE.map(s => { const r = rekordLesen(s.id); return `<button class="modus" ${genug ? "" : "disabled"} onclick="spielKaufen('${s.id}')"><span class="ic">${s.icon}</span><b>${s.name}</b><small>${s.text}${r !== null ? `<br>🏅 Rekord: ${r}${s.id === "memory" ? " Züge" : ""}` : ""}</small><br><span class="preis">⭐ ${SPIEL_PREIS}</span></button>`; }).join("")}
+    </div>
+    ${genug ? "" : `<div class="mitte"><button class="btn gruen" onclick="startseite()">📚 Jetzt lernen</button></div>`}`;
+}
+function spielKaufen(id) {
+  if (sterne < SPIEL_PREIS) return spielecke();
+  sterne -= SPIEL_PREIS; zeigeSterne(); speichern();
+  SPIELE.find(s => s.id === id).start();
+}
+function spielEnde(id, titel, text) {
+  spielStop();
+  const genug = sterne >= SPIEL_PREIS;
+  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🎉</div><h2>${text}</h2><p>Du hast noch ⭐ ${sterne} Sterne.</p>
+    <div class="mitte">${genug ? `<button class="btn gruen" onclick="spielKaufen('${id}')">Nochmal (⭐ ${SPIEL_PREIS})</button>` : ""}
+    <button class="btn" onclick="spielecke()">Zur Spielecke</button><button class="btn grau" onclick="startseite()">📚 Weiter lernen</button></div></div>`;
+}
+
+/* ---------- Ballonplatzen ---------- */
+function ballonStart() {
+  spielStop();
+  let punkte = 0, zeit = 30, ballons = [];
+  app.innerHTML = kopfleiste("🎈 Ballonplatzen") + `<div class="spielinfo"><span>💥 <span id="bp">0</span></span><span>⏱️ <span id="bz">30</span> s</span></div><div class="himmel" id="himmel"></div>`;
+  const himmel = document.getElementById("himmel");
+  const farben = [0, 60, 120, 200, 280, 320];
+  function neuerBallon() {
+    const b = document.createElement("div");
+    b.className = "ballon"; b.textContent = "🎈";
+    const breite = himmel.clientWidth;
+    const x = Math.random() * Math.max(10, breite - 60);
+    b.style.left = x + "px"; b.style.top = himmel.clientHeight + "px";
+    b.style.filter = `hue-rotate(${farben[Math.floor(Math.random() * farben.length)]}deg)`;
+    const obj = { el: b, y: himmel.clientHeight, v: 1.4 + Math.random() * 1.8 + (30 - zeit) * 0.06 };
+    b.addEventListener("pointerdown", e => {
+      e.preventDefault(); if (obj.weg) return;
+      obj.weg = true; punkte++; document.getElementById("bp").textContent = punkte;
+      b.textContent = "💥"; b.style.filter = "none";
+      setTimeout(() => b.remove(), 200);
+    });
+    himmel.appendChild(b); ballons.push(obj);
+  }
+  let letzte = performance.now();
+  function schritt(jetzt) {
+    const dt = Math.min(50, jetzt - letzte) / 16.7; letzte = jetzt;
+    ballons.forEach(o => { if (o.weg) return; o.y -= o.v * dt; o.el.style.top = o.y + "px"; if (o.y < -80) { o.weg = true; o.el.remove(); } });
+    ballons = ballons.filter(o => !o.weg || o.el.isConnected);
+    spielTimer.push(requestAnimationFrame(schritt));
+  }
+  spielTimer.push(requestAnimationFrame(schritt));
+  spielTimer.push(setInterval(neuerBallon, 550));
+  spielTimer.push(setInterval(() => {
+    zeit--; const z = document.getElementById("bz"); if (z) z.textContent = zeit;
+    if (zeit <= 0) {
+      const r = rekord("ballon", punkte, false);
+      spielEnde("ballon", "🎈 Ballonplatzen", `Du hast ${punkte} Ballons geplatzt!${r.neu && punkte > 0 ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord})`}`);
+    }
+  }, 1000));
+  neuerBallon();
+}
+
+/* ---------- Memory ---------- */
+function memoryStart() {
+  spielStop();
+  const tiere = mischen(["🐶", "🐱", "🦊", "🐼", "🐸", "🐵", "🦁", "🐰", "🐷", "🐨", "🐯", "🐮"]).slice(0, 8);
+  const karten = mischen(tiere.concat(tiere));
+  let offen = [], zuege = 0, gefunden = 0, sperre = false;
+  app.innerHTML = kopfleiste("🐶 Memory") + `<div class="spielinfo"><span>🔄 Züge: <span id="mz">0</span></span><span>✅ Paare: <span id="mp">0</span> / 8</span></div>
+    <div class="memory">${karten.map((t, i) => `<button class="mkarte" id="m${i}" onclick="memoryKlick(${i})">${t}</button>`).join("")}</div>`;
+  window.memoryKlick = i => {
+    const el = document.getElementById("m" + i);
+    if (sperre || el.classList.contains("offen") || el.classList.contains("weg")) return;
+    el.classList.add("offen"); offen.push(i);
+    if (offen.length < 2) return;
+    zuege++; document.getElementById("mz").textContent = zuege;
+    const [a, b] = offen; offen = [];
+    if (karten[a] === karten[b]) {
+      gefunden++; document.getElementById("mp").textContent = gefunden;
+      [a, b].forEach(j => { const e = document.getElementById("m" + j); e.classList.remove("offen"); e.classList.add("weg"); });
+      if (gefunden === 8) spielTimer.push(setTimeout(() => {
+        const r = rekord("memory", zuege, true);
+        spielEnde("memory", "🐶 Memory", `Geschafft in ${zuege} Zügen!${r.neu ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord} Züge)`}`);
+      }, 600));
+    } else {
+      sperre = true;
+      spielTimer.push(setTimeout(() => { [a, b].forEach(j => document.getElementById("m" + j).classList.remove("offen")); sperre = false; }, 900));
+    }
+  };
+}
+
+/* ---------- Snake ---------- */
+function snakeStart() {
+  spielStop();
+  const N = 16, groesse = Math.min(400, document.getElementById("app").clientWidth - 20), z = Math.floor(groesse / N);
+  app.innerHTML = kopfleiste("🐍 Snake") + `<div class="spielinfo"><span>🍎 <span id="sp">0</span></span></div>
+    <canvas id="snake" width="${z * N}" height="${z * N}"></canvas>
+    <p class="hinweis" style="text-align:center">Steuern mit den Pfeiltasten, durch Wischen oder mit den Knöpfen.</p>
+    <div class="steuer"><span></span><button onclick="snakeRichtung(0,-1)">⬆️</button><span></span>
+    <button onclick="snakeRichtung(-1,0)">⬅️</button><button onclick="snakeRichtung(0,1)">⬇️</button><button onclick="snakeRichtung(1,0)">➡️</button></div>`;
+  const cv = document.getElementById("snake"), ctx = cv.getContext("2d");
+  let schlange = [{ x: 7, y: 8 }, { x: 6, y: 8 }, { x: 5, y: 8 }], dir = { x: 1, y: 0 }, naechste = dir, apfel = null, punkte = 0, tempo = 170;
+  function neuerApfel() {
+    do { apfel = { x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) }; }
+    while (schlange.some(s => s.x === apfel.x && s.y === apfel.y));
+  }
+  window.snakeRichtung = (x, y) => { if (x !== -dir.x || y !== -dir.y) naechste = { x, y }; };
+  spielTasten = e => {
+    const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] }[e.key];
+    if (m) { e.preventDefault(); snakeRichtung(m[0], m[1]); }
+  };
+  document.addEventListener("keydown", spielTasten);
+  let tx = null, ty = null;
+  cv.addEventListener("touchstart", e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  cv.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+    if (Math.abs(dx) > Math.abs(dy)) snakeRichtung(dx > 0 ? 1 : -1, 0); else snakeRichtung(0, dy > 0 ? 1 : -1);
+  });
+  function malen() {
+    ctx.fillStyle = "#1d3b2a"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = "#e53935"; ctx.beginPath(); ctx.arc(apfel.x * z + z / 2, apfel.y * z + z / 2, z * 0.42, 0, Math.PI * 2); ctx.fill();
+    schlange.forEach((s, i) => { ctx.fillStyle = i === 0 ? "#ffd84d" : "#6ccf6e"; ctx.fillRect(s.x * z + 1, s.y * z + 1, z - 2, z - 2); });
+  }
+  function takt() {
+    dir = naechste;
+    const kopf = { x: schlange[0].x + dir.x, y: schlange[0].y + dir.y };
+    if (kopf.x < 0 || kopf.y < 0 || kopf.x >= N || kopf.y >= N || schlange.some(s => s.x === kopf.x && s.y === kopf.y)) {
+      const r = rekord("snake", punkte, false);
+      return spielEnde("snake", "🐍 Snake", `Du hast ${punkte} Äpfel gefressen!${r.neu && punkte > 0 ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord})`}`);
+    }
+    schlange.unshift(kopf);
+    if (kopf.x === apfel.x && kopf.y === apfel.y) {
+      punkte++; document.getElementById("sp").textContent = punkte; neuerApfel();
+      tempo = Math.max(80, tempo - 4);
+    } else schlange.pop();
+    malen();
+    spielTimer.push(setTimeout(takt, tempo));
+  }
+  neuerApfel(); malen();
+  spielTimer.push(setTimeout(takt, 600));
+}
+
+/* ---------- Gemeinsames für die Action-Spiele ---------- */
+function spielSchleife(cv, schritt) {
+  // Läuft, solange das Spielfeld auf der Seite ist. dt = 1 bei 60 Bildern pro Sekunde.
+  let letzte = performance.now();
+  function lauf(jetzt) {
+    if (!cv.isConnected) return;
+    const dt = Math.min(50, jetzt - letzte) / 16.7; letzte = jetzt;
+    if (schritt(dt, jetzt) === false) return;
+    spielTimer.push(requestAnimationFrame(lauf));
+  }
+  spielTimer.push(requestAnimationFrame(lauf));
+}
+function spielX(cv, e) { const r = cv.getBoundingClientRect(); return (e.clientX - r.left) * cv.width / r.width; }
+function pauseText(ctx, w, h, oben, unten) {
+  ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = "bold 32px Segoe UI, Arial"; ctx.fillText(oben, w / 2, h / 2 - 18);
+  ctx.font = "18px Segoe UI, Arial"; ctx.fillText(unten, w / 2, h / 2 + 20);
+}
+function rekordText(r, punkte) { return r.neu && punkte > 0 ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord})`; }
+
+/* ---------- Bounceball (Breakout) ---------- */
+function bounceStart() {
+  spielStop();
+  const W = 480, H = 600;
+  app.innerHTML = kopfleiste("🏓 Bounceball") + `<div class="spielinfo"><span>🏆 <span id="bbp">0</span></span><span>❤️ <span id="bbl">3</span></span><span>📶 Level <span id="bbv">1</span></span></div>
+    <canvas id="bounce" class="spielfeld" width="${W}" height="${H}"></canvas>
+    <p class="hinweis" style="text-align:center">Balken mit Maus, Finger oder ⬅️ ➡️ steuern. Klick oder Leertaste schießt den Ball ab. P = Pause.</p>`;
+  const cv = document.getElementById("bounce"), ctx = cv.getContext("2d");
+  const FARBEN = ["#ef5350", "#ffa726", "#ffee58", "#66bb6a", "#42a5f5", "#ab47bc", "#ec407a", "#26c6da"];
+  let punkte = 0, leben = 3, level = 1, pause = false, links = false, rechts = false;
+  const p = { x: W / 2, w: 90, h: 14, y: H - 34 };
+  let ball, steine;
+  function tempoBasis() { return 5 + level * 0.7; }
+  function neuerBall() { ball = { x: p.x, y: p.y - 9, vx: 0, vy: 0, r: 8, klebt: true, s: tempoBasis() }; }
+  function neuesLevel() {
+    const reihen = Math.min(8, 4 + level), spalten = 10, bw = 44, bh = 18, gap = 4, links0 = (W - (spalten * bw + (spalten - 1) * gap)) / 2;
+    steine = [];
+    for (let r = 0; r < reihen; r++) for (let c = 0; c < spalten; c++) {
+      // ab Level 2 Lücken-Muster, ab Level 2 harte Steine (2 Treffer), ab Level 4 sehr harte (3 Treffer)
+      if (level >= 3 && (r + c + level) % 7 === 0) continue;
+      let haerte = 1;
+      if (level >= 2 && r < Math.min(level - 1, 3)) haerte = 2;
+      if (level >= 4 && r === 0) haerte = 3;
+      steine.push({ x: links0 + c * (bw + gap), y: 70 + r * (bh + gap), w: bw, h: bh, hp: haerte, farbe: FARBEN[r % FARBEN.length] });
+    }
+    p.w = Math.max(56, 96 - level * 6);
+    neuerBall();
+    document.getElementById("bbv").textContent = level;
+  }
+  function abschiessen() {
+    if (pause || !ball.klebt) return;
+    const winkel = (Math.random() - 0.5) * 0.8;
+    ball.klebt = false; ball.vx = ball.s * Math.sin(winkel); ball.vy = -ball.s * Math.cos(winkel);
+  }
+  cv.addEventListener("pointermove", e => { if (!pause) p.x = spielX(cv, e); });
+  cv.addEventListener("pointerdown", e => { e.preventDefault(); p.x = spielX(cv, e); abschiessen(); });
+  spielTasten = e => {
+    const an = e.type === "keydown";
+    if (e.key === "ArrowLeft" || e.key === "a") { links = an; e.preventDefault(); }
+    else if (e.key === "ArrowRight" || e.key === "d") { rechts = an; e.preventDefault(); }
+    else if (e.key === " " && an) { e.preventDefault(); abschiessen(); }
+    else if ((e.key === "p" || e.key === "P" || e.key === "Escape") && an) pause = !pause;
+  };
+  document.addEventListener("keydown", spielTasten); document.addEventListener("keyup", spielTasten);
+
+  function bewegeBall(dt) {
+    const schritte = Math.ceil(ball.s * dt / 4);
+    for (let i = 0; i < schritte; i++) {
+      const ax = ball.x, ay = ball.y;
+      ball.x += ball.vx * dt / schritte; ball.y += ball.vy * dt / schritte;
+      if (ball.x < ball.r) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); }
+      if (ball.x > W - ball.r) { ball.x = W - ball.r; ball.vx = -Math.abs(ball.vx); }
+      if (ball.y < ball.r) { ball.y = ball.r; ball.vy = Math.abs(ball.vy); }
+      // Balken: Abprallwinkel hängt davon ab, wo der Ball trifft
+      if (ball.vy > 0 && ball.y + ball.r >= p.y && ay + ball.r <= p.y + 4 && ball.x > p.x - p.w / 2 - ball.r && ball.x < p.x + p.w / 2 + ball.r) {
+        const teil = Math.max(-1, Math.min(1, (ball.x - p.x) / (p.w / 2)));
+        ball.s = Math.min(tempoBasis() + 4, ball.s + 0.08);
+        const winkel = teil * 1.1;
+        ball.vx = ball.s * Math.sin(winkel); ball.vy = -ball.s * Math.cos(winkel);
+        ball.y = p.y - ball.r;
+      }
+      for (const st of steine) {
+        if (st.hp <= 0) continue;
+        if (ball.x + ball.r > st.x && ball.x - ball.r < st.x + st.w && ball.y + ball.r > st.y && ball.y - ball.r < st.y + st.h) {
+          const warSeitlich = ax + ball.r <= st.x || ax - ball.r >= st.x + st.w;
+          if (warSeitlich) ball.vx = -ball.vx; else ball.vy = -ball.vy;
+          ball.x = ax; ball.y = ay;
+          st.hp--; punkte += 10 * level; if (st.hp <= 0) punkte += 5 * level;
+          document.getElementById("bbp").textContent = punkte;
+          break;
+        }
+      }
+      if (ball.y - ball.r > H) return false;
+    }
+    return true;
+  }
+  function malen() {
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#1a1f4b"); g.addColorStop(1, "#2d1b4e");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    steine.forEach(st => {
+      if (st.hp <= 0) return;
+      ctx.fillStyle = st.hp === 3 ? "#9e9e9e" : st.hp === 2 ? "#cfd8dc" : st.farbe;
+      ctx.fillRect(st.x, st.y, st.w, st.h);
+      ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(st.x, st.y, st.w, 4);
+      if (st.hp > 1) { ctx.fillStyle = "#37474f"; ctx.font = "bold 13px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(st.hp, st.x + st.w / 2, st.y + st.h / 2 + 1); }
+    });
+    ctx.fillStyle = "#4dd0e1"; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(p.x - p.w / 2, p.y, p.w, p.h, 7) : ctx.rect(p.x - p.w / 2, p.y, p.w, p.h); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+    if (ball.klebt && !pause) { ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.font = "18px Segoe UI, Arial"; ctx.textAlign = "center"; ctx.fillText("Klicken oder Leertaste zum Starten", W / 2, H / 2 + 60); }
+    if (pause) pauseText(ctx, W, H, "⏸ Pause", "P drücken zum Weiterspielen");
+  }
+  neuesLevel();
+  spielSchleife(cv, dt => {
+    if (!pause) {
+      if (links) p.x -= 9 * dt;
+      if (rechts) p.x += 9 * dt;
+      p.x = Math.max(p.w / 2, Math.min(W - p.w / 2, p.x));
+      if (ball.klebt) { ball.x = p.x; ball.y = p.y - ball.r - 1; }
+      else if (!bewegeBall(dt)) {
+        leben--; document.getElementById("bbl").textContent = leben;
+        if (leben <= 0) {
+          const r = rekord("bounce", punkte, false);
+          spielEnde("bounce", "🏓 Bounceball", `Du hast ${punkte} Punkte geschafft (Level ${level})!${rekordText(r, punkte)}`);
+          return false;
+        }
+        neuerBall();
+      }
+      if (steine.every(st => st.hp <= 0)) { punkte += 100 * level; document.getElementById("bbp").textContent = punkte; level++; neuesLevel(); }
+    }
+    malen();
+  });
+}
+
+/* ---------- Blockfall (Tetris) ---------- */
+function blockStart() {
+  spielStop();
+  const SP = 10, RE = 20, Z = 28;
+  app.innerHTML = kopfleiste("🧱 Blockfall") + `<div class="spielinfo"><span>🏆 <span id="tp">0</span></span><span>📏 Reihen: <span id="tr">0</span></span><span>📶 Level <span id="tl">1</span></span></div>
+    <div class="tetris">
+      <canvas id="tfeld" class="spielfeld" width="${SP * Z}" height="${RE * Z}"></canvas>
+      <div class="tseite"><b>Nächster</b><canvas id="tnext" width="112" height="84"></canvas>
+        <p class="hinweis" style="margin:8px 0 0;font-size:15px">⬅️ ➡️ bewegen<br>⬆️ drehen<br>⬇️ schneller<br>Leertaste: fallen lassen<br>P: Pause</p></div>
+    </div>
+    <div class="steuer" style="grid-template-columns:repeat(5,64px)">
+      <button onclick="blockTaste('ArrowLeft')">⬅️</button><button onclick="blockTaste('ArrowUp')">🔄</button><button onclick="blockTaste('ArrowRight')">➡️</button><button onclick="blockTaste('ArrowDown')">⬇️</button><button onclick="blockTaste(' ')">⏬</button></div>`;
+  const cv = document.getElementById("tfeld"), ctx = cv.getContext("2d"), nv = document.getElementById("tnext"), nctx = nv.getContext("2d");
+  const FORMEN = {
+    I: { m: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], f: "#26c6da" },
+    O: { m: [[1, 1], [1, 1]], f: "#ffd54f" },
+    T: { m: [[0, 1, 0], [1, 1, 1], [0, 0, 0]], f: "#ab47bc" },
+    S: { m: [[0, 1, 1], [1, 1, 0], [0, 0, 0]], f: "#66bb6a" },
+    Z: { m: [[1, 1, 0], [0, 1, 1], [0, 0, 0]], f: "#ef5350" },
+    J: { m: [[1, 0, 0], [1, 1, 1], [0, 0, 0]], f: "#42a5f5" },
+    L: { m: [[0, 0, 1], [1, 1, 1], [0, 0, 0]], f: "#ffa726" }
+  };
+  const feld = Array.from({ length: RE }, () => Array(SP).fill(null));
+  let beutel = [], teil, naechstes, punkte = 0, reihen = 0, level = 1, pause = false, vorbei = false, fallZeit = 0;
+  function ziehe() {
+    if (!beutel.length) beutel = mischen(Object.keys(FORMEN));
+    const k = beutel.pop();
+    return { m: FORMEN[k].m.map(r => r.slice()), f: FORMEN[k].f, x: 0, y: 0, k };
+  }
+  function passt(m, x, y) {
+    for (let r = 0; r < m.length; r++) for (let c = 0; c < m[r].length; c++) {
+      if (!m[r][c]) continue;
+      const fx = x + c, fy = y + r;
+      if (fx < 0 || fx >= SP || fy >= RE) return false;
+      if (fy >= 0 && feld[fy][fx]) return false;
+    }
+    return true;
+  }
+  function spawn() {
+    teil = naechstes || ziehe(); naechstes = ziehe();
+    teil.x = Math.floor((SP - teil.m[0].length) / 2); teil.y = teil.k === "I" ? -1 : 0;
+    if (!passt(teil.m, teil.x, teil.y)) vorbei = true;
+    malNext();
+  }
+  function drehe(m) { const n = m.length; return m.map((r, i) => r.map((_, j) => m[n - 1 - j][i])); }
+  function drehen() {
+    const m = drehe(teil.m);
+    for (const dx of [0, -1, 1, -2, 2]) if (passt(m, teil.x + dx, teil.y)) { teil.m = m; teil.x += dx; return; }
+    if (passt(m, teil.x, teil.y - 1)) { teil.m = m; teil.y--; }
+  }
+  function festmachen() {
+    teil.m.forEach((r, ri) => r.forEach((v, ci) => { if (v && teil.y + ri >= 0) feld[teil.y + ri][teil.x + ci] = teil.f; }));
+    if (teil.m.some((r, ri) => r.some(v => v) && teil.y + ri < 0)) { vorbei = true; return; }
+    let weg = 0;
+    for (let r = RE - 1; r >= 0; r--) if (feld[r].every(v => v)) { feld.splice(r, 1); feld.unshift(Array(SP).fill(null)); weg++; r++; }
+    if (weg) {
+      punkte += [0, 100, 300, 500, 800][weg] * level; reihen += weg; level = 1 + Math.floor(reihen / 10);
+      document.getElementById("tr").textContent = reihen; document.getElementById("tl").textContent = level;
+    }
+    document.getElementById("tp").textContent = punkte;
+    spawn();
+  }
+  function runter(vonSpieler) {
+    if (passt(teil.m, teil.x, teil.y + 1)) { teil.y++; if (vonSpieler) { punkte++; document.getElementById("tp").textContent = punkte; } return true; }
+    festmachen(); return false;
+  }
+  window.blockTaste = key => {
+    if (vorbei) return;
+    if (key === "p" || key === "P" || key === "Escape") { pause = !pause; return; }
+    if (pause) return;
+    if (key === "ArrowLeft" || key === "a") { if (passt(teil.m, teil.x - 1, teil.y)) teil.x--; }
+    else if (key === "ArrowRight" || key === "d") { if (passt(teil.m, teil.x + 1, teil.y)) teil.x++; }
+    else if (key === "ArrowUp" || key === "w" || key === "x") drehen();
+    else if (key === "ArrowDown" || key === "s") { runter(true); fallZeit = 0; }
+    else if (key === " ") { let n = 0; while (passt(teil.m, teil.x, teil.y + 1)) { teil.y++; n++; } punkte += 2 * n; festmachen(); fallZeit = 0; }
+  };
+  spielTasten = e => {
+    if (e.type !== "keydown") return;
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " ", "a", "d", "w", "s", "x", "p", "P", "Escape"].includes(e.key)) { e.preventDefault(); blockTaste(e.key); }
+  };
+  document.addEventListener("keydown", spielTasten);
+  function zelle(c, x, y, f, z) {
+    c.fillStyle = f; c.fillRect(x * z + 1, y * z + 1, z - 2, z - 2);
+    c.fillStyle = "rgba(255,255,255,.3)"; c.fillRect(x * z + 1, y * z + 1, z - 2, 4);
+    c.fillStyle = "rgba(0,0,0,.2)"; c.fillRect(x * z + 1, y * z + z - 5, z - 2, 4);
+  }
+  function malNext() {
+    nctx.fillStyle = "#1b1f3a"; nctx.fillRect(0, 0, nv.width, nv.height);
+    const m = naechstes.m, z = 20, b = m[0].length, h = m.filter(r => r.some(v => v)).length, oben = m.findIndex(r => r.some(v => v));
+    const ox = (nv.width - b * z) / 2 / z, oy = (nv.height - h * z) / 2 / z - oben;
+    m.forEach((r, ri) => r.forEach((v, ci) => { if (v) zelle(nctx, ci + ox, ri + oy, naechstes.f, z); }));
+  }
+  function malen() {
+    ctx.fillStyle = "#1b1f3a"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.strokeStyle = "rgba(255,255,255,.05)";
+    for (let c = 1; c < SP; c++) { ctx.beginPath(); ctx.moveTo(c * Z, 0); ctx.lineTo(c * Z, RE * Z); ctx.stroke(); }
+    for (let r = 1; r < RE; r++) { ctx.beginPath(); ctx.moveTo(0, r * Z); ctx.lineTo(SP * Z, r * Z); ctx.stroke(); }
+    feld.forEach((r, ri) => r.forEach((f, ci) => { if (f) zelle(ctx, ci, ri, f, Z); }));
+    let gy = teil.y; while (passt(teil.m, teil.x, gy + 1)) gy++;
+    ctx.globalAlpha = 0.25; teil.m.forEach((r, ri) => r.forEach((v, ci) => { if (v && gy + ri >= 0) zelle(ctx, teil.x + ci, gy + ri, teil.f, Z); })); ctx.globalAlpha = 1;
+    teil.m.forEach((r, ri) => r.forEach((v, ci) => { if (v && teil.y + ri >= 0) zelle(ctx, teil.x + ci, teil.y + ri, teil.f, Z); }));
+    if (pause) pauseText(ctx, cv.width, cv.height, "⏸ Pause", "P drücken zum Weiterspielen");
+  }
+  spawn();
+  spielSchleife(cv, dt => {
+    if (vorbei) {
+      const r = rekord("block", punkte, false);
+      spielEnde("block", "🧱 Blockfall", `${punkte} Punkte und ${reihen} Reihen geschafft (Level ${level})!${rekordText(r, punkte)}`);
+      return false;
+    }
+    if (!pause) {
+      fallZeit += dt * 16.7;
+      const intervall = Math.max(70, 800 * Math.pow(0.85, level - 1));
+      while (fallZeit >= intervall && !vorbei) { fallZeit -= intervall; runter(false); }
+    }
+    malen();
+  });
+}
+
+/* ---------- Weltraum-Abwehr (Shooter) ---------- */
+function weltraumStart() {
+  spielStop();
+  const W = 480, H = 600;
+  app.innerHTML = kopfleiste("🚀 Weltraum-Abwehr") + `<div class="spielinfo"><span>🏆 <span id="wp">0</span></span><span>❤️ <span id="wl">3</span></span><span>🌊 Welle <span id="ww">1</span></span></div>
+    <canvas id="weltraum" class="spielfeld" width="${W}" height="${H}"></canvas>
+    <p class="hinweis" style="text-align:center">Raumschiff mit Maus, Finger oder ⬅️ ➡️ steuern. Es schießt von selbst. Weich Meteoren und Laserschüssen aus! ⚡ = Doppelschuss. P = Pause.</p>`;
+  const cv = document.getElementById("weltraum"), ctx = cv.getContext("2d");
+  const schiff = { x: W / 2, y: H - 50, r: 16 };
+  let punkte = 0, leben = 3, welle = 1, zeit = 0, ende = false, pause = false, links = false, rechts = false, zielX = null;
+  let schuesse = [], feinde = [], laser = [], extras = [], funken = [], schussPause = 0, spawnPause = 60, schutz = 0, doppel = 0;
+  const sterneBg = Array.from({ length: 70 }, () => ({ x: Math.random() * W, y: Math.random() * H, v: 0.5 + Math.random() * 2 }));
+  cv.addEventListener("pointermove", e => { zielX = spielX(cv, e); });
+  cv.addEventListener("pointerdown", e => { e.preventDefault(); zielX = spielX(cv, e); });
+  spielTasten = e => {
+    const an = e.type === "keydown";
+    if (e.key === "ArrowLeft" || e.key === "a") { links = an; zielX = null; e.preventDefault(); }
+    else if (e.key === "ArrowRight" || e.key === "d") { rechts = an; zielX = null; e.preventDefault(); }
+    else if ((e.key === "p" || e.key === "P" || e.key === "Escape") && an) pause = !pause;
+    else if (e.key === " ") e.preventDefault();
+  };
+  document.addEventListener("keydown", spielTasten); document.addEventListener("keyup", spielTasten);
+  function explosion(x, y, farbe, n) { for (let i = 0; i < n; i++) { const w = Math.random() * Math.PI * 2, v = 1 + Math.random() * 4; funken.push({ x, y, vx: Math.cos(w) * v, vy: Math.sin(w) * v, t: 30, f: farbe }); } }
+  function neuerFeind() {
+    const tempo = 1 + welle * 0.25;
+    if (Math.random() < Math.min(0.55, 0.15 + welle * 0.06)) {
+      feinde.push({ art: "alien", x: 30 + Math.random() * (W - 60), y: -20, r: 18, hp: 2, v: tempo * 1.1, phase: Math.random() * 6, schuss: 60 + Math.random() * 80, punkte: 25 });
+    } else {
+      const gross = Math.random() < 0.35;
+      feinde.push({ art: "meteor", x: 20 + Math.random() * (W - 40), y: -30, r: gross ? 28 : 16, hp: gross ? 4 : 1, v: tempo * (gross ? 1.2 : 2) + Math.random(), vx: (Math.random() - 0.5) * 1.5, dreh: Math.random() * 6, punkte: gross ? 20 : 10 });
+    }
+  }
+  function getroffen() {
+    if (schutz > 0) return;
+    leben--; schutz = 120; document.getElementById("wl").textContent = leben;
+    explosion(schiff.x, schiff.y, "#ff7043", 30);
+  }
+  function nah(a, b, abstand) { const dx = a.x - b.x, dy = a.y - b.y; return dx * dx + dy * dy < abstand * abstand; }
+  function update(dt) {
+    zeit += dt;
+    const neueWelle = 1 + Math.floor(zeit / 900);
+    if (neueWelle !== welle) { welle = neueWelle; document.getElementById("ww").textContent = welle; }
+    if (links) schiff.x -= 7 * dt;
+    if (rechts) schiff.x += 7 * dt;
+    if (zielX !== null) schiff.x += Math.max(-9 * dt, Math.min(9 * dt, zielX - schiff.x));
+    schiff.x = Math.max(20, Math.min(W - 20, schiff.x));
+    if (schutz > 0) schutz -= dt;
+    if (doppel > 0) doppel -= dt;
+    schussPause -= dt;
+    if (schussPause <= 0) {
+      schussPause = 11;
+      if (doppel > 0) schuesse.push({ x: schiff.x - 10, y: schiff.y - 14 }, { x: schiff.x + 10, y: schiff.y - 14 });
+      else schuesse.push({ x: schiff.x, y: schiff.y - 18 });
+    }
+    spawnPause -= dt;
+    if (spawnPause <= 0) { neuerFeind(); spawnPause = Math.max(14, 55 - welle * 5) * (0.6 + Math.random() * 0.8); }
+    schuesse.forEach(s => s.y -= 11 * dt); schuesse = schuesse.filter(s => s.y > -10 && !s.weg);
+    feinde.forEach(f => {
+      if (f.art === "alien") {
+        f.y += f.v * dt * 0.8; f.phase += 0.04 * dt; f.x += Math.sin(f.phase) * 2.2 * dt;
+        f.schuss -= dt;
+        if (f.schuss <= 0 && f.y > 0) {
+          f.schuss = Math.max(45, 110 - welle * 8) + Math.random() * 40;
+          const dx = schiff.x - f.x, dy = schiff.y - f.y, l = Math.hypot(dx, dy), v = 3.5 + welle * 0.2;
+          laser.push({ x: f.x, y: f.y + 10, vx: dx / l * v, vy: dy / l * v });
+        }
+      } else { f.y += f.v * dt; f.x += f.vx * dt; f.dreh += 0.03 * dt; if (f.x < f.r || f.x > W - f.r) f.vx = -f.vx; }
+      schuesse.forEach(s => {
+        if (!s.weg && !f.weg && nah(s, f, f.r + 3)) {
+          s.weg = true; f.hp--;
+          if (f.hp <= 0) {
+            f.weg = true; punkte += f.punkte; document.getElementById("wp").textContent = punkte;
+            explosion(f.x, f.y, f.art === "alien" ? "#76ff03" : "#bcaaa4", 16);
+            if (Math.random() < 0.06) extras.push({ x: f.x, y: f.y });
+          } else explosion(s.x, s.y, "#fff59d", 4);
+        }
+      });
+      if (!f.weg && nah(f, schiff, f.r + schiff.r - 4)) { f.weg = true; explosion(f.x, f.y, "#bcaaa4", 12); getroffen(); }
+    });
+    feinde = feinde.filter(f => !f.weg && f.y < H + 40);
+    laser.forEach(l => { l.x += l.vx * dt; l.y += l.vy * dt; if (nah(l, schiff, schiff.r - 4)) { l.weg = true; getroffen(); } });
+    laser = laser.filter(l => !l.weg && l.y < H + 10 && l.y > -10 && l.x > -10 && l.x < W + 10);
+    extras.forEach(e => { e.y += 2 * dt; if (nah(e, schiff, 26)) { e.weg = true; doppel = 480; } });
+    extras = extras.filter(e => !e.weg && e.y < H + 20);
+    funken.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.t -= dt; }); funken = funken.filter(p => p.t > 0);
+    sterneBg.forEach(s => { s.y += s.v * dt; if (s.y > H) { s.y = 0; s.x = Math.random() * W; } });
+  }
+  function malSchiff() {
+    if (schutz > 0 && Math.floor(schutz / 6) % 2 === 0) return;
+    const { x, y } = schiff;
+    ctx.fillStyle = "#ff9800"; ctx.beginPath(); ctx.moveTo(x - 6, y + 14); ctx.lineTo(x, y + 24 + Math.random() * 8); ctx.lineTo(x + 6, y + 14); ctx.fill();
+    ctx.fillStyle = "#90caf9"; ctx.beginPath(); ctx.moveTo(x, y - 20); ctx.lineTo(x + 18, y + 14); ctx.lineTo(x - 18, y + 14); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#1565c0"; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+  }
+  function malen() {
+    ctx.fillStyle = "#0b0d26"; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#fff"; sterneBg.forEach(s => ctx.fillRect(s.x, s.y, s.v > 1.8 ? 2 : 1, s.v > 1.8 ? 2 : 1));
+    ctx.fillStyle = "#ffee58"; schuesse.forEach(s => ctx.fillRect(s.x - 2, s.y - 8, 4, 12));
+    ctx.fillStyle = "#ff1744"; laser.forEach(l => { ctx.beginPath(); ctx.arc(l.x, l.y, 4, 0, Math.PI * 2); ctx.fill(); });
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    feinde.forEach(f => {
+      if (f.art === "alien") { ctx.font = "34px Segoe UI Emoji, Apple Color Emoji, sans-serif"; ctx.fillText("👾", f.x, f.y); }
+      else {
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.dreh);
+        ctx.fillStyle = "#8d6e63"; ctx.beginPath();
+        for (let i = 0; i < 9; i++) { const w = i / 9 * Math.PI * 2, rr = f.r * (0.82 + 0.18 * Math.sin(i * 2.7)); ctx.lineTo(Math.cos(w) * rr, Math.sin(w) * rr); }
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#5d4037"; ctx.beginPath(); ctx.arc(f.r * 0.3, -f.r * 0.2, f.r * 0.22, 0, Math.PI * 2); ctx.arc(-f.r * 0.35, f.r * 0.3, f.r * 0.15, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+    });
+    ctx.font = "26px Segoe UI Emoji, Apple Color Emoji, sans-serif"; extras.forEach(e => ctx.fillText("⚡", e.x, e.y));
+    funken.forEach(p => { ctx.globalAlpha = p.t / 30; ctx.fillStyle = p.f; ctx.fillRect(p.x - 2, p.y - 2, 4, 4); }); ctx.globalAlpha = 1;
+    if (leben > 0) malSchiff();
+    if (doppel > 0) { ctx.fillStyle = "#ffee58"; ctx.font = "bold 16px Segoe UI, Arial"; ctx.textAlign = "left"; ctx.fillText("⚡ Doppelschuss", 10, 20); }
+    if (pause) pauseText(ctx, W, H, "⏸ Pause", "P drücken zum Weiterspielen");
+  }
+  spielSchleife(cv, dt => {
+    if (!pause) update(dt);
+    malen();
+    if (leben <= 0 && !ende) {
+      ende = true;
+      const r = rekord("weltraum", punkte, false);
+      spielTimer.push(setTimeout(() => spielEnde("weltraum", "🚀 Weltraum-Abwehr", `Du hast ${punkte} Punkte geschafft (Welle ${welle})!${rekordText(r, punkte)}`), 900));
+    }
+  });
+}
+
+/* ========================== STERNE-CODE ==========================
+   Sterne von einem Gerät auf ein anderes mitnehmen, ohne Konto.
+   Der Code enthält die Sternzahl und eine Prüfsumme; jeder Code gilt nur einmal pro Gerät. */
+const CODE_ZEICHEN = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+const CODE_SCHLUESSEL = 0x3B9E52A7C1n;
+function codePruef(v) { return ((v * 0x9E3779B1n + 0x2545Fn) >> 9n) & 0xFFFn; }
+function codeMachen(anzahl) {
+  const nonce = BigInt(Math.floor(Math.random() * 65536));
+  const v = (BigInt(anzahl) << 16n) | nonce;
+  let zahl = ((v << 12n) | codePruef(v)) ^ CODE_SCHLUESSEL;
+  let out = "";
+  for (let i = 0; i < 8; i++) { out = CODE_ZEICHEN[Number(zahl & 31n)] + out; zahl >>= 5n; }
+  return out.slice(0, 4) + "-" + out.slice(4);
+}
+function codeLesen(text) {
+  const t = text.toUpperCase().replace(/O/g, "0").replace(/I/g, "1").replace(/[^0-9A-Z]/g, "");
+  if (t.length !== 8) return null;
+  let zahl = 0n;
+  for (const c of t) { const i = CODE_ZEICHEN.indexOf(c); if (i < 0) return null; zahl = (zahl << 5n) | BigInt(i); }
+  zahl ^= CODE_SCHLUESSEL;
+  const v = zahl >> 12n;
+  if ((zahl & 0xFFFn) !== codePruef(v)) return null;
+  return { anzahl: Number(v >> 16n), id: v.toString(36) };
+}
+function sterneUebertragen(meldung) {
+  spielStop();
+  reiter("r_ueben");
+  app.innerHTML = kopfleiste("🔑 Sterne-Code") + `
+    <div class="box" style="margin-bottom:18px">
+      <h2 style="margin-top:0">📤 Sterne mitnehmen</h2>
+      <p>Du hast <b>⭐ ${sterne}</b> Sterne. Wenn du einen Code machst, wandern alle Sterne in den Code und sind auf diesem Gerät weg. Gib den Code dann auf dem anderen Gerät ein.</p>
+      <div id="codeAusgabe">${sterne > 0 ? `<button class="btn" onclick="codeErzeugen()">Code machen</button>` : `<p class="hinweis">Du hast gerade keine Sterne zum Mitnehmen.</p>`}</div>
+    </div>
+    <div class="box">
+      <h2 style="margin-top:0">📥 Sterne einlösen</h2>
+      <p>Code vom anderen Gerät eingeben:</p>
+      <div class="leiste"><input class="codeeingabe" id="codeIn" maxlength="9" placeholder="XXXX-XXXX" onkeydown="if(event.key==='Enter')codeEinloesen()"><button class="btn gruen" onclick="codeEinloesen()">Einlösen</button></div>
+      <div class="feedback" id="codeFb">${meldung || ""}</div>
+    </div>`;
+}
+function codeErzeugen(sicher) {
+  if (sterne <= 0) return;
+  if (!sicher) {
+    document.getElementById("codeAusgabe").innerHTML = `<p>Alle <b>⭐ ${sterne}</b> Sterne in einen Code packen? Auf diesem Gerät sind sie dann weg, bis der Code eingelöst wird.</p><div class="leiste"><button class="btn" onclick="codeErzeugen(true)">Ja, Code machen</button><button class="btn grau" onclick="sterneUebertragen()">Abbrechen</button></div>`;
+    return;
+  }
+  const anzahl = Math.min(sterne, 4095), code = codeMachen(anzahl);
+  sterne -= anzahl; zeigeSterne(); speichern();
+  document.getElementById("codeAusgabe").innerHTML = `<p>Dein Code für <b>⭐ ${anzahl}</b> Sterne:</p><div class="code">${code}</div>
+    <p class="hinweis">Schreib ihn dir auf! Du kannst ihn auch hier wieder einlösen, falls du es dir anders überlegst.</p>`;
+}
+function codeEinloesen() {
+  const fb = document.getElementById("codeFb"), wert = document.getElementById("codeIn").value, c = codeLesen(wert);
+  if (!c) { fb.className = "feedback nein"; fb.textContent = "Dieser Code stimmt nicht. Schau nochmal genau hin."; return; }
+  let benutzt = [];
+  try { benutzt = JSON.parse(localStorage.getItem("ma_codes") || "[]"); } catch (e) {}
+  if (benutzt.includes(c.id)) { fb.className = "feedback nein"; fb.textContent = "Diesen Code hast du hier schon eingelöst."; return; }
+  benutzt.push(c.id);
+  try { localStorage.setItem("ma_codes", JSON.stringify(benutzt)); } catch (e) {}
+  sterne += c.anzahl; zeigeSterne(); speichern();
+  sterneUebertragen(`<span style="color:var(--gruen)">✔ ${c.anzahl} Sterne sind angekommen! Du hast jetzt ⭐ ${sterne}.</span>`);
+}
+zeigeSterne();
+startseite();
+</script>
+</body>
+</html>
