@@ -78,7 +78,7 @@ h2{color:var(--rot);margin:10px 0 12px}
 .auswahl .feld{justify-content:flex-start}
 .ende{text-align:center;padding:30px 10px}
 .ende .gross{font-size:72px}
-.vorlesen{background:none;border:2px solid var(--blau);color:var(--blau);border-radius:999px;padding:4px 12px;font-size:16px;cursor:pointer;font-family:inherit}
+.vorlesen{background:none;border:2px solid var(--blau);color:var(--blau);border-radius:999px;padding:8px 14px;font-size:16px;cursor:pointer;font-family:inherit}
 @media (max-width:600px){
   body{font-size:18px} header h1{font-size:22px}
   .spalten{grid-template-columns:1fr}
@@ -111,6 +111,7 @@ h2{color:var(--rot);margin:10px 0 12px}
 .steuer{display:grid;grid-template-columns:repeat(3,70px);gap:8px;justify-content:center;margin-top:12px}
 .steuer button{height:60px;font-size:28px;border:none;border-radius:14px;background:var(--blau);color:#fff;cursor:pointer}
 .code{font-family:Consolas,monospace;font-size:40px;letter-spacing:4px;background:#fff;border:4px dashed var(--orange);border-radius:16px;padding:12px 20px;display:inline-block;margin:10px 0}
+.codeeingabe::placeholder{font-size:20px;letter-spacing:1px;text-transform:none}
 .codeeingabe{font-family:Consolas,monospace;font-size:30px;letter-spacing:3px;text-transform:uppercase;padding:10px 14px;border:3px solid var(--orange);border-radius:14px;width:260px;max-width:100%;text-align:center}
 </style>
 </head>
@@ -1060,7 +1061,7 @@ function zeigeRaetsel() {
       ${q.bild ? `<div style="text-align:center">${bildHtml(q.bild)}</div>` : ""}
       <div class="frage">${esc(q.f)} ${vorleseKnopf(q.f)}</div>
       <div id="kast">${rtKaestchen(q.w, q.p, "")}</div>
-      <div class="leiste" style="justify-content:center"><input class="codeeingabe" id="rtIn" autocomplete="off" maxlength="${[...q.w].length + 2}" placeholder="Wort eintippen"
+      <div class="leiste" style="justify-content:center"><input class="codeeingabe" id="rtIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="${[...q.w].length + 2}" placeholder="Wort eintippen"
         oninput="document.getElementById('kast').innerHTML=rtKaestchen(rt.fragen[rtIndex].w, rt.fragen[rtIndex].p, this.value)" onkeydown="if(event.key==='Enter')rtPruefen()">
         <button class="btn blau" onclick="rtPruefen()">Prüfen</button></div>
       <div class="feedback" id="fb"></div>
@@ -1722,7 +1723,7 @@ function sterneUebertragen(meldung) {
     <div class="box">
       <h2 style="margin-top:0">📥 Sterne einlösen</h2>
       <p>Code vom anderen Gerät eingeben:</p>
-      <div class="leiste"><input class="codeeingabe" id="codeIn" maxlength="9" placeholder="XXXX-XXXX" onkeydown="if(event.key==='Enter')codeEinloesen()"><button class="btn gruen" onclick="codeEinloesen()">Einlösen</button></div>
+      <div class="leiste"><input class="codeeingabe" id="codeIn" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="9" placeholder="XXXX-XXXX" onkeydown="if(event.key==='Enter')codeEinloesen()"><button class="btn gruen" onclick="codeEinloesen()">Einlösen</button></div>
       <div class="feedback" id="codeFb">${meldung || ""}</div>
     </div>`;
 }
