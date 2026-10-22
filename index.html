@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lukis Lernapps</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f28c28">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 body{margin:0;font-family:"Segoe UI",Verdana,Arial,sans-serif;background:#fff4e6;color:#2b2b2b;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;box-sizing:border-box}
 h1{color:#c8322f;font-size:34px;margin:0 0 24px;text-align:center}
@@ -11,6 +15,7 @@ h1{color:#c8322f;font-size:34px;margin:0 0 24px;text-align:center}
 a{display:block;background:#fff;border-radius:22px;padding:30px 16px;text-align:center;text-decoration:none;color:#c8322f;font-size:26px;font-weight:bold;box-shadow:0 5px 0 #d96d0c,0 8px 16px rgba(0,0,0,.1);touch-action:manipulation}
 a span{display:block;font-size:72px;margin-bottom:8px}
 a small{display:block;color:#777;font-size:17px;font-weight:normal;margin-top:6px}
+#installieren{display:none;margin-top:28px;border:none;border-radius:16px;padding:16px 26px;font-size:22px;font-weight:bold;font-family:inherit;color:#fff;background:#2e9e4f;box-shadow:0 4px 0 #1d6b34;touch-action:manipulation}
 a:active{transform:translateY(3px);box-shadow:0 2px 0 #d96d0c}
 </style>
 </head>
@@ -20,5 +25,14 @@ a:active{transform:translateY(3px);box-shadow:0 2px 0 #d96d0c}
   <a href="fahrradpruefung.html"><span>🚲</span>Fahrradprüfung<small>Schilder, Vorfahrt, Abbiegen und mehr</small></a>
   <a href="mathe.html"><span>➗</span>Mathe<small>Rechnen üben und Prüfungen</small></a>
 </div>
+<button id="installieren">📲 Auf den Startbildschirm</button>
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+let frage = null;
+const knopf = document.getElementById("installieren");
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); frage = e; knopf.style.display = "block"; });
+knopf.addEventListener("click", async () => { if (!frage) return; frage.prompt(); await frage.userChoice; frage = null; knopf.style.display = "none"; });
+addEventListener("appinstalled", () => { knopf.style.display = "none"; });
+</script>
 </body>
 </html>
