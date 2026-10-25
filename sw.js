@@ -1,6 +1,6 @@
 // Speichert die Lernapps, damit sie auch ohne Internet starten. Zuerst immer die neueste Version aus dem Netz.
-const CACHE = "lernapps-v3";
-const DATEIEN = ["./", "index.html", "fahrradpruefung.html", "mathe.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
+const CACHE = "lernapps-v4";
+const DATEIEN = ["./", "index.html", "fahrradpruefung.html", "mathe.html", "deutsch.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(DATEIEN))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== CACHE).map(n => caches.delete(n))))); self.clients.claim(); });
 self.addEventListener("fetch", e => {

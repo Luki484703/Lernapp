@@ -1,0 +1,2297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deutsch Lernapp</title>
+<style>
+:root{
+  --orange:#1597c9; --orange-d:#0d6f96; --rot:#c8322f; --blau:#1f5fbf; --gruen:#2e9e4f;
+  --gelb:#ffd84d; --bg:#eaf6fb; --akzent:#0b5f86; --karte:#ffffff; --text:#2b2b2b; --grau:#777;
+}
+*{box-sizing:border-box}
+button,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Segoe UI",Verdana,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:20px}
+header{background:linear-gradient(90deg,#16a3cf,#1f5fbf);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+header h1{margin:0;font-size:28px;flex:1;cursor:pointer}
+.sterne{background:rgba(255,255,255,.2);border-radius:999px;padding:6px 16px;font-weight:bold;font-size:22px}
+main{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+h2{color:var(--akzent);margin:10px 0 12px}
+.hinweis{color:var(--grau);font-size:17px;margin:0 0 14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.chip{border:3px solid var(--orange);background:#fff;border-radius:999px;padding:8px 14px;font-size:17px;cursor:pointer;font-family:inherit}
+.chip.an{background:var(--orange);color:#fff}
+.modi{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.modus{background:var(--karte);border:none;border-radius:20px;padding:22px 16px;text-align:center;cursor:pointer;box-shadow:0 4px 0 var(--orange-d),0 6px 14px rgba(0,0,0,.1);font-family:inherit;font-size:20px;transition:transform .1s}
+.modus:hover{transform:translateY(-3px)}
+.modus .ic{font-size:54px;display:block;margin-bottom:6px}
+.modus b{display:block;font-size:23px;color:var(--akzent)}
+.modus small{color:var(--grau);font-size:16px}
+.leiste{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.btn{border:none;border-radius:14px;padding:12px 20px;font-size:20px;font-family:inherit;cursor:pointer;background:var(--orange);color:#fff;box-shadow:0 3px 0 var(--orange-d);font-weight:bold}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--orange-d)}
+.btn.grau{background:#ddd;color:#333;box-shadow:0 3px 0 #aaa}
+.btn.gruen{background:var(--gruen);box-shadow:0 3px 0 #1d6b34}
+.btn.blau{background:var(--blau);box-shadow:0 3px 0 #123c7a}
+.btn.klein{padding:8px 14px;font-size:17px}
+.fortschritt{flex:1;min-width:140px;height:16px;background:#fff;border-radius:999px;overflow:hidden;border:2px solid var(--orange)}
+.fortschritt div{height:100%;background:var(--gruen);transition:width .3s}
+.box{background:var(--karte);border-radius:22px;padding:24px;box-shadow:0 6px 16px rgba(0,0,0,.1)}
+.kapitel{font-size:15px;color:#fff;background:var(--blau);display:inline-block;padding:3px 10px;border-radius:999px;margin-bottom:10px}
+/* Karteikarten */
+.flip{perspective:1200px;cursor:pointer;margin:0 auto;max-width:640px}
+.flip-in{position:relative;min-height:320px;transition:transform .5s;transform-style:preserve-3d}
+.flip.offen .flip-in{transform:rotateY(180deg)}
+.seite{position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;padding:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.vorne{background:#fff;border:5px solid var(--orange)}
+.hinten{background:#eaf7ee;border:5px solid var(--gruen);transform:rotateY(180deg)}
+.seite .txt{font-size:25px;line-height:1.35}
+.seite .tipp{position:absolute;bottom:10px;font-size:15px;color:var(--grau)}
+.schild{width:150px;height:150px;margin-bottom:10px}
+.mitte{display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+/* Quiz */
+.frage{font-size:25px;font-weight:bold;margin:6px 0 16px;line-height:1.3}
+.optionen{display:grid;gap:10px}
+.opt{text-align:left;border:3px solid #ddd;background:#fff;border-radius:16px;padding:14px 16px;font-size:21px;font-family:inherit;cursor:pointer}
+.opt:hover{border-color:var(--orange)}
+.opt.gewaehlt{border-color:var(--blau);background:#e8f0fc}
+.opt.richtig{border-color:var(--gruen);background:#dff3e5}
+.opt.falsch{border-color:var(--rot);background:#fbe1e0}
+.feedback{font-size:22px;margin-top:14px;font-weight:bold;min-height:30px}
+.feedback.ok{color:var(--gruen)} .feedback.nein{color:var(--rot)}
+/* Zuordnen */
+.spalten{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.feld{border:3px solid #ddd;background:#fff;border-radius:16px;padding:12px;font-size:19px;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;gap:10px;min-height:64px;font-family:inherit;width:100%;text-align:left}
+.feld svg{width:76px;height:76px;flex:none}
+.feld.aktiv{border-color:var(--blau);background:#e8f0fc}
+.feld.fertig{border-color:var(--gruen);background:#dff3e5;cursor:default;opacity:.75}
+.wackel{animation:wackel .35s}
+@keyframes wackel{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* Reihenfolge */
+.liste{list-style:none;padding:0;margin:0 0 16px}
+.liste li{background:#dff3e5;border:3px solid var(--gruen);border-radius:14px;padding:10px 14px;margin-bottom:8px;font-size:19px}
+.liste li b{color:var(--gruen);margin-right:6px}
+.auswahl .feld{justify-content:flex-start}
+.ende{text-align:center;padding:30px 10px}
+.ende .gross{font-size:72px}
+.vorlesen{background:none;border:2px solid var(--blau);color:var(--blau);border-radius:999px;padding:8px 14px;font-size:16px;cursor:pointer;font-family:inherit}
+@media (max-width:600px){
+  body{font-size:18px} header h1{font-size:22px}
+  .spalten{grid-template-columns:1fr}
+  .seite .txt{font-size:21px} .frage{font-size:21px}
+}
+/* Rätsel */
+.loesung{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.lbuchst{width:30px;height:36px;border:2px solid var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;background:#fff}
+.lbuchst.da{background:var(--gelb)}
+.kaestchen{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:6px 0 14px}
+.kaestchen span{width:34px;height:40px;border:2px solid #999;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;background:#fff}
+.szene{width:400px;max-width:100%;border:2px solid #ddd;border-radius:12px;margin-bottom:10px;background:#fff}
+.kaestchen span.ziel{background:#ffd9a8;border-color:var(--orange-d)}
+/* Spielecke */
+.preis{display:inline-block;background:var(--gelb);color:#5a4300;border-radius:999px;padding:2px 10px;font-size:16px;font-weight:bold;margin-top:6px}
+.modus:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.spielinfo{display:flex;gap:16px;justify-content:center;font-size:22px;font-weight:bold;margin-bottom:10px;flex-wrap:wrap}
+.himmel{position:relative;height:440px;border-radius:22px;overflow:hidden;background:linear-gradient(#8fd3ff,#e6f7ff);touch-action:manipulation;user-select:none}
+.ballon{position:absolute;font-size:58px;cursor:pointer;line-height:1;user-select:none}
+.memory{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:460px;margin:0 auto}
+.mkarte{aspect-ratio:1;border:none;border-radius:16px;font-size:44px;cursor:pointer;background:var(--orange);color:transparent;box-shadow:0 3px 0 var(--orange-d);font-family:inherit}
+.mkarte.offen{background:#fff;color:inherit;box-shadow:0 3px 0 #ccc}
+.mkarte.weg{background:#dff3e5;color:inherit;box-shadow:none;opacity:.6;cursor:default}
+.spielfeld{display:block;margin:0 auto;border-radius:14px;width:auto;height:auto;max-width:100%;max-height:calc(100vh - 230px);touch-action:none;user-select:none}
+.tetris{display:flex;gap:14px;justify-content:center;align-items:flex-start}
+.tetris .spielfeld{margin:0;min-width:0;max-width:calc(100% - 134px)}
+.tseite{flex:none;width:120px;font-size:16px;background:var(--karte);border-radius:16px;padding:10px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.tseite canvas{display:block;margin:6px auto 0;border-radius:10px}
+#snake{display:block;margin:0 auto;background:#1d3b2a;border-radius:14px;max-width:100%;touch-action:none}
+.steuer{display:grid;grid-template-columns:repeat(3,70px);gap:8px;justify-content:center;margin-top:12px}
+.steuer button{height:60px;font-size:28px;border:none;border-radius:14px;background:var(--blau);color:#fff;cursor:pointer}
+.code{font-family:Consolas,monospace;font-size:40px;letter-spacing:4px;background:#fff;border:4px dashed var(--orange);border-radius:16px;padding:12px 20px;display:inline-block;margin:10px 0}
+.codeeingabe::placeholder{font-size:20px;letter-spacing:1px;text-transform:none}
+.codeeingabe{font-family:Consolas,monospace;font-size:30px;letter-spacing:3px;text-transform:uppercase;padding:10px 14px;border:3px solid var(--orange);border-radius:14px;width:260px;max-width:100%;text-align:center}
+.feedback.tipp{color:#8a5a00}
+.chip.wichtig{border-color:#e0a100}
+.chip.wichtig.an{background:#e0a100}
+.badge{display:inline-block;background:var(--gelb);color:#5a4300;border-radius:999px;padding:1px 8px;font-size:13px;font-weight:bold;vertical-align:middle}
+.seite .txt{white-space:pre-line}
+/* Satzzeichen / Wortarten / Groß-klein */
+.satz{font-size:26px;line-height:2.3;margin:10px 0 6px;padding:12px 10px;background:#f7fbff;border-radius:16px;border:2px solid #dbe8f3}
+.swort{display:inline;margin:0 1px}
+.luecke{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:42px;padding:0 4px;margin:0 3px;vertical-align:middle;border:2px dashed #a9bdd2;border-radius:9px;background:#fff;font:bold 30px Georgia,"Times New Roman",serif;color:var(--blau);cursor:pointer}
+.luecke.voll{border-style:solid;border-color:var(--blau);background:#e8f0fc}
+.luecke.aktiv{border-color:#e0a100;background:#fff3c4;box-shadow:0 0 0 3px #ffe28a}
+.luecke.ok{border-color:var(--gruen);background:#dff3e5;color:var(--gruen)}
+.luecke.leer{opacity:.35}
+.luecke.falsch{border-color:var(--rot);border-style:solid;background:#fbe1e0;color:var(--rot)}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 4px}
+.palette button{width:66px;height:70px;border:none;border-radius:14px;background:var(--blau);color:#fff;cursor:pointer;box-shadow:0 3px 0 #123c7a;font:bold 34px Georgia,"Times New Roman",serif;line-height:1}
+.palette button small{display:block;font:12px "Segoe UI",Arial,sans-serif;margin-top:4px}
+.palette button.weg{background:#888;box-shadow:0 3px 0 #555}
+.palette button:active{transform:translateY(2px)}
+.stifte{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.stift{border:3px solid transparent;border-radius:999px;padding:8px 14px;font:inherit;font-size:18px;font-weight:bold;cursor:pointer}
+.stift.N{background:#cfe3ff;color:#174a9c} .stift.V{background:#ffdcb8;color:#8a4300} .stift.A{background:#cdeed5;color:#1d6b34} .stift.X{background:#eee;color:#444}
+.stift.an{border-color:#222;box-shadow:0 0 0 3px #ffe28a}
+.wa,.gk{font:inherit;font-size:26px;border:3px solid transparent;border-radius:10px;padding:0 6px;margin:2px 0;background:#fff;cursor:pointer;color:var(--text)}
+.wa.N{background:#cfe3ff;border-color:#3b82f6} .wa.V{background:#ffdcb8;border-color:#f28c28} .wa.A{background:#cdeed5;border-color:#2e9e4f}
+.gk.gross{background:#fff3c4;border-color:#e0a100;font-weight:bold}
+.wa.falsch,.gk.falsch{border-color:var(--rot)!important;border-style:dashed!important;box-shadow:0 0 0 2px #fbe1e0}
+.gk.ok{background:#dff3e5;border-color:var(--gruen)}
+.grosswort{font-size:44px;letter-spacing:4px;font-weight:bold;text-align:center;background:#e8f6fc;color:#0b5f86;border-radius:999px;padding:12px 18px;margin:8px auto 16px;max-width:520px;word-break:break-word}
+.beweis-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;font-size:22px}
+.beweis-zeile .vor{min-width:120px;color:var(--grau)}
+.eingabe{font:inherit;font-size:22px;padding:8px 12px;border:3px solid #c9d3e0;border-radius:12px;width:240px;max-width:100%}
+.eingabe.ok{border-color:var(--gruen);background:#dff3e5} .eingabe.falsch{border-color:var(--rot);background:#fbe1e0}
+.chip.falsch{border-color:var(--rot);background:#fbe1e0;color:var(--rot)}
+/* Schreiben */
+.werkzeug{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.werkzeug .btn.an{outline:4px solid var(--gelb);outline-offset:1px}
+.heftwrap{border-radius:12px;border:2px solid #d6dde8;overflow:hidden;background:#fffef8;box-shadow:inset 0 2px 6px rgba(0,0,0,.06)}
+#heft{display:block;width:100%;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none}
+.muster{background:#eaf7ee;border:3px solid var(--gruen);border-radius:16px;padding:14px 18px;font-size:24px;line-height:1.6;font-family:"Segoe Print","Comic Sans MS","Chalkboard SE",cursive;color:#1f3c9a}
+.check label{display:flex;gap:10px;align-items:center;font-size:20px;margin:8px 0;cursor:pointer}
+.check input{width:26px;height:26px;flex:none}
+@media (max-width:600px){ .satz{font-size:21px} .wa,.gk{font-size:21px} .grosswort{font-size:32px} .palette button{width:54px;height:62px;font-size:28px} }
+</style>
+</head>
+<body>
+<header>
+  <h1 onclick="startseite()">📚 Deutsch – Lernapp</h1>
+  <span class="sterne" id="sterne" style="cursor:pointer" title="Zur Spielecke" onclick="spielecke()">⭐ 0</span>
+</header>
+<main id="app"></main>
+
+<script>
+/* =====================================================================
+   LERNINHALTE DEUTSCH (4. Klasse)
+   Alles, was gelernt wird, steht hier. Neues Material einfach als
+   weiteres Kapitel ans Ende der Liste anhängen (gleicher Aufbau).
+
+   Aufbau eines Kapitels:
+   {
+     id: "kurzname", titel: "Name", icon: "💬", wichtig: true (= kommt in der Probe dran),
+     karten:  [ { f: "Vorderseite", a: "Rückseite" } ],
+     quiz:    [ { f: "Frage", o: ["Antwort A", "Antwort B"], r: [0] } ],   // r = richtige Antworten (0 = erste)
+     paare:   [ { a: "links", b: "rechts" } ],
+     reihen:  [ { titel: "Aufgabe", schritte: ["1.", "2.", ...] } ],
+     raetsel: [ { titel: "Rätsel", luecke: true, fragen: [ { f: "Frage", w: "Wort", p: -1 } ] } ],
+     zeichen: [ { s: "Satz mit allen Satzzeichen" } ],          // Satzzeichen setzen
+     gross:   [ { s: "Satz richtig geschrieben" } ],            // Groß oder klein?
+     wortarten: [ { s: "Der [kluge|A] [Hund|N] [bellt|V]." } ],  // N = Nomen, V = Verb, A = Adjektiv
+     beweise: [ { w: "Hund", typ: "N", art: "der", mz: "Hunde" },             // mz: null = keine Mehrzahl
+                { w: "zählt", typ: "V", gf: "zählen", du: "zählst", er: "zählt", ihr: "zählt" },
+                { w: "klug", typ: "A", k1: "klüger", k2: "klügsten" } ],    // k2 ohne „am“
+     schreiben: [ { f: "Aufgabe", muster: ["Lösung Zeile 1", ...], zeilen: 4, check: ["Darauf achten", ...] } ]
+   }
+   ===================================================================== */
+const CHECK_REDE = ["Begleitsatz mit Doppelpunkt :", "Anführungszeichen unten „ am Anfang der Rede", "Die Rede fängt groß an", "Satzzeichen (. ? !) steht vor dem Schlusszeichen", "Anführungszeichen oben “ am Ende"];
+const CHECK_SATZ = ["Satzanfang groß geschrieben", "Nomen groß geschrieben", "Richtiges Satzzeichen am Ende (. ? !)"];
+
+const INHALTE = [
+{
+  id: "rede", titel: "Wörtliche Rede", icon: "💬", wichtig: true,
+  karten: [
+    { f: "Was ist wörtliche Rede?", a: "Das, was jemand genau so sagt, wie er es sagt (Wort für Wort). Die wörtliche Rede steht in Anführungszeichen: „Essen ist fertig!“" },
+    { f: "Was ist der Begleitsatz?", a: "Der Begleitsatz sagt, WER spricht und WIE er spricht: Die Köchin ruft: …" },
+    { f: "Welches Zeichen steht nach dem Begleitsatz (wenn er vorne steht)?", a: "Ein Doppelpunkt : → Die Köchin ruft:" },
+    { f: "Wie sehen die Anführungszeichen aus?", a: "Am Anfang der Rede unten „ und am Ende oben “. Merke: unten 99 – oben 66." },
+    { f: "Wo steht das Satzzeichen (. ? !) der wörtlichen Rede?", a: "Innen, also VOR dem Anführungszeichen oben: „Essen ist fertig!“" },
+    { f: "Wie fängt die wörtliche Rede an?", a: "Immer mit einem großen Buchstaben: Lisa ruft: „Los, Arel!“" },
+    { f: "Wann steht in der wörtlichen Rede ein Punkt?", a: "Wenn jemand etwas aussagt oder erzählt: Der Dieb stammelt: „Ich war das nicht.“" },
+    { f: "Wann steht in der wörtlichen Rede ein Fragezeichen?", a: "Wenn jemand etwas fragt: Die Freundin möchte wissen: „Wann kannst du zu mir kommen?“" },
+    { f: "Wann steht in der wörtlichen Rede ein Ausrufezeichen?", a: "Bei einem Ausruf oder einer Aufforderung: Die Nachbarin schimpft: „Macht den Fernseher leiser!“" },
+    { f: "In welcher Reihenfolge schreibe ich wörtliche Rede?", a: "Begleitsatz → Doppelpunkt : → „ → Rede (groß anfangen) → Satzzeichen . ? ! → “" },
+    { f: "Welche Wörter kann ich statt „sagen“ benutzen?", a: "rufen, schreien, fragen, antworten, flüstern, schimpfen, betteln, jammern, seufzen, klagen, stammeln, mahnen, fordern, vorschlagen, sich erkundigen, wissen wollen …" },
+    { f: "Wo kann der Begleitsatz stehen?", a: "Vorne (dann kommt ein Doppelpunkt): Die Köchin ruft: „Essen ist fertig!“\nOder hinten (dann kommt ein Komma): „Essen ist fertig!“, ruft die Köchin." },
+    { f: "Was ist bei „Die Köchin ruft: Essen ist fertig!“ der Begleitsatz und was die wörtliche Rede?", a: "Begleitsatz: Die Köchin ruft:  –  Wörtliche Rede: Essen ist fertig!" }
+  ],
+  quiz: [
+    { f: "Welches Zeichen steht nach dem Begleitsatz „Die Köchin ruft“?", o: ["Ein Doppelpunkt :", "Ein Komma ,", "Ein Punkt ."], r: [0] },
+    { f: "Wie sieht das Anführungszeichen am Anfang der wörtlichen Rede aus?", o: ["„ (unten)", "“ (oben)", "! (Ausrufezeichen)"], r: [0] },
+    { f: "Wie sieht das Anführungszeichen am Ende der wörtlichen Rede aus?", o: ["„ (unten)", "“ (oben)", ": (Doppelpunkt)"], r: [1] },
+    { f: "Welcher Satz ist richtig geschrieben?", o: ["Die Köchin ruft: „Essen ist fertig!“", "Die Köchin ruft „Essen ist fertig!“", "Die Köchin ruft: „Essen ist fertig“!", "Die Köchin ruft: „essen ist fertig!“"], r: [0] },
+    { f: "Welcher Satz ist richtig geschrieben?", o: ["Der Dieb stammelt: „Ich war das nicht“.", "Der Dieb stammelt: „Ich war das nicht.“", "Der Dieb stammelt. „Ich war das nicht.“"], r: [1] },
+    { f: "Welcher Satz ist richtig geschrieben?", o: ["Emre fragt: „wann bekommen wir die neuen Arbeitshefte?“", "Emre fragt: „Wann bekommen wir die neuen Arbeitshefte.“", "Emre fragt: „Wann bekommen wir die neuen Arbeitshefte?“"], r: [2] },
+    { f: "Welches Satzzeichen fehlt? Die Freundin möchte wissen: „Wann kannst du zu mir kommen _“", o: ["?", "!", "."], r: [0] },
+    { f: "Welches Satzzeichen fehlt? Der Vater schlägt vor: „Wir können heute Pizza essen gehen _“", o: ["?", "."], r: [1] },
+    { f: "Welches Satzzeichen fehlt? Die Nachbarin schimpft: „Macht den Fernseher leiser _“", o: ["!", "?"], r: [0] },
+    { f: "Welches Satzzeichen fehlt? Das kleine Kind bettelt: „Darf ich ein Eis essen _“", o: ["!", "?", "."], r: [1] },
+    { f: "Was ist hier der Begleitsatz? Der Vater schlägt vor: „Wir können heute Pizza essen gehen.“", o: ["Der Vater schlägt vor", "Wir können heute Pizza essen gehen"], r: [0] },
+    { f: "Was ist hier die wörtliche Rede? Ivan jammert: „Oje!“", o: ["Ivan jammert", "Oje!"], r: [1] },
+    { f: "Wo steht das Ausrufezeichen?", o: ["Vor dem Anführungszeichen oben: …fertig!“", "Hinter dem Anführungszeichen oben: …fertig“!"], r: [0] },
+    { f: "Welches Wort passt? Der Dieb ___: „Ich … ich war das nicht.“", o: ["stammelt", "jubelt", "singt"], r: [0] },
+    { f: "Welches Wort passt? Das kleine Kind ___: „Bitte, bitte, darf ich ein Eis?“", o: ["bettelt", "befiehlt", "antwortet"], r: [0] },
+    { f: "Welches Wort passt? Herr Kraft ___: „Ich verteile sie morgen.“ (nach einer Frage)", o: ["antwortet", "fragt", "schreit"], r: [0] },
+    { f: "Welches Wort passt? Oma ___: „Psst, das Baby schläft.“", o: ["flüstert", "brüllt", "schimpft"], r: [0] },
+    { f: "Welche Wörter kann man statt „sagen“ benutzen? (3 Antworten)", o: ["rufen", "fragen", "schimpfen", "schwimmen"], r: [0, 1, 2] },
+    { f: "Womit fängt die wörtliche Rede an?", o: ["Mit einem großen Buchstaben", "Mit einem kleinen Buchstaben", "Mit einem Doppelpunkt"], r: [0] },
+    { f: "Was sagt der Begleitsatz? (2 Antworten)", o: ["Wer spricht", "Wie jemand spricht", "Was es zum Essen gibt"], r: [0, 1] }
+  ],
+  paare: [
+    { a: "fragt", b: "möchte etwas wissen" },
+    { a: "schreit", b: "spricht sehr laut" },
+    { a: "flüstert", b: "spricht ganz leise" },
+    { a: "bettelt", b: "möchte unbedingt etwas haben" },
+    { a: "schimpft", b: "ist wütend" },
+    { a: "stammelt", b: "spricht stockend, weil er Angst hat" },
+    { a: "jammert", b: "beklagt sich" },
+    { a: "antwortet", b: "sagt etwas auf eine Frage" },
+    { a: "schlägt vor", b: "hat eine Idee" },
+    { a: "mahnt", b: "erinnert streng an eine Regel" },
+    { a: ":", b: "Doppelpunkt (nach dem Begleitsatz)" },
+    { a: "„", b: "Anführungszeichen unten (Anfang)" },
+    { a: "“", b: "Anführungszeichen oben (Ende)" },
+    { a: "?", b: "Fragezeichen" },
+    { a: "!", b: "Ausrufezeichen" }
+  ],
+  reihen: [
+    { titel: "So schreibe ich wörtliche Rede. Was kommt zuerst?", schritte: ["Begleitsatz: Wer spricht?", "Doppelpunkt :", "Anführungszeichen unten „", "Die Rede (groß anfangen!)", "Satzzeichen . ? oder !", "Anführungszeichen oben “"] },
+    { titel: "Baue den Satz richtig zusammen.", schritte: ["Die Köchin ruft", ":", "„", "Essen ist fertig", "!", "“"] },
+    { titel: "Baue den Satz richtig zusammen.", schritte: ["Die Freundin möchte wissen", ":", "„", "Wann kannst du zu mir kommen", "?", "“"] },
+    { titel: "Baue den Satz richtig zusammen.", schritte: ["Der Dieb stammelt", ":", "„", "Ich war das nicht", ".", "“"] },
+    { titel: "Baue den Satz richtig zusammen.", schritte: ["Der Polizist fordert", ":", "„", "Steigen Sie bitte aus", "!", "“"] }
+  ],
+  raetsel: [
+    { titel: "Lösungswort", fragen: [
+      { f: "Ein anderes Wort für „laut sagen“: Die Köchin ___: „Essen ist fertig!“", w: "ruft", p: 0 },
+      { f: "Das Satzzeichen steht am ___ der wörtlichen Rede, vor dem “.", w: "Ende", p: 0 },
+      { f: "Nach dem Begleitsatz steht ein ___ (Zeichen :).", w: "Doppelpunkt", p: 0 },
+      { f: "Am Anfang stehen die Anführungszeichen unten, am Ende ___.", w: "oben", p: 3 }
+    ] },
+    { titel: "Lückentext Wörtliche Rede", luecke: true, fragen: [
+      { f: "Was jemand genau sagt, steht in ___.", w: "Anführungszeichen", p: -1 },
+      { f: "Der ___ sagt, wer spricht.", w: "Begleitsatz", p: -1 },
+      { f: "Nach dem Begleitsatz steht ein ___.", w: "Doppelpunkt", p: -1 },
+      { f: "Die wörtliche Rede fängt mit einem ___ Buchstaben an.", w: "großen", p: -1 },
+      { f: "Bei einer Frage steht in der wörtlichen Rede ein ___.", w: "Fragezeichen", p: -1 },
+      { f: "Bei einem Ausruf steht ein ___.", w: "Ausrufezeichen", p: -1 }
+    ] }
+  ],
+  zeichen: [
+    { s: "Die Köchin ruft: „Essen ist fertig!“" },
+    { s: "Der Bub schreit: „Das war total unfair!“" },
+    { s: "Die Freundin möchte wissen: „Wann kannst du zu mir kommen?“" },
+    { s: "Der Vater schlägt vor: „Wir können heute Pizza essen gehen.“" },
+    { s: "Das kleine Kind bettelt: „Darf ich ein Eis essen?“" },
+    { s: "Die Nachbarin schimpft: „Macht den Fernseher leiser!“" },
+    { s: "Der Polizist fordert: „Steigen Sie bitte aus!“" },
+    { s: "Die Direktorin mahnt: „Auf dem Gang darf nicht gelaufen werden.“" },
+    { s: "Der Dieb stammelt: „Ich war das nicht.“" },
+    { s: "Die Mutter klagt: „Jetzt hat er schon wieder nicht aufgegessen!“" },
+    { s: "Die Schülerin erkundigt sich: „Habe ich es richtig gerechnet?“" },
+    { s: "Ida schreit: „Das ist viel zu viel!“" },
+    { s: "Ivan jammert: „Oje!“" },
+    { s: "Der Lehrer sagt: „Haltet euch jetzt an unsere Klassenregeln.“" },
+    { s: "Emre fragt: „Wann bekommen wir die neuen Arbeitshefte?“" },
+    { s: "Herr Kraft antwortet: „Ich verteile sie morgen.“" },
+    { s: "Oma flüstert: „Das Baby schläft schon.“" },
+    { s: "Tom fragt: „Spielst du mit mir Fußball?“" },
+    { s: "Lena jubelt: „Wir haben gewonnen!“" },
+    { s: "Der Trainer ruft: „Lauft schneller!“" },
+    { s: "Mia erzählt: „Gestern war ich im Zoo.“" },
+    { s: "Papa fragt: „Wer hat die Schokolade gegessen?“" },
+    { s: "Lisa ruft: „Los, Arel! Willst du nicht mitkommen?“" },
+    { s: "Arel ruft: „Warte auf mich! Ich suche meinen Geldbeutel.“" },
+    { s: "Lisa seufzt: „Oje! Ich glaube, er liegt noch auf dem Schreibtisch.“" }
+  ],
+  schreiben: [
+    { f: "Schreibe den Satz ab und setze alle Zeichen der wörtlichen Rede: Tim ruft Komm schnell her", muster: ["Tim ruft: „Komm schnell her!“"], zeilen: 3, check: CHECK_REDE },
+    { f: "Schreibe ab und setze alle Zeichen: Anna fragt Wo ist mein Buch", muster: ["Anna fragt: „Wo ist mein Buch?“"], zeilen: 3, check: CHECK_REDE },
+    { f: "Schreibe ab und setze alle Zeichen: Der Opa erzählt Früher hatten wir kein Handy", muster: ["Der Opa erzählt: „Früher hatten wir kein Handy.“"], zeilen: 3, check: CHECK_REDE },
+    { f: "Die Mutter ruft, dass das Essen fertig ist. Schreibe das als wörtliche Rede.", muster: ["Die Mutter ruft: „Das Essen ist fertig!“"], zeilen: 3, check: CHECK_REDE },
+    { f: "Dein Freund möchte wissen, ob du mit ihm spielst. Schreibe das als wörtliche Rede.", muster: ["Mein Freund fragt: „Spielst du mit mir?“"], zeilen: 3, check: CHECK_REDE },
+    { f: "Die Lehrerin möchte, dass alle Kinder leise sind. Schreibe auf, was sie sagt.", muster: ["Die Lehrerin sagt: „Seid bitte leise!“"], zeilen: 3, check: CHECK_REDE },
+    { f: "Erfinde selbst zwei Sätze mit wörtlicher Rede. Benutze nicht „sagt“, sondern andere Wörter (ruft, flüstert, fragt …).", muster: ["Zum Beispiel:", "Der Hund-Besitzer ruft: „Bello, komm her!“", "Meine Schwester flüstert: „Ich habe ein Geheimnis.“"], zeilen: 5, check: CHECK_REDE.concat(["Ein anderes Wort statt „sagt“ benutzt"]) },
+    { f: "Schreibe ein kleines Gespräch zwischen dir und deiner Mama (3 Sätze mit wörtlicher Rede).", muster: ["Zum Beispiel:", "Ich frage: „Mama, darf ich nach draußen?“", "Mama antwortet: „Ja, aber zieh eine Jacke an!“", "Ich rufe: „Danke, Mama!“"], zeilen: 6, check: CHECK_REDE }
+  ]
+},
+{
+  id: "redehinten", titel: "Wörtliche Rede: Begleitsatz hinten", icon: "🗨️", wichtig: true,
+  karten: [
+    { f: "Wo kann der Begleitsatz stehen?", a: "Vorne: Die Köchin ruft: „Essen ist fertig!“\nOder hinten: „Essen ist fertig!“, ruft die Köchin." },
+    { f: "Begleitsatz hinten: Welches Zeichen steht nach dem “?", a: "Ein Komma , → „Essen ist fertig!“, ruft die Köchin." },
+    { f: "Begleitsatz hinten bei einer Aussage: Was passiert mit dem Punkt?", a: "Der Punkt in der Rede fällt weg! Dafür kommt nach dem “ ein Komma:\n„Ich war das nicht“, stammelt der Dieb." },
+    { f: "Begleitsatz hinten bei einer Frage oder einem Ausruf: Was bleibt?", a: "Das ? oder ! bleibt in der Rede stehen. Danach kommt “ und ein Komma:\n„Wann kommst du?“, fragt die Freundin." },
+    { f: "Begleitsatz hinten: Was steht ganz am Ende?", a: "Ein Punkt nach dem Begleitsatz: „Oje!“, jammert Ivan." },
+    { f: "Begleitsatz hinten: Groß oder klein?", a: "Der Begleitsatz hinten fängt klein an (außer bei Namen und Nomen): „Komm her!“, ruft Mama. / „Komm her!“, ruft die Mama." },
+    { f: "Reihenfolge beim Begleitsatz hinten?", a: "„ → Rede (groß) → (? oder !) → “ → Komma , → Begleitsatz → Punkt ." }
+  ],
+  quiz: [
+    { f: "Welcher Satz ist richtig geschrieben?", o: ["„Essen ist fertig!“, ruft die Köchin.", "„Essen ist fertig!“ ruft die Köchin.", "„Essen ist fertig“! ruft die Köchin.", "Essen ist fertig!, ruft die Köchin."], r: [0] },
+    { f: "Welcher Satz ist richtig geschrieben?", o: ["„Ich war das nicht.“, stammelt der Dieb.", "„Ich war das nicht“, stammelt der Dieb.", "„Ich war das nicht“. stammelt der Dieb."], r: [1] },
+    { f: "Welcher Satz ist richtig geschrieben?", o: ["„Wann kannst du kommen“, fragt die Freundin.", "„Wann kannst du kommen?“, fragt die Freundin.", "„Wann kannst du kommen?“ Fragt die Freundin."], r: [1] },
+    { f: "Begleitsatz hinten: Welches Zeichen steht direkt nach dem “?", o: ["Ein Komma ,", "Ein Doppelpunkt :", "Gar nichts"], r: [0] },
+    { f: "Begleitsatz hinten bei einer Aussage: Bleibt der Punkt in der Rede?", o: ["Ja", "Nein, der Punkt fällt weg"], r: [1] },
+    { f: "Begleitsatz hinten bei einer Frage: Bleibt das Fragezeichen?", o: ["Ja, das ? bleibt", "Nein, es fällt weg"], r: [0] },
+    { f: "Was steht ganz am Ende, wenn der Begleitsatz hinten steht?", o: ["Ein Punkt", "Ein Doppelpunkt", "Ein Anführungszeichen"], r: [0] },
+    { f: "Wo steht hier der Begleitsatz? „Macht den Fernseher leiser!“, schimpft die Nachbarin.", o: ["Vorne", "Hinten"], r: [1] },
+    { f: "Wo steht hier der Begleitsatz? Der Vater schlägt vor: „Wir gehen Pizza essen.“", o: ["Vorne", "Hinten"], r: [0] },
+    { f: "Stelle um: Der Dieb stammelt: „Ich war das nicht.“", o: ["„Ich war das nicht“, stammelt der Dieb.", "„Ich war das nicht.“ stammelt der Dieb.", "„Ich war das nicht“: stammelt der Dieb."], r: [0] },
+    { f: "Stelle um: Das Kind bettelt: „Darf ich ein Eis essen?“", o: ["„Darf ich ein Eis essen“, bettelt das Kind.", "„Darf ich ein Eis essen?“, bettelt das Kind.", "„Darf ich ein Eis essen?“ bettelt das Kind:"], r: [1] }
+  ],
+  paare: [
+    { a: "Begleitsatz vorne", b: "Doppelpunkt : vor der Rede" },
+    { a: "Begleitsatz hinten", b: "Komma , nach dem “" },
+    { a: "Aussage, Begleitsatz hinten", b: "Der Punkt in der Rede fällt weg" },
+    { a: "Frage, Begleitsatz hinten", b: "Das ? bleibt in der Rede" },
+    { a: "Ende vom Begleitsatz hinten", b: "Punkt ." }
+  ],
+  reihen: [
+    { titel: "Baue den Satz richtig zusammen (Begleitsatz hinten).", schritte: ["„", "Essen ist fertig", "!", "“", ",", "ruft die Köchin", "."] },
+    { titel: "Baue den Satz richtig zusammen (Begleitsatz hinten).", schritte: ["„", "Ich war das nicht", "“", ",", "stammelt der Dieb", "."] },
+    { titel: "Baue den Satz richtig zusammen (Begleitsatz hinten).", schritte: ["„", "Wann kannst du zu mir kommen", "?", "“", ",", "möchte die Freundin wissen", "."] },
+    { titel: "So schreibe ich wörtliche Rede mit Begleitsatz hinten. Was kommt zuerst?", schritte: ["Anführungszeichen unten „", "Die Rede (groß anfangen!)", "Bei Frage oder Ausruf: ? oder !", "Anführungszeichen oben “", "Komma ,", "Begleitsatz", "Punkt ."] }
+  ],
+  zeichen: [
+    { s: "„Essen ist fertig!“, ruft die Köchin." },
+    { s: "„Das war total unfair!“, schreit der Bub." },
+    { s: "„Wann kannst du zu mir kommen?“, möchte die Freundin wissen." },
+    { s: "„Wir können heute Pizza essen gehen“, schlägt der Vater vor." },
+    { s: "„Darf ich ein Eis essen?“, bettelt das kleine Kind." },
+    { s: "„Macht den Fernseher leiser!“, schimpft die Nachbarin." },
+    { s: "„Ich war das nicht“, stammelt der Dieb." },
+    { s: "„Habe ich es richtig gerechnet?“, erkundigt sich die Schülerin." },
+    { s: "„Oje!“, jammert Ivan." },
+    { s: "„Ich verteile sie morgen“, antwortet Herr Kraft." },
+    { s: "„Das Baby schläft schon“, flüstert Oma." },
+    { s: "„Spielst du mit mir Fußball?“, fragt Tom." },
+    { s: "„Wir haben gewonnen!“, jubelt Lena." },
+    { s: "„Gestern war ich im Zoo“, erzählt Mia." }
+  ],
+  schreiben: [
+    { f: "Stelle den Begleitsatz nach hinten: Die Köchin ruft: „Essen ist fertig!“", muster: ["„Essen ist fertig!“, ruft die Köchin."], zeilen: 3, check: ["„ am Anfang und “ nach der Rede", "! bleibt in der Rede", "Komma nach dem “", "Punkt am Ende"] },
+    { f: "Stelle den Begleitsatz nach hinten: Der Dieb stammelt: „Ich war das nicht.“", muster: ["„Ich war das nicht“, stammelt der Dieb."], zeilen: 3, check: ["„ am Anfang und “ nach der Rede", "Der Punkt in der Rede ist weggefallen", "Komma nach dem “", "Punkt am Ende"] },
+    { f: "Stelle den Begleitsatz nach hinten: Emre fragt: „Wann bekommen wir die neuen Arbeitshefte?“", muster: ["„Wann bekommen wir die neuen Arbeitshefte?“,", "fragt Emre."], zeilen: 3, check: ["„ am Anfang und “ nach der Rede", "? bleibt in der Rede", "Komma nach dem “", "Punkt am Ende"] },
+    { f: "Schreibe einen Satz zweimal: einmal mit Begleitsatz vorne und einmal mit Begleitsatz hinten. (Zum Beispiel: Papa ruft, dass wir losfahren.)", muster: ["Papa ruft: „Wir fahren los!“", "„Wir fahren los!“, ruft Papa."], zeilen: 4, check: ["Vorne: Doppelpunkt nach dem Begleitsatz", "Hinten: Komma nach dem “", "Hinten: Punkt am Ende", "„ unten und “ oben"] }
+  ]
+},
+{
+  id: "satzarten", titel: "Satzarten & Satzzeichen", icon: "❗", wichtig: true,
+  karten: [
+    { f: "Welches Satzzeichen steht am Ende eines Aussagesatzes?", a: "Ein Punkt . → Mila meldet sich." },
+    { f: "Welches Satzzeichen steht am Ende eines Fragesatzes?", a: "Ein Fragezeichen ? → Was möchtest du sagen?" },
+    { f: "Welches Satzzeichen steht nach einem Ausruf oder einem Aufforderungssatz?", a: "Ein Ausrufezeichen ! → Ruhe! Hört endlich auf zu reden!" },
+    { f: "Wie schreibe ich den Satzanfang?", a: "Satzanfänge schreibe ich immer groß. (Nomen auch!)" },
+    { f: "Wie mache ich aus einem Aussagesatz einen Fragesatz?", a: "Das Verb kommt nach vorne und am Ende steht ein Fragezeichen: Lisa fährt mit dem Bus. → Fährt Lisa mit dem Bus?" },
+    { f: "Wie mache ich aus einem Aufforderungssatz eine höfliche Frage?", a: "Mit „Kannst du bitte …?“ oder „Würdest du bitte …?“: Warte! → Kannst du bitte auf mich warten?" },
+    { f: "Mit welchen Fragewörtern kann ein Fragesatz anfangen?", a: "Wer? Was? Wann? Wo? Wie? Warum? Wohin? (W-Fragen) – oder mit dem Verb: Kommst du mit?" },
+    { f: "Mit welchen Farben markieren wir die Satzarten?", a: "Aussagesatz grün, Fragesatz blau, Ausrufe- oder Aufforderungssatz rot." }
+  ],
+  quiz: [
+    { f: "Welche Satzart ist das? „Komm her!“", o: ["Aussagesatz", "Fragesatz", "Aufforderungssatz"], r: [2] },
+    { f: "Welche Satzart ist das? „Die Busfahrt kostet 1,20 €.“", o: ["Aussagesatz", "Fragesatz", "Ausruf"], r: [0] },
+    { f: "Welche Satzart ist das? „Oh, nein!“", o: ["Aussagesatz", "Fragesatz", "Ausruf"], r: [2] },
+    { f: "Welche Satzart ist das? „Kommst du mit ins Freibad?“", o: ["Aussagesatz", "Fragesatz", "Aufforderungssatz"], r: [1] },
+    { f: "Welche Satzart ist das? „Ich möchte bitte eine Kugel Vanilleeis.“", o: ["Aussagesatz", "Fragesatz", "Aufforderungssatz"], r: [0] },
+    { f: "Welches Satzzeichen gehört ans Ende? „Arel trödelt _“", o: [".", "?", "!"], r: [0] },
+    { f: "Welches Satzzeichen gehört ans Ende? „Willst du nicht mitkommen _“", o: [".", "?", "!"], r: [1] },
+    { f: "Welches Satzzeichen gehört ans Ende? „Warte auf mich _“", o: [".", "?", "!"], r: [2] },
+    { f: "Welches Satzzeichen gehört ans Ende? „Braucht Elia noch ein Arbeitsblatt _“", o: [".", "?", "!"], r: [1] },
+    { f: "Welches Satzzeichen gehört ans Ende? „In fünf Minuten fährt der Bus in die Stadt _“", o: [".", "?", "!"], r: [0] },
+    { f: "Welcher Fragesatz passt zu „Lisa und Arel fahren mit dem Bus.“?", o: ["Fahren Lisa und Arel mit dem Bus?", "Lisa und Arel fahren mit dem Bus?", "Fahren Lisa und Arel mit dem Bus!"], r: [0] },
+    { f: "Welcher Fragesatz passt zu „Sie gehen in den Schreibwarenladen.“?", o: ["Gehen sie in den Schreibwarenladen?", "Sie gehen in den Schreibwarenladen?", "Gehen sie in den Schreibwarenladen."], r: [0] },
+    { f: "Welche höfliche Frage passt zu „Gib mir sofort den Ball!“?", o: ["Kannst du mir bitte den Ball geben?", "Gib mir den Ball!", "Du gibst mir den Ball."], r: [0] },
+    { f: "Welche höfliche Frage passt zu „Warte!“?", o: ["Warte jetzt!", "Kannst du bitte auf mich warten?", "Ich warte."], r: [1] },
+    { f: "Welcher Satz ist ein Aufforderungssatz?", o: ["Klettere vorsichtig auf den Baum!", "Ich klettere vorsichtig auf den Baum.", "Kletterst du vorsichtig auf den Baum?"], r: [0] },
+    { f: "Welcher Satz ist ein Fragesatz?", o: ["Klettere vorsichtig auf den Baum!", "Ich klettere vorsichtig auf den Baum.", "Kletterst du vorsichtig auf den Baum?"], r: [2] },
+    { f: "Was schreibt man groß? (2 Antworten)", o: ["Satzanfänge", "Nomen", "Verben", "Adjektive"], r: [0, 1] },
+    { f: "Mit welcher Farbe markieren wir einen Fragesatz?", o: ["grün", "blau", "rot"], r: [1] }
+  ],
+  paare: [
+    { a: ".", b: "Aussagesatz" },
+    { a: "?", b: "Fragesatz" },
+    { a: "!", b: "Ausruf oder Aufforderung" },
+    { a: "Lisa fährt Bus.", b: "Fährt Lisa Bus?" },
+    { a: "Du kommst mit.", b: "Kommst du mit?" },
+    { a: "Elia braucht ein Blatt.", b: "Braucht Elia ein Blatt?" },
+    { a: "Warte!", b: "Kannst du bitte warten?" },
+    { a: "Gib mir den Ball!", b: "Gibst du mir bitte den Ball?" }
+  ],
+  reihen: [
+    { titel: "Mache einen Fragesatz: „Ida schreibt einen Brief.“ Tippe die Wörter der Reihe nach.", schritte: ["Schreibt", "Ida", "einen", "Brief", "?"] },
+    { titel: "Mache einen Fragesatz: „Emre gießt die Blumen.“", schritte: ["Gießt", "Emre", "die", "Blumen", "?"] },
+    { titel: "Mache eine höfliche Frage aus: „Hilf mir!“", schritte: ["Kannst", "du", "mir", "bitte", "helfen", "?"] }
+  ],
+  zeichen: [
+    { s: "Heute wollen Lisa und Arel die Materialien für das neue Schuljahr besorgen." },
+    { s: "Arel trödelt." },
+    { s: "Komm her!" },
+    { s: "Oh, nein!" },
+    { s: "Kommst du mit ins Freibad?" },
+    { s: "Ich möchte bitte eine Kugel Vanilleeis." },
+    { s: "Braucht Elia noch ein Arbeitsblatt?" },
+    { s: "Gießt Emre die Blumen im Klassenzimmer?" },
+    { s: "Ist heute Regenpause im Klassenzimmer?" },
+    { s: "Findet der Schwimmunterricht im Freibad statt?" },
+    { s: "Herr Kraft schreibt die Hausaufgaben an die Tafel." },
+    { s: "Ruhe! Hört endlich auf zu reden!" },
+    { s: "Mila meldet sich. Was möchtest du sagen?" },
+    { s: "Klettere vorsichtig auf den Baum!" }
+  ],
+  gross: [
+    { s: "Komm her!" },
+    { s: "Die Busfahrt kostet viel Geld." },
+    { s: "Kommst du mit ins Freibad?" },
+    { s: "Ich möchte bitte eine Kugel Vanilleeis." }
+  ],
+  schreiben: [
+    { f: "Bilde aus dem Aussagesatz einen Fragesatz: Lisa und Arel fahren mit dem Bus.", muster: ["Fahren Lisa und Arel mit dem Bus?"], zeilen: 3, check: CHECK_SATZ.concat(["Das Verb steht vorne"]) },
+    { f: "Bilde aus dem Aussagesatz einen Fragesatz: Sie gehen in den Schreibwarenladen.", muster: ["Gehen sie in den Schreibwarenladen?"], zeilen: 3, check: CHECK_SATZ.concat(["Das Verb steht vorne"]) },
+    { f: "Bilde aus dem Aufforderungssatz eine höfliche Frage: Warte!", muster: ["Kannst du bitte auf mich warten?"], zeilen: 2, check: CHECK_SATZ.concat(["Das Wort „bitte“ benutzt"]) },
+    { f: "Bilde aus dem Aufforderungssatz eine höfliche Frage: Gib mir sofort den Ball!", muster: ["Kannst du mir bitte den Ball geben?"], zeilen: 2, check: CHECK_SATZ.concat(["Das Wort „bitte“ benutzt"]) },
+    { f: "Bilde mit den Wörtern klettern, Baum, vorsichtig einen Aussagesatz, einen Fragesatz und einen Aufforderungssatz.", muster: ["Ich klettere vorsichtig auf den Baum.", "Kletterst du vorsichtig auf den Baum?", "Klettere vorsichtig auf den Baum!"], zeilen: 5, check: CHECK_SATZ },
+    { f: "Bilde mit den Wörtern schwimmen, See, schnell einen Aussagesatz, einen Fragesatz und einen Aufforderungssatz.", muster: ["Ich schwimme schnell durch den See.", "Schwimmst du schnell durch den See?", "Schwimm schnell durch den See!"], zeilen: 5, check: CHECK_SATZ }
+  ]
+},
+{
+  id: "nomen", titel: "Nomen", icon: "🏷️", wichtig: true,
+  karten: [
+    { f: "Was sind Nomen?", a: "Namen für Menschen, Tiere, Pflanzen und Dinge – und auch für Gefühle und Gedanken: das Kind, der Tiger, die Kurve, die Freude." },
+    { f: "Wie beweise ich, dass ein Wort ein Nomen ist?", a: "1. Ich kann einen Artikel davor setzen: der, die, das (oder ein, eine).\n2. Ich kann meistens die Mehrzahl bilden: der Zettel – die Zettel." },
+    { f: "Wie schreibe ich Nomen?", a: "Nomen schreibe ich immer groß: der Schmerz, die Idee." },
+    { f: "Was sind Nomen für Gefühle und Gedanken?", a: "Wörter für Dinge, die man nicht anfassen kann (abstrakte Nomen): der Traum, die Hoffnung, die Idee, das Vertrauen, die Freude, der Schmerz, die Geduld, die Hilfe, die Liebe, die Sicherheit, die Sorge, der Glaube." },
+    { f: "Sind Gefühle wie „die Freude“ auch Nomen?", a: "Ja! Man kann den Artikel davor setzen (die Freude). Darum schreibt man sie groß." },
+    { f: "Kann man von jedem Nomen die Mehrzahl bilden?", a: "Nein. Von manchen Nomen gibt es keine Mehrzahl, zum Beispiel: die Geduld, das Vertrauen, die Liebe." },
+    { f: "Welche Artikel gibt es?", a: "Bestimmte Artikel: der, die, das. Unbestimmte Artikel: ein, eine." },
+    { f: "Ist „liebe“ in „Ich liebe Eis.“ ein Nomen?", a: "Nein! Hier ist „liebe“ ein Verb (ich liebe, du liebst). Das Nomen heißt „die Liebe“." }
+  ],
+  quiz: [
+    { f: "Welcher Artikel passt? ___ Schmerz", o: ["der", "die", "das"], r: [0] },
+    { f: "Welcher Artikel passt? ___ Idee", o: ["der", "die", "das"], r: [1] },
+    { f: "Welcher Artikel passt? ___ Vertrauen", o: ["der", "die", "das"], r: [2] },
+    { f: "Welcher Artikel passt? ___ Glaube", o: ["der", "die", "das"], r: [0] },
+    { f: "Welcher Artikel passt? ___ Wunder", o: ["der", "die", "das"], r: [2] },
+    { f: "Welcher Artikel passt? ___ Dreieck", o: ["der", "die", "das"], r: [2] },
+    { f: "Welcher Artikel passt? ___ Geduld", o: ["der", "die", "das"], r: [1] },
+    { f: "Welcher Artikel passt? ___ Traum", o: ["der", "die", "das"], r: [0] },
+    { f: "Welcher Artikel passt? ___ Schaufel", o: ["der", "die", "das"], r: [1] },
+    { f: "Welcher Artikel passt? ___ Zettel", o: ["der", "die", "das"], r: [0] },
+    { f: "Welches Wort ist ein Nomen?", o: ["Kurve", "schlimm", "kauft"], r: [0] },
+    { f: "Welches Wort ist ein Nomen?", o: ["schlau", "Zettel", "notiere"], r: [1] },
+    { f: "Welche Wörter sind Nomen für Gefühle und Gedanken? (3 Antworten)", o: ["die Freude", "die Hoffnung", "der Traum", "der Tiger"], r: [0, 1, 2] },
+    { f: "Welches Nomen ist KEIN Nomen für Gefühle und Gedanken?", o: ["die Sorge", "die Schaufel", "der Glaube"], r: [1] },
+    { f: "Wie heißt die Mehrzahl von „der Traum“?", o: ["die Traums", "die Träume", "die Traumen"], r: [1] },
+    { f: "Wie heißt die Mehrzahl von „die Idee“?", o: ["die Ideen", "die Ideer", "die Idees"], r: [0] },
+    { f: "Wie heißt die Mehrzahl von „das Dreieck“?", o: ["die Dreiecken", "die Dreiecke", "die Dreiecks"], r: [1] },
+    { f: "Von welchem Nomen gibt es keine Mehrzahl?", o: ["die Geduld", "die Sorge", "der Traum"], r: [0] },
+    { f: "Wie beweise ich, dass „Hoffnung“ ein Nomen ist? (2 Antworten)", o: ["Ich setze den Artikel davor: die Hoffnung", "Ich bilde die Mehrzahl: die Hoffnungen", "Ich steigere es: hoffnunger"], r: [0, 1] },
+    { f: "„Ich liebe Eis.“ – Was ist „liebe“ hier?", o: ["Ein Nomen", "Ein Verb", "Ein Adjektiv"], r: [1] },
+    { f: "Wie schreibt man Nomen?", o: ["groß", "klein"], r: [0] }
+  ],
+  paare: [
+    { a: "der Traum", b: "die Träume" },
+    { a: "die Idee", b: "die Ideen" },
+    { a: "der Schmerz", b: "die Schmerzen" },
+    { a: "die Kurve", b: "die Kurven" },
+    { a: "die Schaufel", b: "die Schaufeln" },
+    { a: "die Geschichte", b: "die Geschichten" },
+    { a: "die Sorge", b: "die Sorgen" },
+    { a: "das Beispiel", b: "die Beispiele" },
+    { a: "das Fahrrad", b: "die Fahrräder" },
+    { a: "der Apfel", b: "die Äpfel" }
+  ],
+  raetsel: [
+    { titel: "Silben-Nomen (Setze die Silben zusammen)", luecke: true, fragen: [
+      { f: "Schau + fel = die ___", w: "Schaufel", p: -1 },
+      { f: "Ver + trau + en = das ___", w: "Vertrauen", p: -1 },
+      { f: "Ge + schich + te = die ___", w: "Geschichte", p: -1 },
+      { f: "Ti + ger = der ___", w: "Tiger", p: -1 },
+      { f: "Sor + ge = die ___", w: "Sorge", p: -1 },
+      { f: "Glau + be = der ___", w: "Glaube", p: -1 }
+    ] },
+    { titel: "Lösungswort Gefühle", fragen: [
+      { f: "Wenn ich mich sehr freue, spüre ich ___.", w: "Freude", p: 0 },
+      { f: "Ich warte ruhig und lange. Ich habe viel ___.", w: "Geduld", p: 3 },
+      { f: "Nachts im Schlaf habe ich einen ___.", w: "Traum", p: 0 },
+      { f: "Mir ist etwas eingefallen. Ich habe eine ___.", w: "Idee", p: 3 },
+      { f: "Wenn es weh tut, habe ich ___.", w: "Schmerzen", p: 4 }
+    ] }
+  ],
+  gross: [
+    { s: "Meine Familie und ich waren in den Ferien in Italien." },
+    { s: "Täglich spielten wir am Strand und haben Eis gegessen." },
+    { s: "Jetzt freue ich mich auf das vierte Schuljahr." },
+    { s: "Bald werde ich die Schule wechseln. Das wird spannend." },
+    { s: "Die Freude über das Geschenk war groß." },
+    { s: "Lisa hat eine tolle Idee." },
+    { s: "Mit Geduld schafft man fast alles." },
+    { s: "Der Tiger hat großen Hunger." },
+    { s: "Ich habe Angst vor dem Gewitter." },
+    { s: "Im Traum fliege ich über das Meer." },
+    { s: "Carlo holt eine Leiter." },
+    { s: "Oben sitzt ein Vogel." }
+  ],
+  beweise: [
+    { w: "Traum", typ: "N", art: "der", mz: "Träume" },
+    { w: "Idee", typ: "N", art: "die", mz: "Ideen" },
+    { w: "Schmerz", typ: "N", art: "der", mz: "Schmerzen" },
+    { w: "Kurve", typ: "N", art: "die", mz: "Kurven" },
+    { w: "Zettel", typ: "N", art: "der", mz: "Zettel" },
+    { w: "Schaufel", typ: "N", art: "die", mz: "Schaufeln" },
+    { w: "Geschichte", typ: "N", art: "die", mz: "Geschichten" },
+    { w: "Tiger", typ: "N", art: "der", mz: "Tiger" },
+    { w: "Sorge", typ: "N", art: "die", mz: "Sorgen" },
+    { w: "Dreieck", typ: "N", art: "das", mz: "Dreiecke" },
+    { w: "Beispiel", typ: "N", art: "das", mz: "Beispiele" },
+    { w: "Wunder", typ: "N", art: "das", mz: "Wunder" },
+    { w: "Hoffnung", typ: "N", art: "die", mz: "Hoffnungen" },
+    { w: "Geduld", typ: "N", art: "die", mz: null },
+    { w: "Vertrauen", typ: "N", art: "das", mz: null }
+  ],
+  schreiben: [
+    { f: "Schreibe die Nomen für Gefühle und Gedanken mit Artikel auf: Traum, Hoffnung, Idee, Freude, Schmerz.", muster: ["der Traum, die Hoffnung, die Idee,", "die Freude, der Schmerz"], zeilen: 3, check: ["Jedes Nomen hat einen Artikel", "Alle Nomen groß geschrieben"] },
+    { f: "Bilde drei Sätze mit Nomen für Gefühle und Gedanken (z. B. Hilfe, Freude, Idee).", muster: ["Zum Beispiel:", "Ich brauche Hilfe.", "Die Freude ist groß.", "Mir fällt eine Idee ein."], zeilen: 5, check: CHECK_SATZ.concat(["In jedem Satz ist ein Nomen für ein Gefühl oder einen Gedanken"]) },
+    { f: "Schreibe den Text richtig auf: meine familie und ich waren in den ferien in italien. täglich spielten wir am strand.", muster: ["Meine Familie und ich waren in den Ferien", "in Italien. Täglich spielten wir am Strand."], zeilen: 4, check: CHECK_SATZ }
+  ]
+},
+{
+  id: "verben", titel: "Verben", icon: "🏃", wichtig: true,
+  karten: [
+    { f: "Was sind Verben?", a: "Verben (Tunwörter) sagen, was jemand tut oder was passiert: zählen, schreiben, riechen." },
+    { f: "Was ist die Grundform eines Verbs?", a: "So steht das Verb im Wörterbuch. Sie endet meistens auf -en: zählen, schreiben, riechen, notieren." },
+    { f: "Was sind Personalformen?", a: "Das Verb verändert sich je nach Person: ich zähle, du zählst, er/sie/es zählt, wir zählen, ihr zählt, sie zählen." },
+    { f: "Wie beweise ich, dass ein Wort ein Verb ist?", a: "Ich kann es in die Personalformen setzen: ich schreibe, du schreibst, er schreibt … (Man nennt das auch: konjugieren.)" },
+    { f: "Welche Endungen haben die Personalformen?", a: "ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie -en." },
+    { f: "Wie lauten die Formen von „schreiben“?", a: "ich schreibe, du schreibst, er/sie/es schreibt, wir schreiben, ihr schreibt, sie schreiben" },
+    { f: "Wie lauten die Formen von „riechen“?", a: "ich rieche, du riechst, er/sie/es riecht, wir riechen, ihr riecht, sie riechen" },
+    { f: "Wie schreibe ich Verben?", a: "Klein – außer am Satzanfang." },
+    { f: "Wie finde ich ein Verb im Wörterbuch?", a: "In der Grundform: sie wählte → wählen, er aß → essen, sie sind → sein." }
+  ],
+  quiz: [
+    { f: "du ___ (schreiben)", o: ["schreibst", "schreibt", "schreiben"], r: [0] },
+    { f: "er ___ (riechen)", o: ["riechst", "riecht", "rieche"], r: [1] },
+    { f: "ihr ___ (zählen)", o: ["zählen", "zählst", "zählt"], r: [2] },
+    { f: "ich ___ (notieren)", o: ["notiere", "notierst", "notiert"], r: [0] },
+    { f: "wir ___ (kaufen)", o: ["kauft", "kaufen", "kaufst"], r: [1] },
+    { f: "du ___ (fahren)", o: ["fahrst", "fährst", "fährt"], r: [1] },
+    { f: "ihr ___ (kaufen)", o: ["kauft", "kaufst", "kaufen"], r: [0] },
+    { f: "Wie heißt die Grundform von „kauft“?", o: ["kaufen", "kauft", "Kauf"], r: [0] },
+    { f: "Wie heißt die Grundform von „notiere“?", o: ["notieren", "notiert", "Notiz"], r: [0] },
+    { f: "Wie heißt die Grundform von „sie wählte“?", o: ["wählte", "wählen", "Wahl"], r: [1] },
+    { f: "Wie heißt die Grundform von „er aß“?", o: ["aßen", "essen", "äßen"], r: [1] },
+    { f: "Wie heißt die Grundform von „sie sind“?", o: ["sinden", "sein", "sind"], r: [1] },
+    { f: "Welches Wort ist ein Verb?", o: ["kauft", "Kurve", "schlau"], r: [0] },
+    { f: "Welches Wort ist ein Verb?", o: ["Zettel", "schlimm", "notiere"], r: [2] },
+    { f: "Wie beweise ich, dass „schreibst“ ein Verb ist?", o: ["Ich setze es in Personalformen: ich schreibe, du schreibst, er schreibt", "Ich setze „die“ davor", "Ich steigere es"], r: [0] },
+    { f: "Welche Endung hat die du-Form?", o: ["-e", "-st", "-en"], r: [1] },
+    { f: "Welche Form ist richtig? „Theo ___ Skateboard.“", o: ["fehrt", "fährt", "fahrt"], r: [1] }
+  ],
+  paare: [
+    { a: "du kaufst", b: "kaufen" },
+    { a: "er riecht", b: "riechen" },
+    { a: "ich notiere", b: "notieren" },
+    { a: "sie wählte", b: "wählen" },
+    { a: "er aß", b: "essen" },
+    { a: "sie sind", b: "sein" },
+    { a: "er schrieb", b: "schreiben" },
+    { a: "es hupt", b: "hupen" },
+    { a: "du zählst", b: "zählen" },
+    { a: "er steigt", b: "steigen" },
+    { a: "er entdeckt", b: "entdecken" },
+    { a: "sie fährt", b: "fahren" }
+  ],
+  raetsel: [
+    { titel: "Verben-Tabelle: zählen", luecke: true, fragen: [
+      { f: "ich ___", w: "zähle", p: -1 }, { f: "du ___", w: "zählst", p: -1 }, { f: "er, sie, es ___", w: "zählt", p: -1 },
+      { f: "wir ___", w: "zählen", p: -1 }, { f: "ihr ___", w: "zählt", p: -1 }, { f: "sie ___", w: "zählen", p: -1 }
+    ] },
+    { titel: "Verben-Tabelle: schreiben", luecke: true, fragen: [
+      { f: "ich ___", w: "schreibe", p: -1 }, { f: "du ___", w: "schreibst", p: -1 }, { f: "er, sie, es ___", w: "schreibt", p: -1 },
+      { f: "wir ___", w: "schreiben", p: -1 }, { f: "ihr ___", w: "schreibt", p: -1 }, { f: "sie ___", w: "schreiben", p: -1 }
+    ] },
+    { titel: "Verben-Tabelle: riechen", luecke: true, fragen: [
+      { f: "ich ___", w: "rieche", p: -1 }, { f: "du ___", w: "riechst", p: -1 }, { f: "er, sie, es ___", w: "riecht", p: -1 },
+      { f: "wir ___", w: "riechen", p: -1 }, { f: "ihr ___", w: "riecht", p: -1 }, { f: "sie ___", w: "riechen", p: -1 }
+    ] },
+    { titel: "du- und ihr-Form", luecke: true, fragen: [
+      { f: "kaufen: du ___", w: "kaufst", p: -1 }, { f: "kaufen: ihr ___", w: "kauft", p: -1 },
+      { f: "notieren: du ___", w: "notierst", p: -1 }, { f: "notieren: ihr ___", w: "notiert", p: -1 },
+      { f: "klettern: du ___", w: "kletterst", p: -1 }, { f: "klettern: ihr ___", w: "klettert", p: -1 }
+    ] }
+  ],
+  beweise: [
+    { w: "zählt", typ: "V", gf: "zählen", du: "zählst", er: "zählt", ihr: "zählt" },
+    { w: "schreibst", typ: "V", gf: "schreiben", du: "schreibst", er: "schreibt", ihr: "schreibt" },
+    { w: "rieche", typ: "V", gf: "riechen", du: "riechst", er: "riecht", ihr: "riecht" },
+    { w: "kauft", typ: "V", gf: "kaufen", du: "kaufst", er: "kauft", ihr: "kauft" },
+    { w: "notiere", typ: "V", gf: "notieren", du: "notierst", er: "notiert", ihr: "notiert" },
+    { w: "klettern", typ: "V", gf: "klettern", du: "kletterst", er: "klettert", ihr: "klettert" },
+    { w: "spielt", typ: "V", gf: "spielen", du: "spielst", er: "spielt", ihr: "spielt" },
+    { w: "fährt", typ: "V", gf: "fahren", du: "fährst", er: "fährt", ihr: "fahrt" },
+    { w: "steigt", typ: "V", gf: "steigen", du: "steigst", er: "steigt", ihr: "steigt" },
+    { w: "entdeckt", typ: "V", gf: "entdecken", du: "entdeckst", er: "entdeckt", ihr: "entdeckt" },
+    { w: "lacht", typ: "V", gf: "lachen", du: "lachst", er: "lacht", ihr: "lacht" },
+    { w: "singe", typ: "V", gf: "singen", du: "singst", er: "singt", ihr: "singt" }
+  ],
+  schreiben: [
+    { f: "Schreibe die Verben kaufen und notieren in der du-Form und in der ihr-Form auf.", muster: ["du kaufst, ihr kauft,", "du notierst, ihr notiert"], zeilen: 3, check: ["Verben klein geschrieben", "du-Form endet auf -st", "ihr-Form endet auf -t"] },
+    { f: "Schreibe alle Personalformen von „riechen“ auf (ich, du, er/sie/es, wir, ihr, sie).", muster: ["ich rieche, du riechst, er riecht,", "wir riechen, ihr riecht, sie riechen"], zeilen: 4, check: ["Alle 6 Personen aufgeschrieben", "Endungen: -e, -st, -t, -en, -t, -en"] }
+  ]
+},
+{
+  id: "adjektive", titel: "Adjektive", icon: "🎨", wichtig: true,
+  karten: [
+    { f: "Was sind Adjektive?", a: "Adjektive (Wiewörter) sagen, wie jemand oder etwas ist: klug, ehrlich, giftig, schlau." },
+    { f: "Wie beweise ich, dass ein Wort ein Adjektiv ist?", a: "Ich kann es steigern (vergleichen): klug – klüger – am klügsten.\nUnd: Es passt zwischen Artikel und Nomen: der kluge Tiger." },
+    { f: "Wie heißen die Stufen beim Steigern?", a: "Grundform: klug\n1. Vergleichsstufe: klüger\n2. Vergleichsstufe: am klügsten" },
+    { f: "Steigere „ehrlich“.", a: "ehrlich – ehrlicher – am ehrlichsten" },
+    { f: "Steigere „giftig“.", a: "giftig – giftiger – am giftigsten" },
+    { f: "Steigere „treu“.", a: "treu – treuer – am treuesten" },
+    { f: "Steigere „fantastisch“.", a: "fantastisch – fantastischer – am fantastischsten" },
+    { f: "Steigere „schlimm“ und „schlau“.", a: "schlimm – schlimmer – am schlimmsten\nschlau – schlauer – am schlauesten" },
+    { f: "Wie schreibe ich Adjektive?", a: "Klein – außer am Satzanfang." },
+    { f: "Wie finde ich „größer“ im Wörterbuch?", a: "Unter der Grundform: groß. Genauso: höher → hoch." }
+  ],
+  quiz: [
+    { f: "Wie heißt die 1. Vergleichsstufe von „klug“?", o: ["kluger", "klüger", "am klügsten"], r: [1] },
+    { f: "Wie heißt die 2. Vergleichsstufe von „klug“?", o: ["am klugsten", "am klügsten", "klüger"], r: [1] },
+    { f: "Wie heißt die 1. Vergleichsstufe von „ehrlich“?", o: ["ehrlicher", "ehrlichster", "ährlicher"], r: [0] },
+    { f: "Wie heißt die 2. Vergleichsstufe von „giftig“?", o: ["am giftigsten", "am giftiger", "giftiger"], r: [0] },
+    { f: "Wie heißt die 1. Vergleichsstufe von „hart“?", o: ["harter", "härter", "am härtesten"], r: [1] },
+    { f: "Wie heißt die 1. Vergleichsstufe von „warm“?", o: ["warmer", "wärmer", "wermer"], r: [1] },
+    { f: "Wie heißt die 1. Vergleichsstufe von „hoch“?", o: ["hocher", "höher", "höcher"], r: [1] },
+    { f: "Wie heißt die 2. Vergleichsstufe von „groß“?", o: ["am größten", "am großsten", "größer"], r: [0] },
+    { f: "Welches Wort ist ein Adjektiv?", o: ["schlimm", "Zettel", "kauft"], r: [0] },
+    { f: "Welches Wort ist ein Adjektiv?", o: ["notiere", "Kurve", "schlau"], r: [2] },
+    { f: "Welche Wörter sind Adjektive? (3 Antworten)", o: ["klug", "ehrlich", "giftig", "Wunder"], r: [0, 1, 2] },
+    { f: "Wie beweise ich, dass „schlau“ ein Adjektiv ist?", o: ["Ich steigere es: schlau – schlauer – am schlauesten", "Ich setze „der“ davor", "Ich sage: du schlaust"], r: [0] },
+    { f: "Was ist „klüger“?", o: ["Grundform", "1. Vergleichsstufe", "2. Vergleichsstufe"], r: [1] },
+    { f: "Was ist „am fantastischsten“?", o: ["Grundform", "1. Vergleichsstufe", "2. Vergleichsstufe"], r: [2] },
+    { f: "Welches Adjektiv passt? Die ___ Schlange zischt.", o: ["giftige", "giftigen", "Gift"], r: [0] }
+  ],
+  paare: [
+    { a: "klug", b: "am klügsten" },
+    { a: "ehrlich", b: "am ehrlichsten" },
+    { a: "giftig", b: "am giftigsten" },
+    { a: "treu", b: "am treuesten" },
+    { a: "fantastisch", b: "am fantastischsten" },
+    { a: "schlimm", b: "am schlimmsten" },
+    { a: "hart", b: "am härtesten" },
+    { a: "groß", b: "am größten" },
+    { a: "hoch", b: "am höchsten" },
+    { a: "warm", b: "am wärmsten" }
+  ],
+  reihen: [
+    { titel: "Steigere: Was kommt zuerst?", schritte: ["klug", "klüger", "am klügsten"] },
+    { titel: "Steigere: Was kommt zuerst?", schritte: ["schlimm", "schlimmer", "am schlimmsten"] },
+    { titel: "Ordne die Tiere: Wer ist am schnellsten? Beginne mit „schnell“.", schritte: ["Die Katze ist schnell.", "Der Hund ist schneller.", "Der Gepard ist am schnellsten."] }
+  ],
+  raetsel: [
+    { titel: "Steigern-Tabelle", luecke: true, fragen: [
+      { f: "klug – ___ – am klügsten", w: "klüger", p: -1 },
+      { f: "ehrlich – ehrlicher – am ___", w: "ehrlichsten", p: -1 },
+      { f: "giftig – ___ – am giftigsten", w: "giftiger", p: -1 },
+      { f: "treu – treuer – am ___", w: "treuesten", p: -1 },
+      { f: "fantastisch – ___ – am fantastischsten", w: "fantastischer", p: -1 },
+      { f: "schlau – ___ – am schlauesten", w: "schlauer", p: -1 },
+      { f: "schlimm – schlimmer – am ___", w: "schlimmsten", p: -1 }
+    ] }
+  ],
+  beweise: [
+    { w: "klug", typ: "A", k1: "klüger", k2: "klügsten" },
+    { w: "ehrlich", typ: "A", k1: "ehrlicher", k2: "ehrlichsten" },
+    { w: "giftig", typ: "A", k1: "giftiger", k2: "giftigsten" },
+    { w: "treu", typ: "A", k1: "treuer", k2: ["treuesten", "treusten"] },
+    { w: "fantastisch", typ: "A", k1: "fantastischer", k2: "fantastischsten" },
+    { w: "schlimm", typ: "A", k1: "schlimmer", k2: "schlimmsten" },
+    { w: "schlau", typ: "A", k1: "schlauer", k2: ["schlauesten", "schlausten"] },
+    { w: "hart", typ: "A", k1: "härter", k2: "härtesten" },
+    { w: "warm", typ: "A", k1: "wärmer", k2: "wärmsten" },
+    { w: "vorsichtig", typ: "A", k1: "vorsichtiger", k2: "vorsichtigsten" },
+    { w: "witzig", typ: "A", k1: "witziger", k2: "witzigsten" },
+    { w: "schnell", typ: "A", k1: "schneller", k2: "schnellsten" },
+    { w: "groß", typ: "A", k1: "größer", k2: "größten" },
+    { w: "mutig", typ: "A", k1: "mutiger", k2: "mutigsten" }
+  ],
+  schreiben: [
+    { f: "Schreibe die Adjektive schlimm und schlau in der Grundform auf und steigere sie.", muster: ["schlimm, schlimmer, am schlimmsten", "schlau, schlauer, am schlauesten"], zeilen: 3, check: ["Adjektive klein geschrieben", "Grundform – 1. Vergleichsstufe – am …sten"] },
+    { f: "Ergänze zwei eigene Adjektive und steigere sie.", muster: ["Zum Beispiel:", "lustig, lustiger, am lustigsten", "kalt, kälter, am kältesten"], zeilen: 3, check: ["Adjektive klein geschrieben", "Grundform – 1. Vergleichsstufe – am …sten"] }
+  ]
+},
+{
+  id: "wortarten", titel: "Wortarten erkennen & beweisen", icon: "🔍", wichtig: true,
+  karten: [
+    { f: "Welche drei Wortarten lernen wir?", a: "Nomen (Namenwörter), Verben (Tunwörter) und Adjektive (Wiewörter)." },
+    { f: "Beweis für ein NOMEN?", a: "Artikel davor setzen (der, die, das) und Mehrzahl bilden: der Zettel – die Zettel. Nomen schreibt man groß." },
+    { f: "Beweis für ein VERB?", a: "In Personalformen setzen: ich zähle, du zählst, er zählt … Grundform: zählen." },
+    { f: "Beweis für ein ADJEKTIV?", a: "Steigern: klug – klüger – am klügsten." },
+    { f: "Welche Farben haben die Wortarten in der Wörterschlange?", a: "Nomen blau, Verben orange, Adjektive grün." }
+  ],
+  quiz: [
+    { f: "Welche Wortart ist „Zettel“?", o: ["Nomen", "Verb", "Adjektiv"], r: [0] },
+    { f: "Welche Wortart ist „schlimm“?", o: ["Nomen", "Verb", "Adjektiv"], r: [2] },
+    { f: "Welche Wortart ist „notiere“?", o: ["Nomen", "Verb", "Adjektiv"], r: [1] },
+    { f: "Welche Wortart ist „Kurve“?", o: ["Nomen", "Verb", "Adjektiv"], r: [0] },
+    { f: "Welche Wortart ist „kauft“?", o: ["Nomen", "Verb", "Adjektiv"], r: [1] },
+    { f: "Welche Wortart ist „schlau“?", o: ["Nomen", "Verb", "Adjektiv"], r: [2] },
+    { f: "Welche Wortart ist „Wunder“?", o: ["Nomen", "Verb", "Adjektiv"], r: [0] },
+    { f: "Welche Wortart ist „zählt“?", o: ["Nomen", "Verb", "Adjektiv"], r: [1] },
+    { f: "Welche Wortart ist „ehrlich“?", o: ["Nomen", "Verb", "Adjektiv"], r: [2] },
+    { f: "Welche Wortart ist „Beispiel“?", o: ["Nomen", "Verb", "Adjektiv"], r: [0] },
+    { f: "Welche Wortart ist „riecht“?", o: ["Nomen", "Verb", "Adjektiv"], r: [1] },
+    { f: "Welche Wortart ist „Freude“?", o: ["Nomen", "Verb", "Adjektiv"], r: [0] },
+    { f: "Mit welchem Beweis zeige ich ein Adjektiv?", o: ["Steigern", "Artikel davor setzen", "Personalformen bilden"], r: [0] },
+    { f: "Mit welchem Beweis zeige ich ein Verb?", o: ["Steigern", "Artikel davor setzen", "Personalformen bilden"], r: [2] },
+    { f: "Mit welchem Beweis zeige ich ein Nomen? (2 Antworten)", o: ["Artikel davor setzen", "Mehrzahl bilden", "Steigern"], r: [0, 1] },
+    { f: "Was ist ein Beweis dafür, dass „Dreieck“ ein Nomen ist?", o: ["das Dreieck – die Dreiecke", "dreiecker – am dreieckigsten", "ich dreiecke"], r: [0] }
+  ],
+  paare: [
+    { a: "Nomen", b: "Artikel davor: der, die, das" },
+    { a: "Verb", b: "ich …e, du …st, er …t" },
+    { a: "Adjektiv", b: "Grundform – 1. – 2. Vergleichsstufe" },
+    { a: "die Hoffnung", b: "Nomen" },
+    { a: "schreibst", b: "Verb" },
+    { a: "giftig", b: "Adjektiv" }
+  ],
+  wortarten: [
+    { s: "Der [kluge|A] [Tiger|N] [schleicht|V] durch den [Wald|N]." },
+    { s: "Die [giftige|A] [Schlange|N] [zischt|V] [laut|A]." },
+    { s: "Mila [schreibt|V] eine [lustige|A] [Geschichte|N]." },
+    { s: "Ich [zähle|V] die [bunten|A] [Zettel|N]." },
+    { s: "Das [ehrliche|A] [Kind|N] [bringt|V] den [Geldbeutel|N] zurück." },
+    { s: "Die [Freude|N] über das [neue|A] [Fahrrad|N] [ist|V] [groß|A]." },
+    { s: "Der [Hund|N] [riecht|V] den [leckeren|A] [Kuchen|N]." },
+    { s: "Wir [klettern|V] [vorsichtig|A] auf den [hohen|A] [Baum|N]." },
+    { s: "Lisa [hat|V] eine [tolle|A] [Idee|N]." },
+    { s: "Der [treue|A] [Freund|N] [hilft|V] mir bei den [schweren|A] [Hausaufgaben|N]." },
+    { s: "Im [Traum|N] [fliege|V] ich über das [blaue|A] [Meer|N]." },
+    { s: "Arel [sucht|V] seinen [alten|A] [Geldbeutel|N]." },
+    { s: "Die [Kinder|N] [spielen|V] am [warmen|A] [Strand|N]." },
+    { s: "Der [Vogel|N] [sitzt|V] auf der [langen|A] [Leiter|N]." },
+    { s: "Ihr [kauft|V] [frische|A] [Äpfel|N] auf dem [Markt|N]." },
+    { s: "Die [mutige|A] [Feuerwehrfrau|N] [rettet|V] die [kleine|A] [Katze|N]." },
+    { s: "Oma [backt|V] einen [fantastischen|A] [Bananenkuchen|N]." },
+    { s: "Der [Schmerz|N] im [Bein|N] [ist|V] [schlimm|A]." },
+    { s: "Du [notierst|V] die [wichtigen|A] [Wörter|N]." },
+    { s: "Der [schlaue|A] [Fuchs|N] [entdeckt|V] die [Hühner|N]." }
+  ],
+  beweise: [
+    { w: "Wunder", typ: "N", art: "das", mz: "Wunder" },
+    { w: "Kurve", typ: "N", art: "die", mz: "Kurven" },
+    { w: "Freude", typ: "N", art: "die", mz: "Freuden" },
+    { w: "schreibst", typ: "V", gf: "schreiben", du: "schreibst", er: "schreibt", ihr: "schreibt" },
+    { w: "riecht", typ: "V", gf: "riechen", du: "riechst", er: "riecht", ihr: "riecht" },
+    { w: "zähle", typ: "V", gf: "zählen", du: "zählst", er: "zählt", ihr: "zählt" },
+    { w: "kluge", typ: "A", k1: "klüger", k2: "klügsten" },
+    { w: "schlau", typ: "A", k1: "schlauer", k2: ["schlauesten", "schlausten"] },
+    { w: "ehrlich", typ: "A", k1: "ehrlicher", k2: "ehrlichsten" }
+  ],
+  schreiben: [
+    { f: "Sortiere die Wörter und schreibe sie auf: Kurve, schlimm, kauft, schlau, Zettel, notiere.\nNomen (mit Artikel): … Verben: … Adjektive: …", muster: ["Nomen: die Kurve, der Zettel", "Verben: kauft, notiere", "Adjektive: schlimm, schlau"], zeilen: 4, check: ["Nomen mit Artikel und groß", "Verben und Adjektive klein"] },
+    { f: "Beweise, dass „Traum“ ein Nomen, „schreibt“ ein Verb und „klug“ ein Adjektiv ist.", muster: ["der Traum – die Träume", "ich schreibe, du schreibst, er schreibt", "klug – klüger – am klügsten"], zeilen: 4, check: ["Nomen: Artikel + Mehrzahl", "Verb: Personalformen", "Adjektiv: gesteigert"] }
+  ]
+},
+{
+  id: "strategien", titel: "Rechtschreib-Strategien", icon: "✏️",
+  karten: [
+    { f: "Strategie SCHWINGEN (ω): Was weiß ich über Silben?", a: "In jeder Silbe gibt es einen Vokal, Umlaut oder Zwielaut: Bo-den, ge-hö-ren, heu-te. Ich spreche das Wort langsam in Silben." },
+    { f: "Strategie VERLÄNGERN (↪): Wann hilft sie?", a: "Wenn ich nicht weiß, ob am Wortende b oder p, d oder t, g oder k steht. Ich verlängere das Wort: Korb → Körbe, er fragt → fragen, witzig → witzige." },
+    { f: "Strategie ABLEITEN (⚡): Wann schreibe ich ä oder äu?", a: "Wenn es ein verwandtes Wort mit a oder au gibt: Bälle → Ball, Mäuse → Maus." },
+    { f: "Was ist der Wortstamm?", a: "Der gemeinsame Teil einer Wortfamilie. Er hilft beim richtigen Schreiben: abmalen, sie malt, die Malerin." },
+    { f: "Strategie MERKEN (M): Was mache ich?", a: "Manche Wörter muss ich mir merken. Ich kann sie im Wörterbuch nachschlagen: Text, wohnen, Straße, voll, Vogel, quaken, Memory." },
+    { f: "Strategie GROSS ODER KLEIN (Aa?): Was schreibe ich groß?", a: "Nomen und Satzanfänge: Im Zimmer sitzen drei Kinder." },
+    { f: "Strategie ZERLEGEN (Bausteine): Wann hilft sie?", a: "Bei zusammengesetzten Wörtern. Ich zerlege sie und schreibe sie zusammen: Schwimm + Bad → das Schwimmbad, Sachbuch, Vogelhaus." },
+    { f: "Ausflu_ – g oder k?", a: "Verlängern: die Ausflüge → der Ausflug" },
+    { f: "Pfer_ – d oder t?", a: "Verlängern: die Pferde → das Pferd" },
+    { f: "L_nder – ä oder e?", a: "Ableiten: das Land → die Länder" }
+  ],
+  quiz: [
+    { f: "der Ausflu_ – g oder k?", o: ["g (die Ausflüge)", "k"], r: [0] },
+    { f: "der Transpor_ – d oder t?", o: ["d", "t (der Transporter)"], r: [1] },
+    { f: "sie schrie_ – b oder p?", o: ["b (schreiben)", "p"], r: [0] },
+    { f: "blin_ – d oder t?", o: ["d (blinde)", "t"], r: [0] },
+    { f: "die Fabri_ – g oder k?", o: ["g", "k (die Fabriken)"], r: [1] },
+    { f: "das Pfer_ – d oder t?", o: ["d (die Pferde)", "t"], r: [0] },
+    { f: "er hu_t – b oder p?", o: ["b", "p (hupen)"], r: [1] },
+    { f: "har_ – d oder t?", o: ["d", "t (härter)"], r: [1] },
+    { f: "die Sch_den – ä oder e?", o: ["ä (der Schaden)", "e"], r: [0] },
+    { f: "l_sen – ä oder e?", o: ["ä", "e (kein Wort mit a)"], r: [1] },
+    { f: "die K_rze – ä oder e?", o: ["ä", "e (kein Wort mit a)"], r: [1] },
+    { f: "die B_ule – äu oder eu?", o: ["äu", "eu (kein Wort mit au)"], r: [1] },
+    { f: "erw_rmen – ä oder e?", o: ["ä (warm)", "e"], r: [0] },
+    { f: "l_uten – äu oder eu?", o: ["äu (laut)", "eu"], r: [0] },
+    { f: "Welches Wort gehört NICHT zur Wortfamilie „zählen“?", o: ["der Zahlenstrahl", "bezahlen", "der Zahn", "abzählen"], r: [2] },
+    { f: "Welches Wort gehört NICHT zur Wortfamilie „wohnen“?", o: ["bewohnen", "wohlig", "der Wohnwagen", "unbewohnt"], r: [1] },
+    { f: "Welches Wort gehört NICHT zur Wortfamilie „kennen“?", o: ["die Bekannte", "unbekannt", "er kämmt", "erkennen"], r: [2] },
+    { f: "Welche Strategie hilft bei „Am Abent sitzt Carlo auf dem Sofa.“?", o: ["Verlängern: die Abende → der Abend", "Ableiten", "Merken"], r: [0] },
+    { f: "Welche Strategie hilft bei „Er schlägt in einem Sach Buch nach.“?", o: ["Zerlegen: das Sachbuch (zusammen)", "Schwingen", "Ableiten"], r: [0] },
+    { f: "Welche Strategie hilft bei „etwas über frösche“?", o: ["Groß oder klein: die Frösche (Nomen groß)", "Verlängern", "Merken"], r: [0] },
+    { f: "Welche Strategie hilft bei „Erstaunt brichtet er seiner Oma“?", o: ["Schwingen: be-rich-ten", "Ableiten", "Verlängern"], r: [0] },
+    { f: "Welche Strategie hilft bei „Je wermer es wird“?", o: ["Ableiten: warm → wärmer", "Merken", "Zerlegen"], r: [0] },
+    { f: "Welche Strategie hilft bei „kwaken“?", o: ["Merken: quaken", "Verlängern", "Groß oder klein"], r: [0] },
+    { f: "Welche Strategie hilft bei „An den Bäumen hängen Epfel“?", o: ["Ableiten: Apfel → Äpfel", "Schwingen", "Zerlegen"], r: [0] },
+    { f: "Welche Strategie hilft bei „Er steikt hinauf“?", o: ["Verlängern: steigen → er steigt", "Merken", "Groß oder klein"], r: [0] },
+    { f: "Welche Strategie hilft bei „Oben sitzt ein Fogel“?", o: ["Merken: Vogel mit V", "Ableiten", "Verlängern"], r: [0] },
+    { f: "Welche Strategie hilft bei „Als er Carlo entdckt“?", o: ["Schwingen: ent-de-cken", "Ableiten", "Merken"], r: [0] },
+    { f: "Welche Strategie hilft bei „Er fliegt in sein Vogel Haus“?", o: ["Zerlegen: das Vogelhaus (zusammen)", "Verlängern", "Ableiten"], r: [0] },
+    { f: "Welche Strategie hilft bei „Theo fehrt Skateboard“?", o: ["Ableiten: fahren → fährt", "Zerlegen", "Schwingen"], r: [0] },
+    { f: "Welche Strategie hilft bei „Linda spielt Trompte“?", o: ["Schwingen: Trom-pe-te", "Ableiten", "Groß oder klein"], r: [0] }
+  ],
+  paare: [
+    { a: "Schwingen ω", b: "Trom-pe-te" },
+    { a: "Verlängern ↪", b: "Fahrrad – die Fahrräder" },
+    { a: "Ableiten ⚡", b: "fährt – fahren" },
+    { a: "Merken M", b: "Memory" },
+    { a: "Zerlegen (Bausteine)", b: "das Schwimmbad" },
+    { a: "Groß oder klein Aa?", b: "der Chor" },
+    { a: "Epfel", b: "Äpfel" },
+    { a: "leiter", b: "Leiter" },
+    { a: "steikt", b: "steigt" },
+    { a: "Fogel", b: "Vogel" },
+    { a: "entdckt", b: "entdeckt" },
+    { a: "Vogel Haus", b: "Vogelhaus" }
+  ],
+  reihen: [
+    { titel: "Silben schwingen: Bilde das Wort aus den Silben.", schritte: ["Klas", "sen", "zim", "mer"] },
+    { titel: "Silben schwingen: Bilde das Wort aus den Silben.", schritte: ["Ba", "na", "nen", "ku", "chen"] },
+    { titel: "Silben schwingen: Bilde das Wort aus den Silben.", schritte: ["Hub", "schrau", "ber", "pi", "lot"] },
+    { titel: "Silben schwingen: Bilde das Wort aus den Silben.", schritte: ["Näh", "ma", "schi", "ne"] },
+    { titel: "Silben schwingen: Bilde das Wort aus den Silben.", schritte: ["Ge", "schich", "te"] }
+  ],
+  raetsel: [
+    { titel: "Fehlerwörter verbessern", luecke: true, fragen: [
+      { f: "Theo fehrt Skateboard. → richtig: ___", w: "fährt", p: -1 },
+      { f: "David spielt gerne Memori. → richtig: ___", w: "Memory", p: -1 },
+      { f: "Frau Ling fährt Fahrrat. → richtig: ___", w: "Fahrrad", p: -1 },
+      { f: "Linda spielt Trompte. → richtig: ___", w: "Trompete", p: -1 },
+      { f: "Vlad geht ins Schwimm Bad. → richtig: ___", w: "Schwimmbad", p: -1 },
+      { f: "Dante singt im chor. → richtig: ___", w: "Chor", p: -1 },
+      { f: "Am Abent sitzt Carlo auf dem Sofa. → richtig: ___", w: "Abend", p: -1 },
+      { f: "desto lauter kwaken die Frösche. → richtig: ___", w: "quaken", p: -1 }
+    ] },
+    { titel: "Silbenwörter", luecke: true, fragen: [
+      { f: "SEN – MER – KLAS – ZIM → das ___", w: "Klassenzimmer", p: -1 },
+      { f: "NA – KU – BA – NEN – CHEN → der ___", w: "Bananenkuchen", p: -1 },
+      { f: "BER – SCHRAU – LOT – HUB – PI → der ___", w: "Hubschrauberpilot", p: -1 },
+      { f: "MA – NÄH – NE – SCHI → die ___", w: "Nähmaschine", p: -1 }
+    ] }
+  ],
+  gross: [
+    { s: "Dante singt im Chor." },
+    { s: "Er schlägt in einem Sachbuch etwas über Frösche nach." },
+    { s: "Carlo holt eine Leiter." }
+  ],
+  schreiben: [
+    { f: "Schreibe den Text richtig auf: Am Abent sitzt Carlo auf dem Sofa. Er schlägt in einem Sach Buch etwas über frösche nach.", muster: ["Am Abend sitzt Carlo auf dem Sofa. Er", "schlägt in einem Sachbuch etwas über", "Frösche nach."], zeilen: 4, check: ["Abend mit d (Abende)", "Sachbuch zusammen", "Frösche groß"] }
+  ]
+},
+{
+  id: "woerterbuch", titel: "Wörterbuch & Alphabet", icon: "📖",
+  karten: [
+    { f: "Wie sind die Wörter im Wörterbuch geordnet?", a: "Nach dem Alphabet (ABC). Wenn der erste Buchstabe gleich ist, schaue ich auf den zweiten, dann auf den dritten …" },
+    { f: "Wie finde ich „größer“ im Wörterbuch?", a: "Ich suche die Grundform: groß." },
+    { f: "Wie finde ich „die Bücher“ im Wörterbuch?", a: "Ich suche die Einzahl: Buch." },
+    { f: "Wie finde ich „sie wählte“ im Wörterbuch?", a: "Ich suche die Grundform: wählen." },
+    { f: "Wie finde ich „die Wochenzeitung“ im Wörterbuch?", a: "Ich zerlege das Wort und suche beide Teile: Woche und Zeitung." },
+    { f: "Wie finde ich „der Zauberstab“ im Wörterbuch?", a: "Ich zerlege das Wort: zaubern (Zauber) und Stab." }
+  ],
+  quiz: [
+    { f: "Unter welchem Wort findest du „größer“?", o: ["groß", "größer", "Größe"], r: [0] },
+    { f: "Unter welchem Wort findest du „die Bücher“?", o: ["Bücher", "Buch", "buchen"], r: [1] },
+    { f: "Unter welchem Wort findest du „aß“?", o: ["aßen", "essen", "Ass"], r: [1] },
+    { f: "Unter welchem Wort findest du „Wälder“?", o: ["Wald", "Wälder", "walten"], r: [0] },
+    { f: "Unter welchem Wort findest du „höher“?", o: ["hoch", "höher", "Höhe"], r: [0] },
+    { f: "Unter welchem Wort findest du „sind“?", o: ["sinden", "sein", "sind"], r: [1] },
+    { f: "Welches Wort kommt im Alphabet zuerst?", o: ["Betrug", "bei", "bezahlen", "beliebt"], r: [1] },
+    { f: "Welches Wort kommt im Alphabet zuerst?", o: ["verrückt", "Verbot", "verlaufen", "Verkäuferin"], r: [1] },
+    { f: "Welches Wort kommt im Alphabet zuletzt?", o: ["Handwerk", "Handy", "Hang"], r: [2] }
+  ],
+  paare: [
+    { a: "größer", b: "groß" },
+    { a: "die Bücher", b: "Buch" },
+    { a: "sie wählte", b: "wählen" },
+    { a: "aß", b: "essen" },
+    { a: "Wälder", b: "Wald" },
+    { a: "höher", b: "hoch" },
+    { a: "sind", b: "sein" }
+  ],
+  reihen: [
+    { titel: "Ordne nach dem Alphabet.", schritte: ["bei", "beliebt", "Betrug", "bezahlen"] },
+    { titel: "Ordne nach dem Alphabet.", schritte: ["Verbot", "Verkäuferin", "verlaufen", "verrückt"] },
+    { titel: "Ordne nach dem Alphabet.", schritte: ["Handwerk", "Handy", "Hang"] },
+    { titel: "Ordne nach dem Alphabet.", schritte: ["Schatulle", "Schatz", "schätzen"] },
+    { titel: "Ordne nach dem Alphabet.", schritte: ["Ananas", "Clown", "Fuchs", "Pizza"] }
+  ]
+}
+];
+
+/* ========================== APP-LOGIK ========================== */
+const app = document.getElementById("app");
+let gewaehlt = new Set(INHALTE.map(k => k.id));
+let sterne = 0;
+try { sterne = parseInt(localStorage.getItem("de_sterne") || "0", 10) || 0; } catch (e) {}
+try { const g = JSON.parse(localStorage.getItem("de_kapitel") || "null"); if (Array.isArray(g) && g.length) gewaehlt = new Set(g.filter(id => INHALTE.some(k => k.id === id))); } catch (e) {}
+if (!gewaehlt.size) gewaehlt = new Set(INHALTE.map(k => k.id));
+
+function speichern() {
+  try { localStorage.setItem("de_sterne", sterne); localStorage.setItem("de_kapitel", JSON.stringify([...gewaehlt])); } catch (e) {}
+}
+function sternDazu() { sterne++; zeigeSterne(); speichern(); }
+function zeigeSterne() { document.getElementById("sterne").textContent = "⭐ " + sterne; }
+function mischen(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function kapitelListe() { return INHALTE.filter(k => gewaehlt.has(k.id)); }
+function sammle(art) { const out = []; kapitelListe().forEach(k => (k[art] || []).forEach(x => out.push(Object.assign({ kapitel: k.titel }, x)))); return out; }
+function bildHtml() { return ""; }
+
+function vorlesen(text) {
+  try {
+    if (!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "de-DE"; u.rate = 0.95;
+    const stimme = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith("de"));
+    if (stimme) u.voice = stimme;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+const kannVorlesen = !!window.speechSynthesis;
+function vorleseKnopf(text) { return kannVorlesen ? `<button class="vorlesen" onclick='event.stopPropagation();vorlesen(${JSON.stringify(text).replace(/'/g, "&#39;")})'>🔊 Vorlesen</button>` : ""; }
+
+function kopfleiste(titel, anteil) {
+  return `<div class="leiste"><button class="btn grau klein" onclick="startseite()">⬅ Zurück</button><h2 style="margin:0">${titel}</h2>${anteil != null ? `<div class="fortschritt"><div style="width:${Math.round(anteil * 100)}%"></div></div>` : ""}</div>`;
+}
+function fertig(titel, text, nochmal) {
+  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🏆</div><h2>${text}</h2><p>Du hast jetzt insgesamt ⭐ ${sterne} Sterne.</p><div class="mitte"><button class="btn gruen" onclick="${nochmal}">Nochmal!</button><button class="btn grau" onclick="startseite()">Zur Übersicht</button></div></div>`;
+}
+function leer(titel) {
+  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🤷</div><p>Für die gewählten Kapitel gibt es hier noch nichts. Wähle auf der Startseite andere Kapitel aus.</p></div>`;
+}
+
+/* ---------- Startseite ---------- */
+function startseite() {
+  spielStop();
+  try { speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
+  const alle = gewaehlt.size === INHALTE.length;
+  const nurProbe = !alle && INHALTE.every(k => gewaehlt.has(k.id) === !!k.wichtig);
+  const n = art => sammle(art).length;
+  const modus = (fn, ic, name, text, art) => `<button class="modus" onclick="${fn}"><span class="ic">${ic}</span><b>${name}</b><small>${text}${art ? ` (${n(art)})` : ""}</small></button>`;
+  app.innerHTML = `
+    <h2>1. Was möchtest du lernen?</h2>
+    <p class="hinweis">Tippe auf die Themen, die du üben willst. <span class="badge">⭐ Probe</span> = kommt am Mittwoch in der Probe dran.</p>
+    <div class="chips">
+      <button class="chip ${alle ? "an" : ""}" onclick="alleKapitel()">✅ Alles</button>
+      <button class="chip wichtig ${nurProbe ? "an" : ""}" onclick="nurProbeThemen()">🎯 Nur Probe-Themen</button>
+      ${INHALTE.map(k => `<button class="chip ${gewaehlt.has(k.id) && !alle && !nurProbe ? "an" : ""}" onclick="kapitelUmschalten('${k.id}')">${k.icon} ${esc(k.titel)}${k.wichtig ? " ⭐" : ""}</button>`).join("")}
+    </div>
+    <h2>2. Wie möchtest du lernen?</h2>
+    <div class="modi">
+      ${modus("karteikarten()", "🃏", "Karteikarten", "Frage lesen, umdrehen, Antwort prüfen", "karten")}
+      ${modus("quiz()", "❓", "Quiz", "12 Fragen – die richtige Antwort finden", "quiz")}
+      ${modus("satzzeichen()", "✒️", "Satzzeichen setzen", "Punkt, Fragezeichen, Doppelpunkt, „ “ …", "zeichen")}
+      ${modus("wortartenDetektiv()", "🔍", "Wortarten-Detektiv", "Nomen, Verben, Adjektive markieren", "wortarten")}
+      ${modus("beweise()", "🕵️", "Beweise", "Wortart erkennen und beweisen", "beweise")}
+      ${modus("grossKlein()", "🔠", "Groß oder klein?", "Satzanfänge und Nomen groß", "gross")}
+      ${modus("zuordnen()", "🔗", "Zuordnen", "Was gehört zusammen?", "paare")}
+      ${modus("reihenfolge()", "🔢", "Reihenfolge", "Sätze bauen, Silben und ABC ordnen", "reihen")}
+      ${modus("raetsel()", "🧩", "Rätsel & Lückentext", "Fehlende Wörter finden", "raetsel")}
+    </div>
+    <h2 style="margin-top:28px">3. Selber schreiben</h2>
+    <div class="modi">
+      ${modus("schreiben()", "✍️", "Schreibaufgaben", "Mit dem Stift ins Heft schreiben und vergleichen", "schreiben")}
+      ${modus("freiesHeft()", "📓", "Freies Heft", "Leeres Heft mit Linien zum Üben")}
+    </div>
+    <h2 style="margin-top:28px">4. Bist du bereit?</h2>
+    <div class="modi">
+      ${modus("pruefung()", "🏁", "Probe-Prüfung", "16 gemischte Aufgaben zu allen Probe-Themen")}
+    </div>
+    <h2 style="margin-top:28px">5. Pause machen?</h2>
+    <div class="modi">
+      ${modus("spielecke()", "🎮", "Spielecke", "Mit deinen Sternen spielen")}
+      ${modus("sterneUebertragen()", "🔑", "Sterne-Code", "Sterne auf ein anderes Gerät mitnehmen")}
+    </div>`;
+}
+function nurProbeThemen() { gewaehlt = new Set(INHALTE.filter(k => k.wichtig).map(k => k.id)); speichern(); startseite(); }
+function alleKapitel() { gewaehlt = new Set(INHALTE.map(k => k.id)); speichern(); startseite(); }
+function kapitelUmschalten(id) {
+  if (gewaehlt.size === INHALTE.length) gewaehlt = new Set([id]);
+  else if (gewaehlt.has(id)) { gewaehlt.delete(id); if (!gewaehlt.size) gewaehlt = new Set(INHALTE.map(k => k.id)); }
+  else gewaehlt.add(id);
+  speichern(); startseite();
+}
+
+/* ---------- Karteikarten ---------- */
+let stapel = [], kartenGesamt = 0, kartenGewusst = 0;
+function karteikarten() {
+  stapel = mischen(sammle("karten"));
+  if (!stapel.length) return leer("🃏 Karteikarten");
+  kartenGesamt = stapel.length; kartenGewusst = 0;
+  zeigeKarte();
+}
+function zeigeKarte() {
+  if (!stapel.length) return fertig("🃏 Karteikarten", "Super! Du kennst alle Karten! 🎉", "karteikarten()");
+  const k = stapel[0];
+  app.innerHTML = kopfleiste("🃏 Karteikarten", kartenGewusst / kartenGesamt) + `
+    <p class="hinweis">Noch ${stapel.length} Karten. Tippe auf die Karte zum Umdrehen.</p>
+    <div class="flip" id="flip" onclick="this.classList.toggle('offen')">
+      <div class="flip-in">
+        <div class="seite vorne"><span class="kapitel">${esc(k.kapitel)}</span>${bildHtml(k.bild)}<div class="txt">${esc(k.f)}</div><div class="mitte">${vorleseKnopf(k.f)}</div><span class="tipp">👆 Antippen zum Umdrehen</span></div>
+        <div class="seite hinten">${bildHtml(k.bild)}<div class="txt">${esc(k.a)}</div><div class="mitte">${vorleseKnopf(k.a)}</div></div>
+      </div>
+    </div>
+    <div class="mitte">
+      <button class="btn grau" onclick="karteNochmal()">🔁 Nochmal üben</button>
+      <button class="btn gruen" onclick="karteGewusst()">✔ Wusste ich!</button>
+    </div>`;
+}
+function karteGewusst() {
+  const k = stapel.shift(); kartenGewusst++;
+  const heute = new Date().toDateString(); let kk = { d: heute, l: [] };
+  try { const g = JSON.parse(localStorage.getItem("de_kk") || "null"); if (g && g.d === heute) kk = g; } catch (e) {}
+  if (!kk.l.includes(k.f + "|" + k.a)) { kk.l.push(k.f + "|" + k.a); sternDazu(); try { localStorage.setItem("de_kk", JSON.stringify(kk)); } catch (e) {} }
+  zeigeKarte();
+}
+function karteNochmal() { stapel.push(stapel.shift()); zeigeKarte(); }
+
+
+/* ====================== AUFGABEN-RUNDEN ======================
+   Quiz, Satzzeichen, Wortarten, Beweise und Groß/klein laufen alle über
+   dieselbe Runde. Jede Aufgabe ruft am Ende genau einmal ergebnis(ok) auf. */
+let R = { liste: [], i: 0, richtig: 0, titel: "", nochmal: "" };
+function runde(liste, titel, nochmal) {
+  if (!liste.length) return leer(titel);
+  R = { liste, i: 0, richtig: 0, titel, nochmal };
+  zeigeAufgabe();
+}
+function zeigeAufgabe() {
+  if (R.i >= R.liste.length) {
+    const n = R.liste.length, lob = R.richtig === n ? "Alles richtig! Du bist ein Deutsch-Profi! 🎉" : R.richtig >= n * 0.7 ? "Toll gemacht! 👍" : "Gut geübt! Weiter so! 💪";
+    return fertig(R.titel, `${R.richtig} von ${n} richtig. ${lob}`, R.nochmal);
+  }
+  const t = R.liste[R.i];
+  app.innerHTML = kopfleiste(R.titel, R.i / R.liste.length) + `
+    <div class="box"><span class="kapitel">${esc(t.kapitel || "")}</span> <span class="hinweis">Aufgabe ${R.i + 1} von ${R.liste.length}</span>
+      <div id="aufgabe"></div>
+      <div class="feedback" id="fb"></div>
+      <div class="mitte" id="weiter"></div>
+    </div>`;
+  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
+}
+let erledigtSchon = false;
+function ergebnis(ok, text) {
+  if (erledigtSchon) return;
+  erledigtSchon = true;
+  const fb = document.getElementById("fb");
+  if (ok) { R.richtig++; sternDazu(); fb.className = "feedback ok"; fb.textContent = text || mischen(["Richtig! 🎉", "Super! ⭐", "Genau so! 👍", "Klasse! 📚"])[0]; }
+  else { fb.className = "feedback nein"; fb.textContent = text || "Leider nicht ganz. Schau dir die Lösung genau an."; }
+  document.getElementById("weiter").innerHTML = `<button class="btn gruen" onclick="R.i++;zeigeAufgabe()">Weiter ➜</button>`;
+}
+function hinweis(text, art) { const fb = document.getElementById("fb"); fb.className = "feedback " + (art || "nein"); fb.innerHTML = text; }
+function wackeln(el) { el.classList.remove("wackel"); void el.offsetWidth; el.classList.add("wackel"); }
+function typ(art) { return sammle(art).map(x => Object.assign({ _a: art }, x)); }
+
+/* ---------- Quiz ---------- */
+let qAuswahl = new Set(), qAkt = null;
+function quiz() { runde(mischen(typ("quiz")).slice(0, 12), "❓ Quiz", "quiz()"); }
+function zeigeQuiz(q, box) {
+  erledigtSchon = false; qAuswahl = new Set();
+  qAkt = Object.assign({}, q, { opts: mischen(q.o.map((t, i) => ({ t, ok: q.r.includes(i) }))) });
+  const anzahl = q.r.length;
+  box.innerHTML = `<div class="frage">${esc(q.f)} ${vorleseKnopf(q.f + ". " + qAkt.opts.map(o => o.t).join(". "))}</div>
+    ${anzahl > 1 ? `<p class="hinweis">Hier sind <b>${anzahl}</b> Antworten richtig. Tippe sie an und drücke dann „Prüfen“.</p>` : ""}
+    <div class="optionen">${qAkt.opts.map((o, i) => `<button class="opt" id="o${i}" onclick="qWaehle(${i})">${esc(o.t)}</button>`).join("")}</div>
+    ${anzahl > 1 ? `<div class="mitte" id="qpruef"><button class="btn blau" onclick="qPruefen()">Prüfen</button></div>` : ""}`;
+}
+function qWaehle(i) {
+  if (erledigtSchon) return;
+  if (qAkt.r.length === 1) { qAuswahl = new Set([i]); return qPruefen(); }
+  if (qAuswahl.has(i)) qAuswahl.delete(i); else qAuswahl.add(i);
+  document.getElementById("o" + i).classList.toggle("gewaehlt", qAuswahl.has(i));
+}
+function qPruefen() {
+  if (erledigtSchon) return;
+  if (!qAuswahl.size) return hinweis("Tippe zuerst eine Antwort an.", "tipp");
+  let ok = true;
+  qAkt.opts.forEach((o, i) => {
+    const el = document.getElementById("o" + i);
+    el.classList.remove("gewaehlt");
+    if (o.ok) el.classList.add("richtig");
+    if (qAuswahl.has(i) !== o.ok) { ok = false; if (qAuswahl.has(i)) el.classList.add("falsch"); }
+  });
+  const p = document.getElementById("qpruef"); if (p) p.remove();
+  ergebnis(ok, ok ? null : "Leider nicht ganz. Die richtige Antwort ist grün markiert.");
+}
+
+/* ---------- Satzzeichen setzen ----------
+   Zwischen allen Wörtern ist eine Lücke. In jede Lücke kommen die Zeichen,
+   die dort hingehören (auch mehrere, z. B. „!“,“). */
+const ZEICHEN = ["." , "?", "!", ":", ",", "„", "“"];
+const ZEICHEN_NAME = { ".": "Punkt", "?": "Frage", "!": "Ausruf", ":": "Doppelp.", ",": "Komma", "„": "unten", "“": "oben" };
+let zz = null;
+function satzzeichen() { runde(mischen(typ("zeichen")).slice(0, 10), "✒️ Satzzeichen setzen", "satzzeichen()"); }
+function zerlegeSatz(s) {
+  const woerter = [], luecken = [""];
+  (s.match(/[„“:.,!?]|[^\s„“:.,!?]+/g) || []).forEach(t => {
+    if (ZEICHEN.includes(t)) luecken[luecken.length - 1] += t;
+    else { woerter.push(t); luecken.push(""); }
+  });
+  return { woerter, luecken };
+}
+function zeigeZeichen(t, box) {
+  erledigtSchon = false;
+  const z = zerlegeSatz(t.s);
+  zz = { woerter: z.woerter, ziel: z.luecken, ein: z.luecken.map(() => ""), akt: 0, versuche: 0, s: t.s };
+  box.innerHTML = `<div class="frage">Setze alle fehlenden Satzzeichen ein.</div>
+    <p class="hinweis">Tippe auf eine Lücke ▢ und dann auf ein Zeichen. In eine Lücke können auch mehrere Zeichen. Leere Lücken bleiben leer.</p>
+    <div class="satz" id="satz"></div>
+    <div class="palette">${ZEICHEN.map(c => `<button onclick="zzSetze('${c}')">${c}<small>${ZEICHEN_NAME[c]}</small></button>`).join("")}<button class="weg" onclick="zzWeg()">⌫<small>löschen</small></button></div>
+    <div class="mitte" id="zzpruef"><button class="btn blau" onclick="zzPruefen()">Prüfen</button></div>`;
+  zzMalen();
+}
+function zzMalen(markiert) {
+  let h = "";
+  zz.ein.forEach((e, i) => {
+    let cls = "luecke" + (e ? " voll" : "") + (i === zz.akt && !erledigtSchon ? " aktiv" : "");
+    if (markiert) cls += e === zz.ziel[i] ? (e ? " ok" : " leer") : " falsch";
+    h += `<button class="${cls}" onclick="zzWaehle(${i})">${esc(e) || "&nbsp;"}</button>`;
+    if (i < zz.woerter.length) h += `<span class="swort">${esc(zz.woerter[i])}</span>`;
+  });
+  document.getElementById("satz").innerHTML = h;
+}
+function zzWaehle(i) { if (erledigtSchon) return; zz.akt = i; zzMalen(); }
+function zzSetze(c) {
+  if (erledigtSchon) return;
+  if (zz.ein[zz.akt].length >= 3) return;
+  zz.ein[zz.akt] += c; zzMalen();
+}
+function zzWeg() { if (erledigtSchon) return; zz.ein[zz.akt] = zz.ein[zz.akt].slice(0, -1); zzMalen(); }
+function zzPruefen() {
+  if (erledigtSchon) return;
+  const falsch = zz.ein.filter((e, i) => e !== zz.ziel[i]).length;
+  if (!falsch) { zzMalen(true); document.getElementById("zzpruef").innerHTML = ""; return ergebnis(zz.versuche === 0, zz.versuche === 0 ? null : "Jetzt ist alles richtig! 👍"); }
+  zz.versuche++;
+  zzMalen(true);
+  const tipp = zzTipp();
+  if (zz.versuche >= 3) {
+    document.getElementById("zzpruef").innerHTML = `<button class="btn blau" onclick="zzPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="zzLoesung()">Lösung zeigen</button>`;
+  }
+  hinweis(`${falsch === 1 ? "Eine Lücke ist" : falsch + " Lücken sind"} noch falsch (rot). ${tipp}`);
+}
+function zzTipp() {
+  const s = zz.s;
+  if (s.startsWith("„")) return "Tipp: Begleitsatz hinten → nach dem “ kommt ein Komma, am Ende ein Punkt.";
+  if (s.includes(":")) return "Tipp: Nach dem Begleitsatz kommt : und dann „ – am Ende erst . ? ! und dann “.";
+  if (s.endsWith("?")) return "Tipp: Ist das eine Frage?";
+  return "Tipp: Ist es eine Aussage (.), eine Frage (?) oder ein Ausruf (!)?";
+}
+function zzLoesung() {
+  zz.ein = zz.ziel.slice(); zzMalen(true);
+  document.getElementById("zzpruef").innerHTML = "";
+  ergebnis(false, "So ist es richtig: " + zz.s);
+}
+
+/* ---------- Wortarten-Detektiv ---------- */
+const WA = { N: { name: "Nomen", farbe: "blau" }, V: { name: "Verb", farbe: "orange" }, A: { name: "Adjektiv", farbe: "grün" } };
+let wa = null;
+function wortartenDetektiv() { runde(mischen(typ("wortarten")).slice(0, 8), "🔍 Wortarten-Detektiv", "wortartenDetektiv()"); }
+function zeigeWortarten(t, box) {
+  erledigtSchon = false;
+  const teile = [];
+  (t.s.match(/\[[^\]]+\]|[^\s\[\]]+/g) || []).forEach(x => {
+    const m = x.match(/^\[([^|]+)\|([NVA])\]$/);
+    if (m) return teile.push({ w: m[1], ziel: m[2], nach: "" });
+    const r = x.match(/^(.*?)([.,!?]*)$/);
+    if (r[1]) teile.push({ w: r[1], ziel: "", nach: r[2] });
+    else if (teile.length) teile[teile.length - 1].nach += r[2];
+  });
+  wa = { teile: teile.map(x => Object.assign({ ein: "" }, x)), stift: "N", versuche: 0 };
+  box.innerHTML = `<div class="frage">Markiere alle Nomen, Verben und Adjektive.</div>
+    <p class="hinweis">Wähle eine Farbe und tippe dann auf die Wörter. Wörter, die nichts davon sind, bleiben weiß.</p>
+    <div class="stifte">
+      <button class="stift N an" id="stN" onclick="waStift('N')">🖍️ Nomen</button>
+      <button class="stift V" id="stV" onclick="waStift('V')">🖍️ Verb</button>
+      <button class="stift A" id="stA" onclick="waStift('A')">🖍️ Adjektiv</button>
+      <button class="stift X" id="stX" onclick="waStift('')">🧽 Radierer</button>
+    </div>
+    <div class="satz" id="satz"></div>
+    <div class="mitte" id="wapruef"><button class="btn grau klein" onclick="waZaehlen()">💡 Wie viele sind es?</button><button class="btn blau" onclick="waPruefen()">Prüfen</button></div>`;
+  waMalen();
+}
+function waStift(s) { wa.stift = s; ["N", "V", "A", "X"].forEach(k => document.getElementById("st" + k).classList.toggle("an", (s || "X") === k)); }
+function waMalen(markiert) {
+  document.getElementById("satz").innerHTML = wa.teile.map((x, i) => {
+    let cls = "wa " + (x.ein || "");
+    if (markiert) cls += x.ein === x.ziel ? (x.ziel ? " ok" : "") : " falsch";
+    return `<button class="${cls}" onclick="waTipp(${i})">${esc(x.w)}</button>${x.nach ? `<span class="swort">${esc(x.nach)}</span>` : ""}`;
+  }).join(" ");
+}
+function waTipp(i) { if (erledigtSchon) return; const x = wa.teile[i]; x.ein = x.ein === wa.stift ? "" : wa.stift; waMalen(); }
+function waZaehlen() {
+  const n = k => wa.teile.filter(x => x.ziel === k).length;
+  hinweis(`Es sind ${n("N")} Nomen, ${n("V")} Verben und ${n("A")} Adjektive.`, "tipp");
+}
+function waPruefen() {
+  if (erledigtSchon) return;
+  const falsch = wa.teile.filter(x => x.ein !== x.ziel);
+  waMalen(true);
+  if (!falsch.length) { document.getElementById("wapruef").innerHTML = ""; return ergebnis(wa.versuche === 0, wa.versuche === 0 ? null : "Jetzt ist alles richtig! 👍"); }
+  wa.versuche++;
+  const x = falsch[0];
+  const tipp = x.ziel === "N" ? `„${x.w}“: Kannst du der, die oder das davor setzen?` : x.ziel === "V" ? `„${x.w}“: Kannst du ich, du, er davor setzen?` : x.ziel === "A" ? `„${x.w}“: Kannst du es steigern?` : `„${x.w}“ ist kein Nomen, Verb oder Adjektiv.`;
+  hinweis(`${falsch.length === 1 ? "Ein Wort ist" : falsch.length + " Wörter sind"} noch falsch (rot umrandet). Tipp: ${tipp}`);
+  if (wa.versuche >= 3) document.getElementById("wapruef").innerHTML = `<button class="btn blau" onclick="waPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="waLoesung()">Lösung zeigen</button>`;
+}
+function waLoesung() { wa.teile.forEach(x => x.ein = x.ziel); waMalen(true); document.getElementById("wapruef").innerHTML = ""; ergebnis(false, "So ist es richtig: Nomen blau, Verben orange, Adjektive grün."); }
+
+/* ---------- Beweise ----------
+   1. Welche Wortart? 2. Beweis eintippen. */
+let bw = null;
+function beweise() { runde(mischen(typ("beweise")).slice(0, 10), "🕵️ Beweise", "beweise()"); }
+function norm(s) { return String(s).trim().toLowerCase().replace(/\s+/g, " "); }
+function zeigeBeweis(t, box) {
+  erledigtSchon = false;
+  bw = { t, schritt: 1, fehler: 0, art: "" };
+  box.innerHTML = `<div class="frage">Welche Wortart ist das? Beweise es!</div>
+    <div class="grosswort">${esc(t.w.toUpperCase())}</div>
+    <div id="bwInhalt"><div class="mitte">${["N", "V", "A"].map(k => `<button class="btn ${k === "N" ? "blau" : k === "V" ? "" : "gruen"}" id="bw${k}" onclick="bwArt('${k}')">${WA[k].name}</button>`).join("")}</div></div>`;
+}
+function bwArt(k) {
+  if (bw.schritt !== 1) return;
+  if (k !== bw.t.typ) { bw.fehler++; wackeln(document.getElementById("bw" + k)); return hinweis(`Nein, „${bw.t.w}“ ist kein ${WA[k].name}. Probiere die Beweise im Kopf aus!`); }
+  bw.schritt = 2; hinweis("Richtig! Jetzt der Beweis:", "ok");
+  const t = bw.t, f = (id, platz, vor) => `<div class="beweis-zeile">${vor ? `<span class="vor">${vor}</span>` : ""}<input class="eingabe" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${platz}" onkeydown="if(event.key==='Enter')bwPruefen()"></div>`;
+  let h = "";
+  if (t.typ === "N") {
+    h = `<p class="hinweis">Nomen-Beweis: Setze den Artikel davor und bilde die Mehrzahl.</p>
+      <div class="beweis-zeile"><span class="vor">Artikel:</span>${["der", "die", "das"].map(a => `<button class="chip" id="ar_${a}" onclick="bwArtikel('${a}')">${a}</button>`).join("")}<b>${esc(t.w)}</b></div>
+      <div class="beweis-zeile"><span class="vor">Mehrzahl: die</span><input class="eingabe" id="bwMz" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Mehrzahl" onkeydown="if(event.key==='Enter')bwPruefen()">
+        <button class="chip" id="bwKeine" onclick="this.classList.toggle('an');document.getElementById('bwMz').disabled=this.classList.contains('an')">Gibt es nicht</button></div>`;
+  } else if (t.typ === "V") {
+    h = `<p class="hinweis">Verb-Beweis: Schreibe die Grundform und die Personalformen.</p>` +
+      f("bwGf", "Grundform", "Grundform:") + f("bwDu", "…", "du") + f("bwEr", "…", "er, sie, es") + f("bwIhr", "…", "ihr");
+  } else {
+    h = `<p class="hinweis">Adjektiv-Beweis: Steigere das Wort.</p>
+      <div class="beweis-zeile"><span class="vor">Grundform:</span><b>${esc(t.k0 || grundformAdj(t))}</b></div>` +
+      f("bwK1", "1. Vergleichsstufe", "1. Vergleichsstufe:") + f("bwK2", "2. Vergleichsstufe", "2. Vergleichsstufe: am");
+  }
+  document.getElementById("bwInhalt").innerHTML = h + `<div class="mitte" id="bwpruef"><button class="btn blau" onclick="bwPruefen()">Prüfen</button></div>`;
+  setTimeout(() => { const e = document.querySelector("#bwInhalt input"); if (e && t.typ !== "N") e.focus(); }, 50);
+}
+function grundformAdj(t) { return t.w === "kluge" ? "klug" : t.w; }
+function bwArtikel(a) { bw.art = a; ["der", "die", "das"].forEach(x => document.getElementById("ar_" + x).classList.toggle("an", x === a)); }
+function bwFeld(id, soll) {
+  const el = document.getElementById(id), ok = [].concat(soll).some(s => norm(el.value) === norm(s));
+  el.classList.toggle("ok", ok); el.classList.toggle("falsch", !ok);
+  return ok;
+}
+function bwPruefen() {
+  if (erledigtSchon || bw.schritt !== 2) return;
+  const t = bw.t; let ok = true, extra = "";
+  if (t.typ === "N") {
+    const artOk = bw.art === t.art;
+    ["der", "die", "das"].forEach(x => { const el = document.getElementById("ar_" + x); el.classList.toggle("falsch", x === bw.art && !artOk); });
+    if (!artOk) ok = false;
+    const keine = document.getElementById("bwKeine").classList.contains("an"), mz = document.getElementById("bwMz");
+    if (t.mz === null) { if (!keine) { ok = false; mz.classList.add("falsch"); extra = " Tipp: Von diesem Nomen gibt es keine Mehrzahl!"; } }
+    else if (keine) { ok = false; extra = " Doch, hier gibt es eine Mehrzahl!"; }
+    else {
+      const wert = mz.value.trim().replace(/^die\s+/i, ""), mzOk = norm(wert) === norm(t.mz);
+      mz.classList.toggle("ok", mzOk); mz.classList.toggle("falsch", !mzOk);
+      if (!mzOk) ok = false;
+      else if (wert[0] !== wert[0].toUpperCase()) extra = " Denk dran: Nomen schreibt man groß!";
+    }
+  } else if (t.typ === "V") {
+    ok = [bwFeld("bwGf", t.gf), bwFeld("bwDu", t.du), bwFeld("bwEr", t.er), bwFeld("bwIhr", t.ihr)].every(Boolean);
+  } else {
+    ok = [bwFeld("bwK1", t.k1), bwFeld("bwK2", t.k2)].every(Boolean);
+  }
+  if (ok) { document.getElementById("bwpruef").innerHTML = ""; return ergebnis(bw.fehler === 0, (bw.fehler === 0 ? "Bewiesen! ⭐" : "Bewiesen! 👍") + extra); }
+  bw.fehler++;
+  hinweis("Noch nicht alles richtig (rot)." + extra + (t.typ === "V" ? " Endungen: du -st, er -t, ihr -t." : t.typ === "A" ? " Tipp: …er und am …sten." : ""));
+  if (bw.fehler >= 2) document.getElementById("bwpruef").innerHTML = `<button class="btn blau" onclick="bwPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="bwLoesung()">Lösung zeigen</button>`;
+}
+function bwLoesung() {
+  const t = bw.t;
+  const txt = t.typ === "N" ? `${t.art} ${t.w} – ${t.mz ? "die " + t.mz : "keine Mehrzahl"}` : t.typ === "V" ? `${t.gf}: du ${t.du}, er/sie/es ${t.er}, ihr ${t.ihr}` : `${grundformAdj(t)} – ${t.k1} – am ${[].concat(t.k2)[0]}`;
+  document.getElementById("bwpruef").innerHTML = "";
+  ergebnis(false, "Lösung: " + txt);
+}
+
+/* ---------- Groß oder klein? ---------- */
+let gk = null;
+function grossKlein() { runde(mischen(typ("gross")).slice(0, 8), "🔠 Groß oder klein?", "grossKlein()"); }
+function klein(w) { return w.charAt(0).toLowerCase() + w.slice(1); }
+function gross(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
+function zeigeGross(t, box) {
+  erledigtSchon = false;
+  const woerter = t.s.split(/\s+/);
+  gk = { ziel: woerter, ein: woerter.map(w => /^[A-ZÄÖÜa-zäöüß]/.test(w) ? klein(w) : w), versuche: 0 };
+  box.innerHTML = `<div class="frage">Hier ist alles klein geschrieben. Tippe auf die Wörter, die man groß schreibt.</div>
+    <p class="hinweis">Denk an die Satzanfänge und an die Nomen!</p>
+    <div class="satz" id="satz"></div>
+    <div class="mitte" id="gkpruef"><button class="btn blau" onclick="gkPruefen()">Prüfen</button></div>`;
+  gkMalen();
+}
+function gkMalen(markiert) {
+  document.getElementById("satz").innerHTML = gk.ein.map((w, i) => {
+    let cls = "gk" + (w !== klein(w) ? " gross" : "");
+    if (markiert) cls += w === gk.ziel[i] ? (w !== klein(w) ? " ok" : "") : " falsch";
+    return `<button class="${cls}" onclick="gkTipp(${i})">${esc(w)}</button>`;
+  }).join(" ");
+}
+function gkTipp(i) { if (erledigtSchon) return; const w = gk.ein[i]; gk.ein[i] = w === klein(w) ? gross(w) : klein(w); gkMalen(); }
+function gkPruefen() {
+  if (erledigtSchon) return;
+  const falsch = gk.ein.filter((w, i) => w !== gk.ziel[i]).length;
+  gkMalen(true);
+  if (!falsch) { document.getElementById("gkpruef").innerHTML = ""; return ergebnis(gk.versuche === 0, gk.versuche === 0 ? null : "Jetzt ist alles richtig! 👍"); }
+  gk.versuche++;
+  hinweis(`${falsch === 1 ? "Ein Wort ist" : falsch + " Wörter sind"} noch falsch (rot). Tipp: Kann man der, die oder das davor setzen? Steht das Wort am Satzanfang?`);
+  if (gk.versuche >= 3) document.getElementById("gkpruef").innerHTML = `<button class="btn blau" onclick="gkPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="gkLoesung()">Lösung zeigen</button>`;
+}
+function gkLoesung() { gk.ein = gk.ziel.slice(); gkMalen(true); document.getElementById("gkpruef").innerHTML = ""; ergebnis(false, "So ist es richtig: " + gk.ziel.join(" ")); }
+
+/* ---------- Probe-Prüfung ----------
+   Gemischt aus den Probe-Themen: Quiz, Satzzeichen, Wortarten, Beweise, Groß/klein. */
+function pruefung() {
+  const wichtig = INHALTE.filter(k => k.wichtig);
+  const nimm = (art, n) => { const out = []; wichtig.forEach(k => (k[art] || []).forEach(x => out.push(Object.assign({ _a: art, kapitel: k.titel }, x)))); return mischen(out).slice(0, n); };
+  const rede = mischen(INHALTE.filter(k => k.id === "rede" || k.id === "redehinten").flatMap(k => k.zeichen.map(x => Object.assign({ _a: "zeichen", kapitel: k.titel }, x)))).slice(0, 4);
+  const liste = [].concat(nimm("quiz", 6), rede, nimm("wortarten", 2), nimm("beweise", 3), nimm("gross", 1));
+  runde(mischen(liste), "🏁 Probe-Prüfung", "pruefung()");
+}
+
+/* ====================== SCHREIBEN MIT STIFT ======================
+   Heft mit Lineatur 4 (Linien mit Rand) oder Lineatur 3 (mit Hilfslinien).
+   Mit Stift, Maus oder Finger. Wird ein Stift benutzt, werden Finger ignoriert
+   (dann kann die Hand auf dem Bildschirm liegen). */
+let sListe = [], sAkt = null, heft = null;
+let lineatur = 4;
+try { lineatur = parseInt(localStorage.getItem("de_lineatur") || "4", 10) === 3 ? 3 : 4; } catch (e) {}
+function schreiben() {
+  sListe = mischen(sammle("schreiben"));
+  if (!sListe.length) return leer("✍️ Schreiben");
+  naechsteSchreib();
+}
+function naechsteSchreib() {
+  if (!sListe.length) return fertig("✍️ Schreiben", "Du hast alle Schreibaufgaben geschafft! 🎉", "schreiben()");
+  sAkt = sListe.shift();
+  zeigeSchreib();
+}
+function freiesHeft() {
+  sListe = [];
+  sAkt = { kapitel: "Freies Heft", f: "Schreibe, was du üben möchtest – zum Beispiel wörtliche Rede oder Sätze mit Nomen, Verben und Adjektiven.", zeilen: 8, frei: true };
+  zeigeSchreib();
+}
+function zeigeSchreib() {
+  const a = sAkt;
+  app.innerHTML = kopfleiste("✍️ Schreiben") + `
+    <div class="box">
+      <span class="kapitel">${esc(a.kapitel)}</span>
+      <div class="frage" style="white-space:pre-line">${esc(a.f)} ${vorleseKnopf(a.f)}</div>
+      <div class="werkzeug">
+        <button class="btn blau klein an" id="wzStift" onclick="heftWerkzeug('stift')">✏️ Stift</button>
+        <button class="btn klein" style="background:#c8322f;box-shadow:0 3px 0 #8a1f1d" id="wzRot" onclick="heftWerkzeug('rot')">🖍️ Rot</button>
+        <button class="btn grau klein" id="wzRadierer" onclick="heftWerkzeug('radierer')">🧽 Radierer</button>
+        <button class="btn grau klein" onclick="heftZurueck()">↩️ Zurück</button>
+        <button class="btn grau klein" onclick="heftLeeren()">🗑️ Alles weg</button>
+        <button class="btn grau klein" onclick="heftZeilen(2)">➕ Zeilen</button>
+        <button class="btn grau klein" onclick="heftLineatur()" id="wzLin">📏 Lineatur ${lineatur}</button>
+      </div>
+      <div class="heftwrap"><canvas id="heft"></canvas></div>
+      <p class="hinweis" style="margin-top:8px">Schreibe mit dem Stift (oder mit Maus oder Finger) auf die Linien.</p>
+      <div id="vergleich"></div>
+      <div class="mitte" id="sKnoepfe">
+        ${a.frei ? `<button class="btn grau" onclick="startseite()">Fertig</button>` : `<button class="btn gruen" onclick="schreibVergleichen()">✔ Fertig – vergleichen</button><button class="btn grau" onclick="naechsteSchreib()">Überspringen ➜</button>`}
+      </div>
+    </div>`;
+  heftStart(a.zeilen || 4);
+}
+function heftStart(zeilen) {
+  const cv = document.getElementById("heft");
+  heft = { cv, ctx: cv.getContext("2d"), striche: [], aktuell: null, zeilen, werkzeug: "stift", stiftGesehen: false, zeiger: null };
+  heftGroesse();
+  cv.addEventListener("pointerdown", heftRunter);
+  cv.addEventListener("pointermove", heftZiehen);
+  cv.addEventListener("pointerup", heftHoch);
+  cv.addEventListener("pointercancel", heftHoch);
+  cv.addEventListener("pointerleave", heftHoch);
+  cv.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+  cv.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
+}
+window.addEventListener("resize", () => { if (heft && document.body.contains(heft.cv)) heftGroesse(); });
+const ZEILE = 62; // Zeilenhöhe in Pixeln bei 800 px Breite
+function heftMasse() { const b = heft.cv.clientWidth || 800, f = Math.max(0.6, Math.min(1.2, b / 800)); return { b, zh: ZEILE * f, oben: 26 * f }; }
+function heftGroesse() {
+  const cv = heft.cv, dpr = window.devicePixelRatio || 1, m = heftMasse();
+  const h = Math.round(m.oben + m.zh * heft.zeilen + 20);
+  cv.style.height = h + "px";
+  cv.width = Math.round(m.b * dpr); cv.height = Math.round(h * dpr);
+  heft.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  heftMalen();
+}
+function heftLinien() {
+  const ctx = heft.ctx, m = heftMasse(), b = m.b, h = heft.cv.clientHeight;
+  ctx.fillStyle = "#fffef8"; ctx.fillRect(0, 0, b, h);
+  const rl = Math.max(28, b * 0.07), rr = b - Math.max(20, b * 0.05);
+  ctx.lineWidth = 1.2;
+  for (let i = 0; i < heft.zeilen; i++) {
+    const grund = m.oben + m.zh * (i + 1) - m.zh * 0.18;
+    if (lineatur === 3) {
+      // Lineatur 3: Ober- und Mittelband mit Hilfslinien
+      const x = m.zh * 0.30;
+      ctx.fillStyle = "#eef4fb"; ctx.fillRect(rl, grund - x, rr - rl, x);
+      ctx.strokeStyle = "#c6d3e6";
+      [grund - 2 * x, grund - x, grund + x * 0.9].forEach(y => { ctx.beginPath(); ctx.moveTo(rl, y); ctx.lineTo(rr, y); ctx.stroke(); });
+    }
+    ctx.strokeStyle = "#8ea3c4"; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(0, grund); ctx.lineTo(b, grund); ctx.stroke();
+    ctx.lineWidth = 1.2;
+  }
+  ctx.strokeStyle = "#b8b8b8"; ctx.lineWidth = 1.2;
+  [rl, rr].forEach(x => { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); });
+}
+function heftStrich(s) {
+  const ctx = heft.ctx, b = heftMasse().b, p = s.p;
+  if (!p.length) return;
+  ctx.strokeStyle = s.farbe; ctx.fillStyle = s.farbe; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  if (p.length === 1) { ctx.beginPath(); ctx.arc(p[0][0] * b, p[0][1] * b, s.dicke * b / 2, 0, 7); ctx.fill(); return; }
+  for (let i = 1; i < p.length; i++) {
+    ctx.lineWidth = s.dicke * b * (0.55 + 0.9 * (p[i][2] || 0.5));
+    ctx.beginPath();
+    const a = p[i - 1], c = p[i];
+    if (i >= 2) { const z = p[i - 2]; ctx.moveTo((z[0] + a[0]) / 2 * b, (z[1] + a[1]) / 2 * b); ctx.quadraticCurveTo(a[0] * b, a[1] * b, (a[0] + c[0]) / 2 * b, (a[1] + c[1]) / 2 * b); }
+    else { ctx.moveTo(a[0] * b, a[1] * b); ctx.lineTo((a[0] + c[0]) / 2 * b, (a[1] + c[1]) / 2 * b); }
+    ctx.stroke();
+  }
+  const l = p[p.length - 1], v = p[p.length - 2];
+  ctx.beginPath(); ctx.moveTo((v[0] + l[0]) / 2 * b, (v[1] + l[1]) / 2 * b); ctx.lineTo(l[0] * b, l[1] * b); ctx.stroke();
+}
+function heftMalen() { heftLinien(); heft.striche.forEach(heftStrich); if (heft.aktuell) heftStrich(heft.aktuell); }
+function heftPunkt(e) {
+  const r = heft.cv.getBoundingClientRect(), b = r.width;
+  const druck = e.pointerType === "pen" && e.pressure > 0 ? e.pressure : 0.5;
+  return [(e.clientX - r.left) / b, (e.clientY - r.top) / b, druck];
+}
+function heftRunter(e) {
+  if (e.pointerType === "pen") heft.stiftGesehen = true;
+  if (e.pointerType === "touch" && heft.stiftGesehen) return; // Hand auflegen erlaubt
+  if (heft.zeiger !== null) return;
+  e.preventDefault();
+  heft.zeiger = e.pointerId;
+  try { heft.cv.setPointerCapture(e.pointerId); } catch (x) {}
+  if (heft.werkzeug === "radierer" || e.button === 5 || (e.buttons & 32)) { heft.radiert = true; heftRadieren(heftPunkt(e)); return; }
+  heft.radiert = false;
+  heft.aktuell = { farbe: heft.werkzeug === "rot" ? "#c8322f" : "#1f3c9a", dicke: 0.0042, p: [heftPunkt(e)] };
+  heftMalen();
+}
+function heftZiehen(e) {
+  if (e.pointerId !== heft.zeiger) return;
+  e.preventDefault();
+  if (heft.radiert) return heftRadieren(heftPunkt(e));
+  const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+  (ev.length ? ev : [e]).forEach(x => heft.aktuell.p.push(heftPunkt(x)));
+  heftMalen();
+}
+function heftHoch(e) {
+  if (e.pointerId !== heft.zeiger) return;
+  heft.zeiger = null;
+  if (heft.aktuell) { heft.striche.push(heft.aktuell); heft.aktuell = null; }
+  heftMalen();
+}
+function heftRadieren(pt) {
+  const r = 0.018, vorher = heft.striche.length;
+  heft.striche = heft.striche.filter(s => !s.p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < r));
+  if (heft.striche.length !== vorher) heftMalen();
+}
+function heftWerkzeug(w) {
+  heft.werkzeug = w;
+  [["wzStift", "stift"], ["wzRot", "rot"], ["wzRadierer", "radierer"]].forEach(([id, x]) => document.getElementById(id).classList.toggle("an", x === w));
+}
+function heftZurueck() { heft.striche.pop(); heftMalen(); }
+function heftLeeren() { if (heft.striche.length && !confirm("Alles wegradieren?")) return; heft.striche = []; heftMalen(); }
+function heftZeilen(n) { heft.zeilen = Math.min(20, heft.zeilen + n); heftGroesse(); }
+function heftLineatur() {
+  lineatur = lineatur === 4 ? 3 : 4;
+  try { localStorage.setItem("de_lineatur", lineatur); } catch (e) {}
+  document.getElementById("wzLin").textContent = "📏 Lineatur " + lineatur;
+  heftMalen();
+}
+function schreibVergleichen() {
+  const a = sAkt;
+  if (!heft.striche.length) { document.getElementById("vergleich").innerHTML = `<div class="feedback tipp">Schreibe zuerst etwas ins Heft. ✏️</div>`; return; }
+  document.getElementById("vergleich").innerHTML = `
+    <h3 style="margin:16px 0 6px">So könnte es aussehen:</h3>
+    <div class="muster">${a.muster.map(esc).join("<br>")}</div>
+    <h3 style="margin:16px 0 6px">Kontrolliere dich selbst. Hast du an alles gedacht?</h3>
+    <div class="check">${(a.check || []).map((c, i) => `<label><input type="checkbox" id="ck${i}" onchange="schreibCheck()"> ${esc(c)}</label>`).join("")}</div>
+    <p class="hinweis">Wenn etwas fehlt: verbessere es mit dem roten Stift und hake es dann ab.</p>`;
+  document.getElementById("sKnoepfe").innerHTML = `<button class="btn gruen" id="sFertig" disabled style="opacity:.5" onclick="schreibGeschafft()">⭐ Alles richtig – weiter</button><button class="btn grau" onclick="naechsteSchreib()">Weiter ohne Stern ➜</button>`;
+  document.getElementById("vergleich").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function schreibCheck() {
+  const alle = [...document.querySelectorAll(".check input")].every(c => c.checked), b = document.getElementById("sFertig");
+  b.disabled = !alle; b.style.opacity = alle ? 1 : .5;
+}
+function schreibGeschafft() { sternDazu(); sternDazu(); naechsteSchreib(); }
+
+/* ---------- Zuordnen ---------- */
+let zPaare = [], zLinks = null, zRunde = [], zFehler = 0, zFalsch = new Set();
+function zuordnen() {
+  zPaare = mischen(sammle("paare"));
+  if (!zPaare.length) return leer("🔗 Zuordnen");
+  naechsteRunde();
+}
+function naechsteRunde() {
+  if (!zPaare.length) return fertig("🔗 Zuordnen", "Alles richtig zugeordnet! 🎉", "zuordnen()");
+  zRunde = zPaare.splice(0, 5).map((p, i) => Object.assign({ nr: i }, p));
+  zLinks = null; zFehler = 0; zFalsch = new Set();
+  const links = mischen(zRunde), rechts = mischen(zRunde);
+  app.innerHTML = kopfleiste("🔗 Zuordnen") + `
+    <p class="hinweis">Tippe links etwas an und dann rechts das, was dazu passt.</p>
+    <div class="spalten">
+      <div>${links.map(p => `<button class="feld" id="l${p.nr}" onclick="zWaehleLinks(${p.nr})">${bildHtml(p.bild, "")}${esc(p.a)}</button>`).join("")}</div>
+      <div>${rechts.map(p => `<button class="feld" id="r${p.nr}" onclick="zWaehleRechts(${p.nr})">${esc(p.b)}</button>`).join("")}</div>
+    </div>
+    <div class="feedback" id="fb"></div>`;
+}
+function zWaehleLinks(nr) {
+  const el = document.getElementById("l" + nr);
+  if (el.classList.contains("fertig")) return;
+  document.querySelectorAll(".feld.aktiv").forEach(e => e.classList.remove("aktiv"));
+  zLinks = nr; el.classList.add("aktiv");
+}
+function zWaehleRechts(nr) {
+  const el = document.getElementById("r" + nr);
+  if (el.classList.contains("fertig")) return;
+  const fb = document.getElementById("fb");
+  if (zLinks === null) { fb.className = "feedback"; fb.textContent = "Tippe zuerst links etwas an."; return; }
+  if (zLinks === nr) {
+    el.classList.add("fertig"); const l = document.getElementById("l" + nr); l.classList.remove("aktiv"); l.classList.add("fertig");
+    zLinks = null; if (!zFalsch.has(nr)) sternDazu(); fb.className = "feedback ok"; fb.textContent = zFalsch.has(nr) ? "Richtig!" : "Richtig! ⭐";
+    if (document.querySelectorAll(".spalten .feld:not(.fertig)").length === 0) {
+      fb.innerHTML = `Runde geschafft! 🎉 <div class="mitte"><button class="btn gruen" onclick="naechsteRunde()">Weiter ➜</button></div>`;
+    }
+  } else {
+    zFehler++; zFalsch.add(zLinks); el.classList.remove("wackel"); void el.offsetWidth; el.classList.add("wackel");
+    fb.className = "feedback nein"; fb.textContent = "Das passt nicht. Versuch es nochmal!";
+  }
+}
+
+/* ---------- Rätsel (Lösungswort) ---------- */
+let rtListe = [], rt = null, rtIndex = 0, rtFehler = 0;
+function raetsel() {
+  rtListe = sammle("raetsel");
+  if (!rtListe.length) return leer("🧩 Rätsel");
+  rt = rtListe.shift(); rtIndex = 0;
+  zeigeRaetsel();
+}
+function rtNorm(s) { return s.toLowerCase().replace(/ß/g, "ss").replace(/[^a-zäöüs]/g, ""); }
+function rtLoesung(bis) {
+  return rt.fragen.map((q, i) => `<span class="lbuchst ${i < bis ? "da" : ""}">${i < bis ? esc(q.w[q.p].toUpperCase()) : ""}</span>`).join("");
+}
+function rtKaestchen(wort, p, text) {
+  const t = [...(text || "")];
+  return `<div class="kaestchen">${[...wort].map((c, i) => `<span class="${i === p ? "ziel" : ""}">${esc((t[i] || "").toUpperCase())}</span>`).join("")}</div>`;
+}
+function zeigeRaetsel() {
+  if (rtIndex >= rt.fragen.length) {
+    app.innerHTML = kopfleiste("🧩 Rätsel", 1) + `<div class="box ende"><div class="gross">🏆</div>${rt.luecke ? `<p>Alle Lücken sind gefüllt!</p>` : `<p>Das Lösungswort:</p><div class="loesung">${rtLoesung(rt.fragen.length)}</div>`}
+      <h2>Super gelöst! 🎉</h2><div class="mitte">${rtListe.length ? `<button class="btn gruen" onclick="rt=rtListe.shift();rtIndex=0;zeigeRaetsel()">Nächstes Rätsel ➜</button>` : `<button class="btn gruen" onclick="raetsel()">Nochmal!</button>`}<button class="btn grau" onclick="startseite()">Zur Übersicht</button></div></div>`;
+    return;
+  }
+  const q = rt.fragen[rtIndex]; rtFehler = 0;
+  app.innerHTML = kopfleiste("🧩 Rätsel", rtIndex / rt.fragen.length) + `
+    <div class="box">
+      <span class="kapitel">${esc(rt.kapitel)}</span>
+      ${rt.luecke ? `<p class="hinweis" style="margin-top:8px">${esc(rt.titel)} – Lücke ${rtIndex + 1} von ${rt.fragen.length}. Welches Wort fehlt?</p>` : `<p class="hinweis" style="margin-top:8px">Lösungswort:</p><div class="loesung">${rtLoesung(rtIndex)}</div>
+      <p class="hinweis">Frage ${rtIndex + 1} von ${rt.fragen.length}. Das orange Kästchen ist ein Buchstabe vom Lösungswort.</p>`}
+      ${q.bild ? `<div style="text-align:center">${bildHtml(q.bild)}</div>` : ""}
+      <div class="frage">${esc(q.f)} ${vorleseKnopf(q.f)}</div>
+      <div id="kast">${rtKaestchen(q.w, q.p, "")}</div>
+      <div class="leiste" style="justify-content:center"><input class="codeeingabe" id="rtIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="${[...q.w].length + 2}" placeholder="Wort eintippen"
+        oninput="document.getElementById('kast').innerHTML=rtKaestchen(rt.fragen[rtIndex].w, rt.fragen[rtIndex].p, this.value)" onkeydown="if(event.key==='Enter')rtPruefen()">
+        <button class="btn blau" onclick="rtPruefen()">Prüfen</button></div>
+      <div class="feedback" id="fb"></div>
+      <div class="mitte" id="weiter"></div>
+    </div>`;
+  setTimeout(() => { const i = document.getElementById("rtIn"); if (i) i.focus(); }, 50);
+}
+function rtPruefen() {
+  const q = rt.fragen[rtIndex], ein = document.getElementById("rtIn"), fb = document.getElementById("fb");
+  if (!ein.value.trim()) return;
+  if (rtNorm(ein.value) === rtNorm(q.w)) {
+    if (rtFehler === 0) sternDazu();
+    fb.className = "feedback ok"; fb.textContent = rtFehler === 0 ? "Richtig! ⭐" : "Richtig!";
+    document.getElementById("kast").innerHTML = rtKaestchen(q.w, q.p, q.w);
+    ein.disabled = true;
+    document.getElementById("weiter").innerHTML = `<button class="btn gruen" onclick="rtIndex++;zeigeRaetsel()">Weiter ➜</button>`;
+    return;
+  }
+  rtFehler++;
+  ein.classList.remove("wackel"); void ein.offsetWidth; ein.classList.add("wackel");
+  fb.className = "feedback nein";
+  fb.textContent = rtFehler === 1 ? `Noch nicht. Tipp: Das Wort hat ${[...q.w].length} Buchstaben.` : `Tipp: Es fängt mit „${q.w.slice(0, rtFehler).toUpperCase()}“ an.`;
+  if (rtFehler >= 3) document.getElementById("weiter").innerHTML = `<button class="btn grau" onclick="rtZeigen()">Lösung zeigen</button>`;
+}
+function rtZeigen() {
+  const q = rt.fragen[rtIndex], ein = document.getElementById("rtIn");
+  ein.value = q.w; ein.disabled = true;
+  document.getElementById("kast").innerHTML = rtKaestchen(q.w, q.p, q.w);
+  document.getElementById("fb").className = "feedback"; document.getElementById("fb").textContent = "Das Wort ist: " + q.w;
+  document.getElementById("weiter").innerHTML = `<button class="btn gruen" onclick="rtIndex++;zeigeRaetsel()">Weiter ➜</button>`;
+}
+
+/* ---------- Reihenfolge ---------- */
+let rListe = [], rAktuell = null, rSchritt = 0, rFalsch = false;
+function reihenfolge() {
+  rListe = mischen(sammle("reihen"));
+  if (!rListe.length) return leer("🔢 Reihenfolge");
+  naechsteReihe();
+}
+function naechsteReihe() {
+  if (!rListe.length) return fertig("🔢 Reihenfolge", "Du kennst alle Reihenfolgen! 🎉", "reihenfolge()");
+  rAktuell = rListe.shift(); rSchritt = 0; rFalsch = false;
+  zeigeReihe();
+}
+function zeigeReihe() {
+  const r = rAktuell, rest = mischen(r.schritte.map((t, i) => ({ t, i })).filter(s => s.i >= rSchritt));
+  app.innerHTML = kopfleiste("🔢 Reihenfolge", rSchritt / r.schritte.length) + `
+    <div class="box">
+      <span class="kapitel">${esc(r.kapitel)}</span>
+      ${r.bild ? `<div style="text-align:center">${bildHtml(r.bild)}</div>` : ""}
+      <div class="frage">${esc(r.titel)}</div>
+      <p class="hinweis">Was kommt zuerst? Tippe die Schritte der Reihe nach an.</p>
+      <ol class="liste">${r.schritte.slice(0, rSchritt).map((t, i) => `<li><b>${i + 1}.</b>${esc(t)}</li>`).join("")}</ol>
+      ${rSchritt < r.schritte.length
+        ? `<div class="auswahl">${rest.map(s => `<button class="feld" id="s${s.i}" onclick="rWaehle(${s.i})">${esc(s.t)}</button>`).join("")}</div>`
+        : `<div class="feedback ok">Richtig geordnet! 🎉</div><div class="mitte"><button class="btn gruen" onclick="naechsteReihe()">Weiter ➜</button></div>`}
+      <div class="feedback" id="fb"></div>
+    </div>`;
+}
+function rWaehle(i) {
+  if (i === rSchritt) { if (!rFalsch) sternDazu(); rSchritt++; rFalsch = false; zeigeReihe(); }
+  else {
+    rFalsch = true;
+    const el = document.getElementById("s" + i); el.classList.remove("wackel"); void el.offsetWidth; el.classList.add("wackel");
+    const fb = document.getElementById("fb"); fb.className = "feedback nein"; fb.textContent = "Noch nicht! Was kommt davor?";
+  }
+}
+
+/* ========================== SPIELECKE ==========================
+   Jede Spielrunde kostet Sterne. Sterne gibt es nur fürs Lernen.
+   Preis hier ändern: */
+const SPIEL_PREIS = 5;
+const SPIELE = [
+  { id: "bounce", name: "Bounceball", icon: "🏓", text: "Halte den Ball mit dem Balken in der Luft und zerschlage alle Steine. Jedes Level wird schneller!", start: () => bounceStart() },
+  { id: "block", name: "Blockfall", icon: "🧱", text: "Drehe die fallenden Blöcke und mache volle Reihen. Wie Tetris, mit Levels.", start: () => blockStart() },
+  { id: "weltraum", name: "Weltraum-Abwehr", icon: "🚀", text: "Schieße Meteore und Aliens ab und weiche ihren Laserschüssen aus.", start: () => weltraumStart() },
+  { id: "ballon", name: "Ballonplatzen", icon: "🎈", text: "Platze in 30 Sekunden so viele Ballons wie du kannst!", start: () => ballonStart() },
+  { id: "memory", name: "Memory", icon: "🐶", text: "Finde alle Tier-Paare mit möglichst wenigen Zügen.", start: () => memoryStart() },
+  { id: "snake", name: "Snake", icon: "🐍", text: "Friss Äpfel und werde immer länger. Nicht gegen die Wand!", start: () => snakeStart() }
+];
+let spielTimer = [], spielTasten = null;
+function spielStop() {
+  spielTimer.forEach(t => { clearInterval(t); clearTimeout(t); cancelAnimationFrame(t); });
+  spielTimer = [];
+  if (spielTasten) { document.removeEventListener("keydown", spielTasten); document.removeEventListener("keyup", spielTasten); spielTasten = null; }
+}
+function rekord(id, wert, kleinerBesser) {
+  let alt = null;
+  try { const v = localStorage.getItem("de_rekord_" + id); alt = v === null ? null : Number(v); } catch (e) {}
+  const neu = alt === null || (kleinerBesser ? wert < alt : wert > alt);
+  if (neu) { try { localStorage.setItem("de_rekord_" + id, wert); } catch (e) {} }
+  return { neu, rekord: neu ? wert : alt };
+}
+function rekordLesen(id) { try { const v = localStorage.getItem("de_rekord_" + id); return v === null ? null : Number(v); } catch (e) { return null; } }
+
+function spielecke() {
+  spielStop();
+  const genug = sterne >= SPIEL_PREIS;
+  app.innerHTML = kopfleiste("🎮 Spielecke") + `
+    <div class="box" style="text-align:center;margin-bottom:18px">
+      <div style="font-size:26px">Du hast <b>⭐ ${sterne}</b> Sterne.</div>
+      <p class="hinweis" style="margin:6px 0 0">${genug ? `Jede Spielrunde kostet ⭐ ${SPIEL_PREIS} Sterne.` : `Du brauchst ⭐ ${SPIEL_PREIS} Sterne für eine Runde. Lerne weiter, dann kannst du spielen! 📚`}</p>
+    </div>
+    <div class="modi">
+      ${SPIELE.map(s => { const r = rekordLesen(s.id); return `<button class="modus" ${genug ? "" : "disabled"} onclick="spielKaufen('${s.id}')"><span class="ic">${s.icon}</span><b>${s.name}</b><small>${s.text}${r !== null ? `<br>🏅 Rekord: ${r}${s.id === "memory" ? " Züge" : ""}` : ""}</small><br><span class="preis">⭐ ${SPIEL_PREIS}</span></button>`; }).join("")}
+    </div>
+    ${genug ? "" : `<div class="mitte"><button class="btn gruen" onclick="startseite()">📚 Jetzt lernen</button></div>`}`;
+}
+function spielKaufen(id) {
+  if (sterne < SPIEL_PREIS) return spielecke();
+  sterne -= SPIEL_PREIS; zeigeSterne(); speichern();
+  SPIELE.find(s => s.id === id).start();
+}
+function spielEnde(id, titel, text) {
+  spielStop();
+  const genug = sterne >= SPIEL_PREIS;
+  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🎉</div><h2>${text}</h2><p>Du hast noch ⭐ ${sterne} Sterne.</p>
+    <div class="mitte">${genug ? `<button class="btn gruen" onclick="spielKaufen('${id}')">Nochmal (⭐ ${SPIEL_PREIS})</button>` : ""}
+    <button class="btn" onclick="spielecke()">Zur Spielecke</button><button class="btn grau" onclick="startseite()">📚 Weiter lernen</button></div></div>`;
+}
+
+/* ---------- Ballonplatzen ---------- */
+function ballonStart() {
+  spielStop();
+  let punkte = 0, zeit = 30, ballons = [];
+  app.innerHTML = kopfleiste("🎈 Ballonplatzen") + `<div class="spielinfo"><span>💥 <span id="bp">0</span></span><span>⏱️ <span id="bz">30</span> s</span></div><div class="himmel" id="himmel"></div>`;
+  const himmel = document.getElementById("himmel");
+  const farben = [0, 60, 120, 200, 280, 320];
+  function neuerBallon() {
+    const b = document.createElement("div");
+    b.className = "ballon"; b.textContent = "🎈";
+    const breite = himmel.clientWidth;
+    const x = Math.random() * Math.max(10, breite - 60);
+    b.style.left = x + "px"; b.style.top = himmel.clientHeight + "px";
+    b.style.filter = `hue-rotate(${farben[Math.floor(Math.random() * farben.length)]}deg)`;
+    const obj = { el: b, y: himmel.clientHeight, v: 1.4 + Math.random() * 1.8 + (30 - zeit) * 0.06 };
+    b.addEventListener("pointerdown", e => {
+      e.preventDefault(); if (obj.weg) return;
+      obj.weg = true; punkte++; document.getElementById("bp").textContent = punkte;
+      b.textContent = "💥"; b.style.filter = "none";
+      setTimeout(() => b.remove(), 200);
+    });
+    himmel.appendChild(b); ballons.push(obj);
+  }
+  let letzte = performance.now();
+  function schritt(jetzt) {
+    const dt = Math.min(50, jetzt - letzte) / 16.7; letzte = jetzt;
+    ballons.forEach(o => { if (o.weg) return; o.y -= o.v * dt; o.el.style.top = o.y + "px"; if (o.y < -80) { o.weg = true; o.el.remove(); } });
+    ballons = ballons.filter(o => !o.weg || o.el.isConnected);
+    spielTimer.push(requestAnimationFrame(schritt));
+  }
+  spielTimer.push(requestAnimationFrame(schritt));
+  spielTimer.push(setInterval(neuerBallon, 550));
+  spielTimer.push(setInterval(() => {
+    zeit--; const z = document.getElementById("bz"); if (z) z.textContent = zeit;
+    if (zeit <= 0) {
+      const r = rekord("ballon", punkte, false);
+      spielEnde("ballon", "🎈 Ballonplatzen", `Du hast ${punkte} Ballons geplatzt!${r.neu && punkte > 0 ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord})`}`);
+    }
+  }, 1000));
+  neuerBallon();
+}
+
+/* ---------- Memory ---------- */
+function memoryStart() {
+  spielStop();
+  const tiere = mischen(["🐶", "🐱", "🦊", "🐼", "🐸", "🐵", "🦁", "🐰", "🐷", "🐨", "🐯", "🐮"]).slice(0, 8);
+  const karten = mischen(tiere.concat(tiere));
+  let offen = [], zuege = 0, gefunden = 0, sperre = false;
+  app.innerHTML = kopfleiste("🐶 Memory") + `<div class="spielinfo"><span>🔄 Züge: <span id="mz">0</span></span><span>✅ Paare: <span id="mp">0</span> / 8</span></div>
+    <div class="memory">${karten.map((t, i) => `<button class="mkarte" id="m${i}" onclick="memoryKlick(${i})">${t}</button>`).join("")}</div>`;
+  window.memoryKlick = i => {
+    const el = document.getElementById("m" + i);
+    if (sperre || el.classList.contains("offen") || el.classList.contains("weg")) return;
+    el.classList.add("offen"); offen.push(i);
+    if (offen.length < 2) return;
+    zuege++; document.getElementById("mz").textContent = zuege;
+    const [a, b] = offen; offen = [];
+    if (karten[a] === karten[b]) {
+      gefunden++; document.getElementById("mp").textContent = gefunden;
+      [a, b].forEach(j => { const e = document.getElementById("m" + j); e.classList.remove("offen"); e.classList.add("weg"); });
+      if (gefunden === 8) spielTimer.push(setTimeout(() => {
+        const r = rekord("memory", zuege, true);
+        spielEnde("memory", "🐶 Memory", `Geschafft in ${zuege} Zügen!${r.neu ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord} Züge)`}`);
+      }, 600));
+    } else {
+      sperre = true;
+      spielTimer.push(setTimeout(() => { [a, b].forEach(j => document.getElementById("m" + j).classList.remove("offen")); sperre = false; }, 900));
+    }
+  };
+}
+
+/* ---------- Snake ---------- */
+function snakeStart() {
+  spielStop();
+  const N = 16, groesse = Math.min(400, document.getElementById("app").clientWidth - 20), z = Math.floor(groesse / N);
+  app.innerHTML = kopfleiste("🐍 Snake") + `<div class="spielinfo"><span>🍎 <span id="sp">0</span></span></div>
+    <canvas id="snake" width="${z * N}" height="${z * N}"></canvas>
+    <p class="hinweis" style="text-align:center">Steuern mit den Pfeiltasten, durch Wischen oder mit den Knöpfen.</p>
+    <div class="steuer"><span></span><button onclick="snakeRichtung(0,-1)">⬆️</button><span></span>
+    <button onclick="snakeRichtung(-1,0)">⬅️</button><button onclick="snakeRichtung(0,1)">⬇️</button><button onclick="snakeRichtung(1,0)">➡️</button></div>`;
+  const cv = document.getElementById("snake"), ctx = cv.getContext("2d");
+  let schlange = [{ x: 7, y: 8 }, { x: 6, y: 8 }, { x: 5, y: 8 }], dir = { x: 1, y: 0 }, naechste = dir, apfel = null, punkte = 0, tempo = 170;
+  function neuerApfel() {
+    do { apfel = { x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) }; }
+    while (schlange.some(s => s.x === apfel.x && s.y === apfel.y));
+  }
+  window.snakeRichtung = (x, y) => { if (x !== -dir.x || y !== -dir.y) naechste = { x, y }; };
+  spielTasten = e => {
+    const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] }[e.key];
+    if (m) { e.preventDefault(); snakeRichtung(m[0], m[1]); }
+  };
+  document.addEventListener("keydown", spielTasten);
+  let tx = null, ty = null;
+  cv.addEventListener("touchstart", e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  cv.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+    if (Math.abs(dx) > Math.abs(dy)) snakeRichtung(dx > 0 ? 1 : -1, 0); else snakeRichtung(0, dy > 0 ? 1 : -1);
+  });
+  function malen() {
+    ctx.fillStyle = "#1d3b2a"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = "#e53935"; ctx.beginPath(); ctx.arc(apfel.x * z + z / 2, apfel.y * z + z / 2, z * 0.42, 0, Math.PI * 2); ctx.fill();
+    schlange.forEach((s, i) => { ctx.fillStyle = i === 0 ? "#ffd84d" : "#6ccf6e"; ctx.fillRect(s.x * z + 1, s.y * z + 1, z - 2, z - 2); });
+  }
+  function takt() {
+    dir = naechste;
+    const kopf = { x: schlange[0].x + dir.x, y: schlange[0].y + dir.y };
+    if (kopf.x < 0 || kopf.y < 0 || kopf.x >= N || kopf.y >= N || schlange.some(s => s.x === kopf.x && s.y === kopf.y)) {
+      const r = rekord("snake", punkte, false);
+      return spielEnde("snake", "🐍 Snake", `Du hast ${punkte} Äpfel gefressen!${r.neu && punkte > 0 ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord})`}`);
+    }
+    schlange.unshift(kopf);
+    if (kopf.x === apfel.x && kopf.y === apfel.y) {
+      punkte++; document.getElementById("sp").textContent = punkte; neuerApfel();
+      tempo = Math.max(80, tempo - 4);
+    } else schlange.pop();
+    malen();
+    spielTimer.push(setTimeout(takt, tempo));
+  }
+  neuerApfel(); malen();
+  spielTimer.push(setTimeout(takt, 600));
+}
+
+/* ---------- Gemeinsames für die Action-Spiele ---------- */
+function spielSchleife(cv, schritt) {
+  // Läuft, solange das Spielfeld auf der Seite ist. dt = 1 bei 60 Bildern pro Sekunde.
+  let letzte = performance.now();
+  function lauf(jetzt) {
+    if (!cv.isConnected) return;
+    const dt = Math.min(50, jetzt - letzte) / 16.7; letzte = jetzt;
+    if (schritt(dt, jetzt) === false) return;
+    spielTimer.push(requestAnimationFrame(lauf));
+  }
+  spielTimer.push(requestAnimationFrame(lauf));
+}
+function spielX(cv, e) { const r = cv.getBoundingClientRect(); return (e.clientX - r.left) * cv.width / r.width; }
+function pauseText(ctx, w, h, oben, unten) {
+  ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = "bold 32px Segoe UI, Arial"; ctx.fillText(oben, w / 2, h / 2 - 18);
+  ctx.font = "18px Segoe UI, Arial"; ctx.fillText(unten, w / 2, h / 2 + 20);
+}
+function rekordText(r, punkte) { return r.neu && punkte > 0 ? " 🏅 Neuer Rekord!" : ` (Rekord: ${r.rekord})`; }
+
+/* ---------- Bounceball (Breakout) ---------- */
+function bounceStart() {
+  spielStop();
+  const W = 480, H = 600;
+  app.innerHTML = kopfleiste("🏓 Bounceball") + `<div class="spielinfo"><span>🏆 <span id="bbp">0</span></span><span>❤️ <span id="bbl">3</span></span><span>📶 Level <span id="bbv">1</span></span></div>
+    <canvas id="bounce" class="spielfeld" width="${W}" height="${H}"></canvas>
+    <p class="hinweis" style="text-align:center">Balken mit Maus, Finger oder ⬅️ ➡️ steuern. Klick oder Leertaste schießt den Ball ab. P = Pause.</p>`;
+  const cv = document.getElementById("bounce"), ctx = cv.getContext("2d");
+  const FARBEN = ["#ef5350", "#ffa726", "#ffee58", "#66bb6a", "#42a5f5", "#ab47bc", "#ec407a", "#26c6da"];
+  let punkte = 0, leben = 3, level = 1, pause = false, links = false, rechts = false;
+  const p = { x: W / 2, w: 90, h: 14, y: H - 34 };
+  let ball, steine;
+  function tempoBasis() { return 5 + level * 0.7; }
+  function neuerBall() { ball = { x: p.x, y: p.y - 9, vx: 0, vy: 0, r: 8, klebt: true, s: tempoBasis() }; }
+  function neuesLevel() {
+    const reihen = Math.min(8, 4 + level), spalten = 10, bw = 44, bh = 18, gap = 4, links0 = (W - (spalten * bw + (spalten - 1) * gap)) / 2;
+    steine = [];
+    for (let r = 0; r < reihen; r++) for (let c = 0; c < spalten; c++) {
+      // ab Level 2 Lücken-Muster, ab Level 2 harte Steine (2 Treffer), ab Level 4 sehr harte (3 Treffer)
+      if (level >= 3 && (r + c + level) % 7 === 0) continue;
+      let haerte = 1;
+      if (level >= 2 && r < Math.min(level - 1, 3)) haerte = 2;
+      if (level >= 4 && r === 0) haerte = 3;
+      steine.push({ x: links0 + c * (bw + gap), y: 70 + r * (bh + gap), w: bw, h: bh, hp: haerte, farbe: FARBEN[r % FARBEN.length] });
+    }
+    p.w = Math.max(56, 96 - level * 6);
+    neuerBall();
+    document.getElementById("bbv").textContent = level;
+  }
+  function abschiessen() {
+    if (pause || !ball.klebt) return;
+    const winkel = (Math.random() - 0.5) * 0.8;
+    ball.klebt = false; ball.vx = ball.s * Math.sin(winkel); ball.vy = -ball.s * Math.cos(winkel);
+  }
+  cv.addEventListener("pointermove", e => { if (!pause) p.x = spielX(cv, e); });
+  cv.addEventListener("pointerdown", e => { e.preventDefault(); p.x = spielX(cv, e); abschiessen(); });
+  spielTasten = e => {
+    const an = e.type === "keydown";
+    if (e.key === "ArrowLeft" || e.key === "a") { links = an; e.preventDefault(); }
+    else if (e.key === "ArrowRight" || e.key === "d") { rechts = an; e.preventDefault(); }
+    else if (e.key === " " && an) { e.preventDefault(); abschiessen(); }
+    else if ((e.key === "p" || e.key === "P" || e.key === "Escape") && an) pause = !pause;
+  };
+  document.addEventListener("keydown", spielTasten); document.addEventListener("keyup", spielTasten);
+
+  function bewegeBall(dt) {
+    const schritte = Math.ceil(ball.s * dt / 4);
+    for (let i = 0; i < schritte; i++) {
+      const ax = ball.x, ay = ball.y;
+      ball.x += ball.vx * dt / schritte; ball.y += ball.vy * dt / schritte;
+      if (ball.x < ball.r) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); }
+      if (ball.x > W - ball.r) { ball.x = W - ball.r; ball.vx = -Math.abs(ball.vx); }
+      if (ball.y < ball.r) { ball.y = ball.r; ball.vy = Math.abs(ball.vy); }
+      // Balken: Abprallwinkel hängt davon ab, wo der Ball trifft
+      if (ball.vy > 0 && ball.y + ball.r >= p.y && ay + ball.r <= p.y + 4 && ball.x > p.x - p.w / 2 - ball.r && ball.x < p.x + p.w / 2 + ball.r) {
+        const teil = Math.max(-1, Math.min(1, (ball.x - p.x) / (p.w / 2)));
+        ball.s = Math.min(tempoBasis() + 4, ball.s + 0.08);
+        const winkel = teil * 1.1;
+        ball.vx = ball.s * Math.sin(winkel); ball.vy = -ball.s * Math.cos(winkel);
+        ball.y = p.y - ball.r;
+      }
+      for (const st of steine) {
+        if (st.hp <= 0) continue;
+        if (ball.x + ball.r > st.x && ball.x - ball.r < st.x + st.w && ball.y + ball.r > st.y && ball.y - ball.r < st.y + st.h) {
+          const warSeitlich = ax + ball.r <= st.x || ax - ball.r >= st.x + st.w;
+          if (warSeitlich) ball.vx = -ball.vx; else ball.vy = -ball.vy;
+          ball.x = ax; ball.y = ay;
+          st.hp--; punkte += 10 * level; if (st.hp <= 0) punkte += 5 * level;
+          document.getElementById("bbp").textContent = punkte;
+          break;
+        }
+      }
+      if (ball.y - ball.r > H) return false;
+    }
+    return true;
+  }
+  function malen() {
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#1a1f4b"); g.addColorStop(1, "#2d1b4e");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    steine.forEach(st => {
+      if (st.hp <= 0) return;
+      ctx.fillStyle = st.hp === 3 ? "#9e9e9e" : st.hp === 2 ? "#cfd8dc" : st.farbe;
+      ctx.fillRect(st.x, st.y, st.w, st.h);
+      ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(st.x, st.y, st.w, 4);
+      if (st.hp > 1) { ctx.fillStyle = "#37474f"; ctx.font = "bold 13px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(st.hp, st.x + st.w / 2, st.y + st.h / 2 + 1); }
+    });
+    ctx.fillStyle = "#4dd0e1"; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(p.x - p.w / 2, p.y, p.w, p.h, 7) : ctx.rect(p.x - p.w / 2, p.y, p.w, p.h); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+    if (ball.klebt && !pause) { ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.font = "18px Segoe UI, Arial"; ctx.textAlign = "center"; ctx.fillText("Klicken oder Leertaste zum Starten", W / 2, H / 2 + 60); }
+    if (pause) pauseText(ctx, W, H, "⏸ Pause", "P drücken zum Weiterspielen");
+  }
+  neuesLevel();
+  spielSchleife(cv, dt => {
+    if (!pause) {
+      if (links) p.x -= 9 * dt;
+      if (rechts) p.x += 9 * dt;
+      p.x = Math.max(p.w / 2, Math.min(W - p.w / 2, p.x));
+      if (ball.klebt) { ball.x = p.x; ball.y = p.y - ball.r - 1; }
+      else if (!bewegeBall(dt)) {
+        leben--; document.getElementById("bbl").textContent = leben;
+        if (leben <= 0) {
+          const r = rekord("bounce", punkte, false);
+          spielEnde("bounce", "🏓 Bounceball", `Du hast ${punkte} Punkte geschafft (Level ${level})!${rekordText(r, punkte)}`);
+          return false;
+        }
+        neuerBall();
+      }
+      if (steine.every(st => st.hp <= 0)) { punkte += 100 * level; document.getElementById("bbp").textContent = punkte; level++; neuesLevel(); }
+    }
+    malen();
+  });
+}
+
+/* ---------- Blockfall (Tetris) ---------- */
+function blockStart() {
+  spielStop();
+  const SP = 10, RE = 20, Z = 28;
+  app.innerHTML = kopfleiste("🧱 Blockfall") + `<div class="spielinfo"><span>🏆 <span id="tp">0</span></span><span>📏 Reihen: <span id="tr">0</span></span><span>📶 Level <span id="tl">1</span></span></div>
+    <div class="tetris">
+      <canvas id="tfeld" class="spielfeld" width="${SP * Z}" height="${RE * Z}"></canvas>
+      <div class="tseite"><b>Nächster</b><canvas id="tnext" width="112" height="84"></canvas>
+        <p class="hinweis" style="margin:8px 0 0;font-size:15px">⬅️ ➡️ bewegen<br>⬆️ drehen<br>⬇️ schneller<br>Leertaste: fallen lassen<br>P: Pause</p></div>
+    </div>
+    <div class="steuer" style="grid-template-columns:repeat(5,64px)">
+      <button onclick="blockTaste('ArrowLeft')">⬅️</button><button onclick="blockTaste('ArrowUp')">🔄</button><button onclick="blockTaste('ArrowRight')">➡️</button><button onclick="blockTaste('ArrowDown')">⬇️</button><button onclick="blockTaste(' ')">⏬</button></div>`;
+  const cv = document.getElementById("tfeld"), ctx = cv.getContext("2d"), nv = document.getElementById("tnext"), nctx = nv.getContext("2d");
+  const FORMEN = {
+    I: { m: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], f: "#26c6da" },
+    O: { m: [[1, 1], [1, 1]], f: "#ffd54f" },
+    T: { m: [[0, 1, 0], [1, 1, 1], [0, 0, 0]], f: "#ab47bc" },
+    S: { m: [[0, 1, 1], [1, 1, 0], [0, 0, 0]], f: "#66bb6a" },
+    Z: { m: [[1, 1, 0], [0, 1, 1], [0, 0, 0]], f: "#ef5350" },
+    J: { m: [[1, 0, 0], [1, 1, 1], [0, 0, 0]], f: "#42a5f5" },
+    L: { m: [[0, 0, 1], [1, 1, 1], [0, 0, 0]], f: "#ffa726" }
+  };
+  const feld = Array.from({ length: RE }, () => Array(SP).fill(null));
+  let beutel = [], teil, naechstes, punkte = 0, reihen = 0, level = 1, pause = false, vorbei = false, fallZeit = 0;
+  function ziehe() {
+    if (!beutel.length) beutel = mischen(Object.keys(FORMEN));
+    const k = beutel.pop();
+    return { m: FORMEN[k].m.map(r => r.slice()), f: FORMEN[k].f, x: 0, y: 0, k };
+  }
+  function passt(m, x, y) {
+    for (let r = 0; r < m.length; r++) for (let c = 0; c < m[r].length; c++) {
+      if (!m[r][c]) continue;
+      const fx = x + c, fy = y + r;
+      if (fx < 0 || fx >= SP || fy >= RE) return false;
+      if (fy >= 0 && feld[fy][fx]) return false;
+    }
+    return true;
+  }
+  function spawn() {
+    teil = naechstes || ziehe(); naechstes = ziehe();
+    teil.x = Math.floor((SP - teil.m[0].length) / 2); teil.y = teil.k === "I" ? -1 : 0;
+    if (!passt(teil.m, teil.x, teil.y)) vorbei = true;
+    malNext();
+  }
+  function drehe(m) { const n = m.length; return m.map((r, i) => r.map((_, j) => m[n - 1 - j][i])); }
+  function drehen() {
+    const m = drehe(teil.m);
+    for (const dx of [0, -1, 1, -2, 2]) if (passt(m, teil.x + dx, teil.y)) { teil.m = m; teil.x += dx; return; }
+    if (passt(m, teil.x, teil.y - 1)) { teil.m = m; teil.y--; }
+  }
+  function festmachen() {
+    teil.m.forEach((r, ri) => r.forEach((v, ci) => { if (v && teil.y + ri >= 0) feld[teil.y + ri][teil.x + ci] = teil.f; }));
+    if (teil.m.some((r, ri) => r.some(v => v) && teil.y + ri < 0)) { vorbei = true; return; }
+    let weg = 0;
+    for (let r = RE - 1; r >= 0; r--) if (feld[r].every(v => v)) { feld.splice(r, 1); feld.unshift(Array(SP).fill(null)); weg++; r++; }
+    if (weg) {
+      punkte += [0, 100, 300, 500, 800][weg] * level; reihen += weg; level = 1 + Math.floor(reihen / 10);
+      document.getElementById("tr").textContent = reihen; document.getElementById("tl").textContent = level;
+    }
+    document.getElementById("tp").textContent = punkte;
+    spawn();
+  }
+  function runter(vonSpieler) {
+    if (passt(teil.m, teil.x, teil.y + 1)) { teil.y++; if (vonSpieler) { punkte++; document.getElementById("tp").textContent = punkte; } return true; }
+    festmachen(); return false;
+  }
+  window.blockTaste = key => {
+    if (vorbei) return;
+    if (key === "p" || key === "P" || key === "Escape") { pause = !pause; return; }
+    if (pause) return;
+    if (key === "ArrowLeft" || key === "a") { if (passt(teil.m, teil.x - 1, teil.y)) teil.x--; }
+    else if (key === "ArrowRight" || key === "d") { if (passt(teil.m, teil.x + 1, teil.y)) teil.x++; }
+    else if (key === "ArrowUp" || key === "w" || key === "x") drehen();
+    else if (key === "ArrowDown" || key === "s") { runter(true); fallZeit = 0; }
+    else if (key === " ") { let n = 0; while (passt(teil.m, teil.x, teil.y + 1)) { teil.y++; n++; } punkte += 2 * n; festmachen(); fallZeit = 0; }
+  };
+  spielTasten = e => {
+    if (e.type !== "keydown") return;
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " ", "a", "d", "w", "s", "x", "p", "P", "Escape"].includes(e.key)) { e.preventDefault(); blockTaste(e.key); }
+  };
+  document.addEventListener("keydown", spielTasten);
+  function zelle(c, x, y, f, z) {
+    c.fillStyle = f; c.fillRect(x * z + 1, y * z + 1, z - 2, z - 2);
+    c.fillStyle = "rgba(255,255,255,.3)"; c.fillRect(x * z + 1, y * z + 1, z - 2, 4);
+    c.fillStyle = "rgba(0,0,0,.2)"; c.fillRect(x * z + 1, y * z + z - 5, z - 2, 4);
+  }
+  function malNext() {
+    nctx.fillStyle = "#1b1f3a"; nctx.fillRect(0, 0, nv.width, nv.height);
+    const m = naechstes.m, z = 20, b = m[0].length, h = m.filter(r => r.some(v => v)).length, oben = m.findIndex(r => r.some(v => v));
+    const ox = (nv.width - b * z) / 2 / z, oy = (nv.height - h * z) / 2 / z - oben;
+    m.forEach((r, ri) => r.forEach((v, ci) => { if (v) zelle(nctx, ci + ox, ri + oy, naechstes.f, z); }));
+  }
+  function malen() {
+    ctx.fillStyle = "#1b1f3a"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.strokeStyle = "rgba(255,255,255,.05)";
+    for (let c = 1; c < SP; c++) { ctx.beginPath(); ctx.moveTo(c * Z, 0); ctx.lineTo(c * Z, RE * Z); ctx.stroke(); }
+    for (let r = 1; r < RE; r++) { ctx.beginPath(); ctx.moveTo(0, r * Z); ctx.lineTo(SP * Z, r * Z); ctx.stroke(); }
+    feld.forEach((r, ri) => r.forEach((f, ci) => { if (f) zelle(ctx, ci, ri, f, Z); }));
+    let gy = teil.y; while (passt(teil.m, teil.x, gy + 1)) gy++;
+    ctx.globalAlpha = 0.25; teil.m.forEach((r, ri) => r.forEach((v, ci) => { if (v && gy + ri >= 0) zelle(ctx, teil.x + ci, gy + ri, teil.f, Z); })); ctx.globalAlpha = 1;
+    teil.m.forEach((r, ri) => r.forEach((v, ci) => { if (v && teil.y + ri >= 0) zelle(ctx, teil.x + ci, teil.y + ri, teil.f, Z); }));
+    if (pause) pauseText(ctx, cv.width, cv.height, "⏸ Pause", "P drücken zum Weiterspielen");
+  }
+  spawn();
+  spielSchleife(cv, dt => {
+    if (vorbei) {
+      const r = rekord("block", punkte, false);
+      spielEnde("block", "🧱 Blockfall", `${punkte} Punkte und ${reihen} Reihen geschafft (Level ${level})!${rekordText(r, punkte)}`);
+      return false;
+    }
+    if (!pause) {
+      fallZeit += dt * 16.7;
+      const intervall = Math.max(70, 800 * Math.pow(0.85, level - 1));
+      while (fallZeit >= intervall && !vorbei) { fallZeit -= intervall; runter(false); }
+    }
+    malen();
+  });
+}
+
+/* ---------- Weltraum-Abwehr (Shooter) ---------- */
+function weltraumStart() {
+  spielStop();
+  const W = 480, H = 600;
+  app.innerHTML = kopfleiste("🚀 Weltraum-Abwehr") + `<div class="spielinfo"><span>🏆 <span id="wp">0</span></span><span>❤️ <span id="wl">3</span></span><span>🌊 Welle <span id="ww">1</span></span></div>
+    <canvas id="weltraum" class="spielfeld" width="${W}" height="${H}"></canvas>
+    <p class="hinweis" style="text-align:center">Raumschiff mit Maus, Finger oder ⬅️ ➡️ steuern. Es schießt von selbst. Weich Meteoren und Laserschüssen aus! ⚡ = Doppelschuss. P = Pause.</p>`;
+  const cv = document.getElementById("weltraum"), ctx = cv.getContext("2d");
+  const schiff = { x: W / 2, y: H - 50, r: 16 };
+  let punkte = 0, leben = 3, welle = 1, zeit = 0, ende = false, pause = false, links = false, rechts = false, zielX = null;
+  let schuesse = [], feinde = [], laser = [], extras = [], funken = [], schussPause = 0, spawnPause = 60, schutz = 0, doppel = 0;
+  const sterneBg = Array.from({ length: 70 }, () => ({ x: Math.random() * W, y: Math.random() * H, v: 0.5 + Math.random() * 2 }));
+  cv.addEventListener("pointermove", e => { zielX = spielX(cv, e); });
+  cv.addEventListener("pointerdown", e => { e.preventDefault(); zielX = spielX(cv, e); });
+  spielTasten = e => {
+    const an = e.type === "keydown";
+    if (e.key === "ArrowLeft" || e.key === "a") { links = an; zielX = null; e.preventDefault(); }
+    else if (e.key === "ArrowRight" || e.key === "d") { rechts = an; zielX = null; e.preventDefault(); }
+    else if ((e.key === "p" || e.key === "P" || e.key === "Escape") && an) pause = !pause;
+    else if (e.key === " ") e.preventDefault();
+  };
+  document.addEventListener("keydown", spielTasten); document.addEventListener("keyup", spielTasten);
+  function explosion(x, y, farbe, n) { for (let i = 0; i < n; i++) { const w = Math.random() * Math.PI * 2, v = 1 + Math.random() * 4; funken.push({ x, y, vx: Math.cos(w) * v, vy: Math.sin(w) * v, t: 30, f: farbe }); } }
+  function neuerFeind() {
+    const tempo = 1 + welle * 0.25;
+    if (Math.random() < Math.min(0.55, 0.15 + welle * 0.06)) {
+      feinde.push({ art: "alien", x: 30 + Math.random() * (W - 60), y: -20, r: 18, hp: 2, v: tempo * 1.1, phase: Math.random() * 6, schuss: 60 + Math.random() * 80, punkte: 25 });
+    } else {
+      const gross = Math.random() < 0.35;
+      feinde.push({ art: "meteor", x: 20 + Math.random() * (W - 40), y: -30, r: gross ? 28 : 16, hp: gross ? 4 : 1, v: tempo * (gross ? 1.2 : 2) + Math.random(), vx: (Math.random() - 0.5) * 1.5, dreh: Math.random() * 6, punkte: gross ? 20 : 10 });
+    }
+  }
+  function getroffen() {
+    if (schutz > 0) return;
+    leben--; schutz = 120; document.getElementById("wl").textContent = leben;
+    explosion(schiff.x, schiff.y, "#ff7043", 30);
+  }
+  function nah(a, b, abstand) { const dx = a.x - b.x, dy = a.y - b.y; return dx * dx + dy * dy < abstand * abstand; }
+  function update(dt) {
+    zeit += dt;
+    const neueWelle = 1 + Math.floor(zeit / 900);
+    if (neueWelle !== welle) { welle = neueWelle; document.getElementById("ww").textContent = welle; }
+    if (links) schiff.x -= 7 * dt;
+    if (rechts) schiff.x += 7 * dt;
+    if (zielX !== null) schiff.x += Math.max(-9 * dt, Math.min(9 * dt, zielX - schiff.x));
+    schiff.x = Math.max(20, Math.min(W - 20, schiff.x));
+    if (schutz > 0) schutz -= dt;
+    if (doppel > 0) doppel -= dt;
+    schussPause -= dt;
+    if (schussPause <= 0) {
+      schussPause = 11;
+      if (doppel > 0) schuesse.push({ x: schiff.x - 10, y: schiff.y - 14 }, { x: schiff.x + 10, y: schiff.y - 14 });
+      else schuesse.push({ x: schiff.x, y: schiff.y - 18 });
+    }
+    spawnPause -= dt;
+    if (spawnPause <= 0) { neuerFeind(); spawnPause = Math.max(14, 55 - welle * 5) * (0.6 + Math.random() * 0.8); }
+    schuesse.forEach(s => s.y -= 11 * dt); schuesse = schuesse.filter(s => s.y > -10 && !s.weg);
+    feinde.forEach(f => {
+      if (f.art === "alien") {
+        f.y += f.v * dt * 0.8; f.phase += 0.04 * dt; f.x += Math.sin(f.phase) * 2.2 * dt;
+        f.schuss -= dt;
+        if (f.schuss <= 0 && f.y > 0) {
+          f.schuss = Math.max(45, 110 - welle * 8) + Math.random() * 40;
+          const dx = schiff.x - f.x, dy = schiff.y - f.y, l = Math.hypot(dx, dy), v = 3.5 + welle * 0.2;
+          laser.push({ x: f.x, y: f.y + 10, vx: dx / l * v, vy: dy / l * v });
+        }
+      } else { f.y += f.v * dt; f.x += f.vx * dt; f.dreh += 0.03 * dt; if (f.x < f.r || f.x > W - f.r) f.vx = -f.vx; }
+      schuesse.forEach(s => {
+        if (!s.weg && !f.weg && nah(s, f, f.r + 3)) {
+          s.weg = true; f.hp--;
+          if (f.hp <= 0) {
+            f.weg = true; punkte += f.punkte; document.getElementById("wp").textContent = punkte;
+            explosion(f.x, f.y, f.art === "alien" ? "#76ff03" : "#bcaaa4", 16);
+            if (Math.random() < 0.06) extras.push({ x: f.x, y: f.y });
+          } else explosion(s.x, s.y, "#fff59d", 4);
+        }
+      });
+      if (!f.weg && nah(f, schiff, f.r + schiff.r - 4)) { f.weg = true; explosion(f.x, f.y, "#bcaaa4", 12); getroffen(); }
+    });
+    feinde = feinde.filter(f => !f.weg && f.y < H + 40);
+    laser.forEach(l => { l.x += l.vx * dt; l.y += l.vy * dt; if (nah(l, schiff, schiff.r - 4)) { l.weg = true; getroffen(); } });
+    laser = laser.filter(l => !l.weg && l.y < H + 10 && l.y > -10 && l.x > -10 && l.x < W + 10);
+    extras.forEach(e => { e.y += 2 * dt; if (nah(e, schiff, 26)) { e.weg = true; doppel = 480; } });
+    extras = extras.filter(e => !e.weg && e.y < H + 20);
+    funken.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.t -= dt; }); funken = funken.filter(p => p.t > 0);
+    sterneBg.forEach(s => { s.y += s.v * dt; if (s.y > H) { s.y = 0; s.x = Math.random() * W; } });
+  }
+  function malSchiff() {
+    if (schutz > 0 && Math.floor(schutz / 6) % 2 === 0) return;
+    const { x, y } = schiff;
+    ctx.fillStyle = "#ff9800"; ctx.beginPath(); ctx.moveTo(x - 6, y + 14); ctx.lineTo(x, y + 24 + Math.random() * 8); ctx.lineTo(x + 6, y + 14); ctx.fill();
+    ctx.fillStyle = "#90caf9"; ctx.beginPath(); ctx.moveTo(x, y - 20); ctx.lineTo(x + 18, y + 14); ctx.lineTo(x - 18, y + 14); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#1565c0"; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+  }
+  function malen() {
+    ctx.fillStyle = "#0b0d26"; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#fff"; sterneBg.forEach(s => ctx.fillRect(s.x, s.y, s.v > 1.8 ? 2 : 1, s.v > 1.8 ? 2 : 1));
+    ctx.fillStyle = "#ffee58"; schuesse.forEach(s => ctx.fillRect(s.x - 2, s.y - 8, 4, 12));
+    ctx.fillStyle = "#ff1744"; laser.forEach(l => { ctx.beginPath(); ctx.arc(l.x, l.y, 4, 0, Math.PI * 2); ctx.fill(); });
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    feinde.forEach(f => {
+      if (f.art === "alien") { ctx.font = "34px Segoe UI Emoji, Apple Color Emoji, sans-serif"; ctx.fillText("👾", f.x, f.y); }
+      else {
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.dreh);
+        ctx.fillStyle = "#8d6e63"; ctx.beginPath();
+        for (let i = 0; i < 9; i++) { const w = i / 9 * Math.PI * 2, rr = f.r * (0.82 + 0.18 * Math.sin(i * 2.7)); ctx.lineTo(Math.cos(w) * rr, Math.sin(w) * rr); }
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#5d4037"; ctx.beginPath(); ctx.arc(f.r * 0.3, -f.r * 0.2, f.r * 0.22, 0, Math.PI * 2); ctx.arc(-f.r * 0.35, f.r * 0.3, f.r * 0.15, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+    });
+    ctx.font = "26px Segoe UI Emoji, Apple Color Emoji, sans-serif"; extras.forEach(e => ctx.fillText("⚡", e.x, e.y));
+    funken.forEach(p => { ctx.globalAlpha = p.t / 30; ctx.fillStyle = p.f; ctx.fillRect(p.x - 2, p.y - 2, 4, 4); }); ctx.globalAlpha = 1;
+    if (leben > 0) malSchiff();
+    if (doppel > 0) { ctx.fillStyle = "#ffee58"; ctx.font = "bold 16px Segoe UI, Arial"; ctx.textAlign = "left"; ctx.fillText("⚡ Doppelschuss", 10, 20); }
+    if (pause) pauseText(ctx, W, H, "⏸ Pause", "P drücken zum Weiterspielen");
+  }
+  spielSchleife(cv, dt => {
+    if (!pause) update(dt);
+    malen();
+    if (leben <= 0 && !ende) {
+      ende = true;
+      const r = rekord("weltraum", punkte, false);
+      spielTimer.push(setTimeout(() => spielEnde("weltraum", "🚀 Weltraum-Abwehr", `Du hast ${punkte} Punkte geschafft (Welle ${welle})!${rekordText(r, punkte)}`), 900));
+    }
+  });
+}
+
+/* ========================== STERNE-CODE ==========================
+   Sterne von einem Gerät auf ein anderes mitnehmen, ohne Konto.
+   Der Code enthält die Sternzahl und eine Prüfsumme; jeder Code gilt nur einmal pro Gerät. */
+const CODE_ZEICHEN = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+const CODE_SCHLUESSEL = 0x6D2B47E9C5n;
+function codePruef(v) { return ((v * 0x9E3779B1n + 0x2545Fn) >> 9n) & 0xFFFn; }
+function codeMachen(anzahl) {
+  const nonce = BigInt(Math.floor(Math.random() * 65536));
+  const v = (BigInt(anzahl) << 16n) | nonce;
+  let zahl = ((v << 12n) | codePruef(v)) ^ CODE_SCHLUESSEL;
+  let out = "";
+  for (let i = 0; i < 8; i++) { out = CODE_ZEICHEN[Number(zahl & 31n)] + out; zahl >>= 5n; }
+  return out.slice(0, 4) + "-" + out.slice(4);
+}
+function codeLesen(text) {
+  const t = text.toUpperCase().replace(/O/g, "0").replace(/I/g, "1").replace(/[^0-9A-Z]/g, "");
+  if (t.length !== 8) return null;
+  let zahl = 0n;
+  for (const c of t) { const i = CODE_ZEICHEN.indexOf(c); if (i < 0) return null; zahl = (zahl << 5n) | BigInt(i); }
+  zahl ^= CODE_SCHLUESSEL;
+  const v = zahl >> 12n;
+  if ((zahl & 0xFFFn) !== codePruef(v)) return null;
+  return { anzahl: Number(v >> 16n), id: v.toString(36) };
+}
+function sterneUebertragen(meldung) {
+  spielStop();
+  app.innerHTML = kopfleiste("🔑 Sterne-Code") + `
+    <div class="box" style="margin-bottom:18px">
+      <h2 style="margin-top:0">📤 Sterne mitnehmen</h2>
+      <p>Du hast <b>⭐ ${sterne}</b> Sterne. Wenn du einen Code machst, wandern alle Sterne in den Code und sind auf diesem Gerät weg. Gib den Code dann auf dem anderen Gerät ein.</p>
+      <div id="codeAusgabe">${sterne > 0 ? `<button class="btn" onclick="codeErzeugen()">Code machen</button>` : `<p class="hinweis">Du hast gerade keine Sterne zum Mitnehmen.</p>`}</div>
+    </div>
+    <div class="box">
+      <h2 style="margin-top:0">📥 Sterne einlösen</h2>
+      <p>Code vom anderen Gerät eingeben:</p>
+      <div class="leiste"><input class="codeeingabe" id="codeIn" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="9" placeholder="XXXX-XXXX" onkeydown="if(event.key==='Enter')codeEinloesen()"><button class="btn gruen" onclick="codeEinloesen()">Einlösen</button></div>
+      <div class="feedback" id="codeFb">${meldung || ""}</div>
+    </div>`;
+}
+function codeErzeugen() {
+  if (sterne <= 0) return;
+  const box = document.getElementById("codeAusgabe");
+  if (!box.dataset.sicher) {
+    box.dataset.sicher = "1";
+    box.innerHTML = `<p>Alle ⭐ ${sterne} Sterne in einen Code packen? Auf diesem Gerät sind sie dann weg, bis der Code eingelöst wird.</p><div class="leiste"><button class="btn" onclick="codeErzeugen()">Ja, Code machen</button><button class="btn grau" onclick="sterneUebertragen()">Abbrechen</button></div>`;
+    return;
+  }
+  const anzahl = Math.min(sterne, 4095), code = codeMachen(anzahl);
+  sterne -= anzahl; zeigeSterne(); speichern();
+  document.getElementById("codeAusgabe").innerHTML = `<p>Dein Code für <b>⭐ ${anzahl}</b> Sterne:</p><div class="code">${code}</div>
+    <p class="hinweis">Schreib ihn dir auf! Du kannst ihn auch hier wieder einlösen, falls du es dir anders überlegst.</p>`;
+}
+function codeEinloesen() {
+  const fb = document.getElementById("codeFb"), wert = document.getElementById("codeIn").value, c = codeLesen(wert);
+  if (!c) { fb.className = "feedback nein"; fb.textContent = "Dieser Code stimmt nicht. Schau nochmal genau hin."; return; }
+  let benutzt = [];
+  try { benutzt = JSON.parse(localStorage.getItem("de_codes") || "[]"); } catch (e) {}
+  if (benutzt.includes(c.id)) { fb.className = "feedback nein"; fb.textContent = "Diesen Code hast du hier schon eingelöst."; return; }
+  benutzt.push(c.id);
+  try { localStorage.setItem("de_codes", JSON.stringify(benutzt)); } catch (e) {}
+  sterne += c.anzahl; zeigeSterne(); speichern();
+  sterneUebertragen(`<span style="color:var(--gruen)">✔ ${c.anzahl} Sterne sind angekommen! Du hast jetzt ⭐ ${sterne}.</span>`);
+}
+
+zeigeSterne();
+startseite();
+</script>
+</body>
+</html>
