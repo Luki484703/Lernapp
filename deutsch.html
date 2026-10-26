@@ -646,6 +646,9 @@ const INHALTE = [
     { f: "Steigere „treu“.", a: "treu – treuer – am treuesten" },
     { f: "Steigere „fantastisch“.", a: "fantastisch – fantastischer – am fantastischsten" },
     { f: "Steigere „schlimm“ und „schlau“.", a: "schlimm – schlimmer – am schlimmsten\nschlau – schlauer – am schlauesten" },
+    { f: "Wann sage ich „als“ und wann „wie“?", a: "Bei Ungleichheit: größer ALS → Der Hund ist größer als die Katze.\nBei Gleichheit: so groß WIE → Tom ist so groß wie Lena." },
+    { f: "Welche Adjektive bekommen beim Steigern einen Umlaut?", a: "Viele kurze Wörter: alt – älter, groß – größer, jung – jünger, warm – wärmer, kalt – kälter, hart – härter, hoch – höher." },
+    { f: "Welche Adjektive steigert man ganz anders (Ausnahmen)?", a: "gut – besser – am besten\nviel – mehr – am meisten\ngern – lieber – am liebsten" },
     { f: "Wie schreibe ich Adjektive?", a: "Klein – außer am Satzanfang." },
     { f: "Wie finde ich „größer“ im Wörterbuch?", a: "Unter der Grundform: groß. Genauso: höher → hoch." }
   ],
@@ -664,7 +667,13 @@ const INHALTE = [
     { f: "Wie beweise ich, dass „schlau“ ein Adjektiv ist?", o: ["Ich steigere es: schlau – schlauer – am schlauesten", "Ich setze „der“ davor", "Ich sage: du schlaust"], r: [0] },
     { f: "Was ist „klüger“?", o: ["Grundform", "1. Vergleichsstufe", "2. Vergleichsstufe"], r: [1] },
     { f: "Was ist „am fantastischsten“?", o: ["Grundform", "1. Vergleichsstufe", "2. Vergleichsstufe"], r: [2] },
-    { f: "Welches Adjektiv passt? Die ___ Schlange zischt.", o: ["giftige", "giftigen", "Gift"], r: [0] }
+    { f: "Welches Adjektiv passt? Die ___ Schlange zischt.", o: ["giftige", "giftigen", "Gift"], r: [0] },
+    { f: "Was ist richtig?", o: ["Der Hund ist größer als die Katze.", "Der Hund ist größer wie die Katze."], r: [0] },
+    { f: "Was ist richtig?", o: ["Tom ist so groß wie Lena.", "Tom ist so groß als Lena."], r: [0] },
+    { f: "Wie heißt die 1. Vergleichsstufe von „gut“?", o: ["guter", "besser", "güter"], r: [1] },
+    { f: "Wie heißt die 2. Vergleichsstufe von „viel“?", o: ["am vielsten", "am meisten", "am mehrsten"], r: [1] },
+    { f: "Wie heißt die 1. Vergleichsstufe von „gern“?", o: ["gerner", "lieber", "am liebsten"], r: [1] },
+    { f: "Welche Adjektive bekommen beim Steigern einen Umlaut (ä, ö, ü)? (3 Antworten)", o: ["alt – älter", "groß – größer", "jung – jünger", "schnell – schneller"], r: [0, 1, 2] }
   ],
   paare: [
     { a: "klug", b: "am klügsten" },
@@ -693,6 +702,55 @@ const INHALTE = [
       { f: "schlau – ___ – am schlauesten", w: "schlauer", p: -1 },
       { f: "schlimm – schlimmer – am ___", w: "schlimmsten", p: -1 }
     ] }
+  ],
+  steigern: [
+    { g: "klug", k1: "klüger", k2: "klügsten" },
+    { g: "ehrlich", k1: "ehrlicher", k2: "ehrlichsten" },
+    { g: "giftig", k1: "giftiger", k2: "giftigsten" },
+    { g: "treu", k1: "treuer", k2: ["treuesten", "treusten"] },
+    { g: "frei", k1: "freier", k2: ["freiesten", "freisten"] },
+    { g: "fantastisch", k1: "fantastischer", k2: "fantastischsten" },
+    { g: "schlimm", k1: "schlimmer", k2: "schlimmsten" },
+    { g: "schlau", k1: "schlauer", k2: ["schlauesten", "schlausten"] },
+    { g: "hart", k1: "härter", k2: "härtesten" },
+    { g: "warm", k1: "wärmer", k2: "wärmsten" },
+    { g: "kalt", k1: "kälter", k2: "kältesten" },
+    { g: "alt", k1: "älter", k2: "ältesten" },
+    { g: "jung", k1: "jünger", k2: "jüngsten" },
+    { g: "lang", k1: "länger", k2: "längsten" },
+    { g: "kurz", k1: "kürzer", k2: "kürzesten" },
+    { g: "groß", k1: "größer", k2: "größten" },
+    { g: "klein", k1: "kleiner", k2: "kleinsten" },
+    { g: "hoch", k1: "höher", k2: "höchsten" },
+    { g: "schnell", k1: "schneller", k2: "schnellsten" },
+    { g: "langsam", k1: "langsamer", k2: "langsamsten" },
+    { g: "laut", k1: "lauter", k2: "lautesten" },
+    { g: "leise", k1: "leiser", k2: "leisesten" },
+    { g: "lustig", k1: "lustiger", k2: "lustigsten" },
+    { g: "mutig", k1: "mutiger", k2: "mutigsten" },
+    { g: "vorsichtig", k1: "vorsichtiger", k2: "vorsichtigsten" },
+    { g: "witzig", k1: "witziger", k2: "witzigsten" },
+    { g: "stark", k1: "stärker", k2: "stärksten" },
+    { g: "schwer", k1: "schwerer", k2: "schwersten" },
+    { g: "gut", k1: "besser", k2: "besten", tipp: "Achtung, das ist eine Ausnahme!" },
+    { g: "viel", k1: "mehr", k2: "meisten", tipp: "Achtung, das ist eine Ausnahme!" },
+    { g: "gern", k1: "lieber", k2: "liebsten", tipp: "Achtung, das ist eine Ausnahme!" },
+    { s: "Der Hund ist ___ als die Katze.", g: "schnell", w: "schneller" },
+    { s: "Der Gepard ist von allen Tieren am ___.", g: "schnell", w: "schnellsten" },
+    { s: "Opa ist ___ als Papa.", g: "alt", w: "älter" },
+    { s: "Im Winter ist es ___ als im Sommer.", g: "kalt", w: "kälter" },
+    { s: "Der Fuchs ist ___ als der Hase.", g: "schlau", w: "schlauer" },
+    { s: "Die Giraffe ist von allen Tieren am ___.", g: "groß", w: "größten" },
+    { s: "Mein Turm ist ___ als dein Turm.", g: "hoch", w: "höher" },
+    { s: "Der Elefant ist ___ als die Maus.", g: "schwer", w: "schwerer" },
+    { s: "Die Schlange ist am ___.", g: "giftig", w: "giftigsten" },
+    { s: "Lena ist ___ als ihr Bruder.", g: "jung", w: "jünger" },
+    { s: "Mia singt am ___ von allen.", g: "laut", w: "lautesten" },
+    { s: "Ich esse Eis ___ als Spinat.", g: "gern", w: "lieber" },
+    { s: "Dein Bild ist ___ als meins.", g: "gut", w: "besser" },
+    { s: "Dieses Buch ist am ___.", g: "fantastisch", w: "fantastischsten" },
+    { s: "Der Stein ist ___ als das Holz.", g: "hart", w: "härter" },
+    { s: "Heute ist es ___ als gestern.", g: "warm", w: "wärmer" }
   ],
   beweise: [
     { w: "klug", typ: "A", k1: "klüger", k2: "klügsten" },
@@ -1010,6 +1068,7 @@ function startseite() {
       ${modus("satzzeichen()", "✒️", "Satzzeichen setzen", "Punkt, Fragezeichen, Doppelpunkt, „ “ …", "zeichen")}
       ${modus("wortartenDetektiv()", "🔍", "Wortarten-Detektiv", "Nomen, Verben, Adjektive markieren", "wortarten")}
       ${modus("textDetektiv()", "📝", "Text-Detektiv", "Kleingeschriebener Text: alle Wortarten unterstreichen", "texte")}
+      ${modus("steigernUeben()", "📈", "Steigern", "Adjektive steigern: klug – klüger – am klügsten", "steigern")}
       ${modus("beweise()", "🕵️", "Beweise", "Wortart erkennen und beweisen", "beweise")}
       ${modus("grossKlein()", "🔠", "Groß oder klein?", "Satzanfänge und Nomen groß", "gross")}
       ${modus("zuordnen()", "🔗", "Zuordnen", "Was gehört zusammen?", "paare")}
@@ -1023,7 +1082,7 @@ function startseite() {
     </div>
     <h2 style="margin-top:28px">4. Bist du bereit?</h2>
     <div class="modi">
-      ${modus("pruefung()", "🏁", "Probe-Prüfung", "16 gemischte Aufgaben zu allen Probe-Themen")}
+      ${modus("pruefung()", "🏁", "Probe-Prüfung", "17 gemischte Aufgaben zu allen Probe-Themen")}
     </div>
     <h2 style="margin-top:28px">5. Pause machen?</h2>
     <div class="modi">
@@ -1095,7 +1154,7 @@ function zeigeAufgabe() {
       <div class="feedback" id="fb"></div>
       <div class="mitte" id="weiter"></div>
     </div>`;
-  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, texte: zeigeWortarten, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
+  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, texte: zeigeWortarten, steigern: zeigeSteigern, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
 }
 let erledigtSchon = false;
 function ergebnis(ok, text) {
@@ -1353,6 +1412,45 @@ function bwLoesung() {
   ergebnis(false, "Lösung: " + txt);
 }
 
+/* ---------- Steigern ----------
+   Tabelle: eine Stufe ist vorgegeben, die anderen werden eingetippt.
+   Satz: die passende Form ins Lückenwort. */
+let st = null;
+function steigernUeben() { runde(mischen(typ("steigern")).slice(0, 10), "📈 Steigern", "steigernUeben()"); }
+function stFeld(id, platz) { return `<input class="eingabe" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${platz}" onkeydown="if(event.key==='Enter')stPruefen()">`; }
+function zeigeSteigern(t, box) {
+  erledigtSchon = false;
+  st = { t, fehler: 0 };
+  if (t.s) {
+    box.innerHTML = `<div class="frage">Setze das Adjektiv „${esc(t.g)}“ in der richtigen Form ein.</div>
+      <div class="satz">${esc(t.s).replace("___", stFeld("stW", "?"))}</div>
+      <p class="hinweis">Tipp: „… als“ → 1. Vergleichsstufe (…er). „am …“ → 2. Vergleichsstufe (…sten).</p>
+      <div class="mitte" id="stpruef"><button class="btn blau" onclick="stPruefen()">Prüfen</button></div>`;
+  } else {
+    st.vor = Math.random() < 0.6 ? 0 : Math.floor(Math.random() * 3);
+    const zeile = (nr, name, id, wert) => `<div class="beweis-zeile"><span class="vor" style="min-width:190px">${name}</span>${nr === 2 ? "am " : ""}${nr === st.vor ? `<b>${esc(wert)}</b>` : stFeld(id, "…")}</div>`;
+    box.innerHTML = `<div class="frage">Steigere das Adjektiv. Fülle die Tabelle aus.</div>
+      ${t.tipp ? `<p class="hinweis">⚠️ ${esc(t.tipp)}</p>` : ""}
+      ${zeile(0, "Grundform:", "stG", t.g)}${zeile(1, "1. Vergleichsstufe:", "stK1", t.k1)}${zeile(2, "2. Vergleichsstufe:", "stK2", [].concat(t.k2)[0])}
+      <div class="mitte" id="stpruef"><button class="btn blau" onclick="stPruefen()">Prüfen</button></div>`;
+  }
+  setTimeout(() => { const e = box.querySelector("input"); if (e) e.focus(); }, 50);
+}
+function stPruefen() {
+  if (erledigtSchon) return;
+  const t = st.t;
+  const ok = t.s ? bwFeld("stW", t.w) : [["stG", t.g, 0], ["stK1", t.k1, 1], ["stK2", t.k2, 2]].filter(f => f[2] !== st.vor).map(f => bwFeld(f[0], f[1])).every(Boolean);
+  if (ok) { document.getElementById("stpruef").innerHTML = ""; return ergebnis(st.fehler === 0, st.fehler === 0 ? null : "Jetzt ist es richtig! 👍"); }
+  st.fehler++;
+  hinweis("Noch nicht ganz (rot). " + (t.tipp || "Tipp: 1. Vergleichsstufe endet auf -er, 2. Vergleichsstufe: am …sten. Manchmal kommt ein Umlaut dazu (alt → älter)."));
+  if (st.fehler >= 2) document.getElementById("stpruef").innerHTML = `<button class="btn blau" onclick="stPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="stLoesung()">Lösung zeigen</button>`;
+}
+function stLoesung() {
+  const t = st.t;
+  document.getElementById("stpruef").innerHTML = "";
+  ergebnis(false, "Lösung: " + (t.s ? t.s.replace("___", t.w) : `${t.g} – ${t.k1} – am ${[].concat(t.k2)[0]}`));
+}
+
 /* ---------- Groß oder klein? ---------- */
 let gk = null;
 function grossKlein() { runde(mischen(typ("gross")).slice(0, 8), "🔠 Groß oder klein?", "grossKlein()"); }
@@ -1393,7 +1491,7 @@ function pruefung() {
   const wichtig = INHALTE.filter(k => k.wichtig);
   const nimm = (art, n) => { const out = []; wichtig.forEach(k => (k[art] || []).forEach(x => out.push(Object.assign({ _a: art, kapitel: k.titel }, x)))); return mischen(out).slice(0, n); };
   const rede = mischen(INHALTE.filter(k => k.id === "rede" || k.id === "redehinten").flatMap(k => k.zeichen.map(x => Object.assign({ _a: "zeichen", kapitel: k.titel }, x)))).slice(0, 4);
-  const liste = [].concat(nimm("quiz", 6), rede, nimm("wortarten", 1), nimm("texte", 1), nimm("beweise", 3), nimm("gross", 1));
+  const liste = [].concat(nimm("quiz", 6), rede, nimm("wortarten", 1), nimm("texte", 1), nimm("steigern", 2), nimm("beweise", 2), nimm("gross", 1));
   runde(mischen(liste), "🏁 Probe-Prüfung", "pruefung()");
 }
 
