@@ -134,6 +134,13 @@ h2{color:var(--akzent);margin:10px 0 12px}
 .stift.an{border-color:#222;box-shadow:0 0 0 3px #ffe28a}
 .wa,.gk{font:inherit;font-size:26px;border:3px solid transparent;border-radius:10px;padding:0 6px;margin:2px 0;background:#fff;cursor:pointer;color:var(--text)}
 .wa.N{background:#cfe3ff;border-color:#3b82f6} .wa.V{background:#ffdcb8;border-color:#f28c28} .wa.A{background:#cdeed5;border-color:#2e9e4f}
+.stift.P{background:#e6d6fb;color:#5b2a9c} .stift.T{background:#fff0a8;color:#6b5400}
+.wa.P{background:#e6d6fb;border-color:#8b5cf6} .wa.T{background:#fff0a8;border-color:#d4a800}
+.satz.unter{line-height:2.4}
+.unter .swort{margin-left:-3px}
+.unter .wa,.unter .wa.N,.unter .wa.V,.unter .wa.A,.unter .wa.P,.unter .wa.T{line-height:1.25;background:transparent;border:none;border-radius:0;border-bottom:5px solid transparent;padding:0 3px}
+.unter .wa.N{border-bottom-color:#3b82f6} .unter .wa.V{border-bottom-color:#f28c28} .unter .wa.A{border-bottom-color:#2e9e4f} .unter .wa.P{border-bottom-color:#8b5cf6} .unter .wa.T{border-bottom-color:#d4a800}
+.unter .wa.falsch{outline:3px dashed var(--rot);outline-offset:2px;border-radius:6px}
 .gk.gross{background:#fff3c4;border-color:#e0a100;font-weight:bold}
 .wa.falsch,.gk.falsch{border-color:var(--rot)!important;border-style:dashed!important;box-shadow:0 0 0 2px #fbe1e0}
 .gk.ok{background:#dff3e5;border-color:var(--gruen)}
@@ -715,7 +722,11 @@ const INHALTE = [
     { f: "Beweis für ein NOMEN?", a: "Artikel davor setzen (der, die, das) und Mehrzahl bilden: der Zettel – die Zettel. Nomen schreibt man groß." },
     { f: "Beweis für ein VERB?", a: "In Personalformen setzen: ich zähle, du zählst, er zählt … Grundform: zählen." },
     { f: "Beweis für ein ADJEKTIV?", a: "Steigern: klug – klüger – am klügsten." },
-    { f: "Welche Farben haben die Wortarten in der Wörterschlange?", a: "Nomen blau, Verben orange, Adjektive grün." }
+    { f: "Welche Farben haben die Wortarten in der Wörterschlange?", a: "Nomen blau, Verben orange, Adjektive grün." },
+    { f: "Was sind Pronomen?", a: "Pronomen (Fürwörter) stehen für ein Nomen: ich, du, er, sie, es, wir, ihr, sie.\nLisa ruft. → Sie ruft." },
+    { f: "Was sind Artikel?", a: "Artikel (Begleiter) stehen vor einem Nomen.\nBestimmte Artikel: der, die, das (auch den, dem).\nUnbestimmte Artikel: ein, eine (auch einen, einem)." },
+    { f: "Woran erkenne ich ein Pronomen?", a: "Ich kann statt dem Pronomen ein Nomen einsetzen: Er bellt. → Der Hund bellt." },
+    { f: "Woran erkenne ich einen Artikel?", a: "Direkt danach (oder nach einem Adjektiv) kommt ein Nomen: der Hund, eine graue Katze." }
   ],
   quiz: [
     { f: "Welche Wortart ist „Zettel“?", o: ["Nomen", "Verb", "Adjektiv"], r: [0] },
@@ -733,6 +744,12 @@ const INHALTE = [
     { f: "Mit welchem Beweis zeige ich ein Adjektiv?", o: ["Steigern", "Artikel davor setzen", "Personalformen bilden"], r: [0] },
     { f: "Mit welchem Beweis zeige ich ein Verb?", o: ["Steigern", "Artikel davor setzen", "Personalformen bilden"], r: [2] },
     { f: "Mit welchem Beweis zeige ich ein Nomen? (2 Antworten)", o: ["Artikel davor setzen", "Mehrzahl bilden", "Steigern"], r: [0, 1] },
+    { f: "Welche Wortart ist „wir“?", o: ["Artikel", "Pronomen", "Verb"], r: [1] },
+    { f: "Welche Wortart ist „eine“ in „eine graue Katze“?", o: ["Artikel", "Pronomen", "Adjektiv"], r: [0] },
+    { f: "Welche Wörter sind Pronomen? (3 Antworten)", o: ["ich", "ihr", "er", "das"], r: [0, 1, 2] },
+    { f: "Welche Wörter sind Artikel? (3 Antworten)", o: ["der", "ein", "dem", "du"], r: [0, 1, 2] },
+    { f: "Welches Pronomen passt? „Die Katze klettert. ___ ist schnell.“", o: ["Er", "Sie", "Wir"], r: [1] },
+    { f: "Welches Pronomen passt? „Lisa und Arel fahren Bus. ___ kaufen Hefte.“", o: ["Sie", "Ihr", "Es"], r: [0] },
     { f: "Was ist ein Beweis dafür, dass „Dreieck“ ein Nomen ist?", o: ["das Dreieck – die Dreiecke", "dreiecker – am dreieckigsten", "ich dreiecke"], r: [0] }
   ],
   paare: [
@@ -741,7 +758,19 @@ const INHALTE = [
     { a: "Adjektiv", b: "Grundform – 1. – 2. Vergleichsstufe" },
     { a: "die Hoffnung", b: "Nomen" },
     { a: "schreibst", b: "Verb" },
-    { a: "giftig", b: "Adjektiv" }
+    { a: "giftig", b: "Adjektiv" },
+    { a: "Pronomen", b: "ich, du, er, sie, es, wir, ihr" },
+    { a: "Artikel", b: "der, die, das, ein, eine" }
+  ],
+  texte: [
+    { titel: "Hund und Katze", s: "[Der|T] [kleine|A] [Hund|N] [bellt|V] [laut|A]. [Er|P] [sieht|V] [eine|T] [graue|A] [Katze|N]. [Die|T] [Katze|N] [klettert|V] [schnell|A] auf [einen|T] [hohen|A] [Baum|N]. [Wir|P] [lachen|V] über [den|T] [frechen|A] [Hund|N]." },
+    { titel: "Im Schreibwarenladen", s: "[Lisa|N] und [Arel|N] [fahren|V] mit [dem|T] [Bus|N] in [die|T] [Stadt|N]. [Sie|P] [kaufen|V] [neue|A] [Hefte|N] und [einen|T] [blauen|A] [Füller|N]. [Arel|N] [sucht|V] [den|T] [alten|A] [Geldbeutel|N]. [Er|P] [liegt|V] noch auf [dem|T] [Schreibtisch|N]." },
+    { titel: "Das Mittagessen", s: "[Die|T] [Köchin|N] [kocht|V] [eine|T] [leckere|A] [Suppe|N]. [Ich|P] [habe|V] [großen|A] [Hunger|N]. [Du|P] [deckst|V] [den|T] [Tisch|N]. [Wir|P] [essen|V] [die|T] [warme|A] [Suppe|N]." },
+    { titel: "Fußball im Regen", s: "[Ihr|P] [spielt|V] auf [dem|T] [großen|A] [Platz|N] [Fußball|N]. [Der|T] [mutige|A] [Torwart|N] [hält|V] [einen|T] [harten|A] [Schuss|N]. [Es|P] [regnet|V] [stark|A]. [Die|T] [Kinder|N] [werden|V] [nass|A]." },
+    { titel: "Das Vogelhaus", s: "[Ich|P] [habe|V] [eine|T] [tolle|A] [Idee|N]. [Wir|P] [bauen|V] [ein|T] [kleines|A] [Haus|N] für [die|T] [Vögel|N]. [Die|T] [Freude|N] [ist|V] [riesig|A]. [Oma|N] [bringt|V] [bunte|A] [Farbe|N]." },
+    { titel: "Der schlaue Fuchs", s: "[Sie|P] [liest|V] [ein|T] [spannendes|A] [Buch|N]. [Das|T] [Buch|N] [handelt|V] von [einem|T] [schlauen|A] [Fuchs|N]. [Der|T] [Fuchs|N] [entdeckt|V] [die|T] [Hühner|N]. [Er|P] [ist|V] [hungrig|A]." },
+    { titel: "Der Ausflug", s: "[Die|T] [Klasse|N] [macht|V] [einen|T] [langen|A] [Ausflug|N]. [Wir|P] [wandern|V] durch [den|T] [dunklen|A] [Wald|N]. [Du|P] [findest|V] [einen|T] [großen|A] [Pilz|N]. [Die|T] [Lehrerin|N] [ist|V] [stolz|A]." },
+    { titel: "Beim Zahnarzt", s: "[Der|T] [Zahnarzt|N] [schaut|V] [genau|A] in [den|T] [Mund|N]. [Ich|P] [habe|V] [große|A] [Angst|N]. [Er|P] [ist|V] sehr [freundlich|A]. [Die|T] [Schmerzen|N] [sind|V] [klein|A]." }
   ],
   wortarten: [
     { s: "Der [kluge|A] [Tiger|N] [schleicht|V] durch den [Wald|N]." },
@@ -980,6 +1009,7 @@ function startseite() {
       ${modus("quiz()", "❓", "Quiz", "12 Fragen – die richtige Antwort finden", "quiz")}
       ${modus("satzzeichen()", "✒️", "Satzzeichen setzen", "Punkt, Fragezeichen, Doppelpunkt, „ “ …", "zeichen")}
       ${modus("wortartenDetektiv()", "🔍", "Wortarten-Detektiv", "Nomen, Verben, Adjektive markieren", "wortarten")}
+      ${modus("textDetektiv()", "📝", "Text-Detektiv", "Kleingeschriebener Text: alle Wortarten unterstreichen", "texte")}
       ${modus("beweise()", "🕵️", "Beweise", "Wortart erkennen und beweisen", "beweise")}
       ${modus("grossKlein()", "🔠", "Groß oder klein?", "Satzanfänge und Nomen groß", "gross")}
       ${modus("zuordnen()", "🔗", "Zuordnen", "Was gehört zusammen?", "paare")}
@@ -1065,7 +1095,7 @@ function zeigeAufgabe() {
       <div class="feedback" id="fb"></div>
       <div class="mitte" id="weiter"></div>
     </div>`;
-  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
+  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, texte: zeigeWortarten, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
 }
 let erledigtSchon = false;
 function ergebnis(ok, text) {
@@ -1181,57 +1211,73 @@ function zzLoesung() {
 }
 
 /* ---------- Wortarten-Detektiv ---------- */
-const WA = { N: { name: "Nomen", farbe: "blau" }, V: { name: "Verb", farbe: "orange" }, A: { name: "Adjektiv", farbe: "grün" } };
+const WA = { N: { name: "Nomen", farbe: "blau" }, V: { name: "Verb", farbe: "orange" }, A: { name: "Adjektiv", farbe: "grün" }, P: { name: "Pronomen", farbe: "lila" }, T: { name: "Artikel", farbe: "gelb" } };
+const WA_TIPP = {
+  N: w => `„${w}“: Kannst du der, die oder das davor setzen?`,
+  V: w => `„${w}“: Kannst du ich, du, er davor setzen?`,
+  A: w => `„${w}“: Kannst du es steigern?`,
+  P: w => `„${w}“: Steht es für ein Nomen (ich, du, er, sie, es, wir, ihr, sie)?`,
+  T: w => `„${w}“: Ist es ein Begleiter vor einem Nomen (der, die, das, ein, eine …)?`
+};
 let wa = null;
 function wortartenDetektiv() { runde(mischen(typ("wortarten")).slice(0, 8), "🔍 Wortarten-Detektiv", "wortartenDetektiv()"); }
+function textDetektiv() { runde(mischen(typ("texte")), "📝 Text-Detektiv", "textDetektiv()"); }
 function zeigeWortarten(t, box) {
   erledigtSchon = false;
+  const text = t._a === "texte", arten = text ? ["N", "V", "A", "P", "T"] : ["N", "V", "A"];
   const teile = [];
   (t.s.match(/\[[^\]]+\]|[^\s\[\]]+/g) || []).forEach(x => {
-    const m = x.match(/^\[([^|]+)\|([NVA])\]$/);
+    const m = x.match(/^\[([^|]+)\|([NVAPT])\]$/);
     if (m) return teile.push({ w: m[1], ziel: m[2], nach: "" });
     const r = x.match(/^(.*?)([.,!?]*)$/);
     if (r[1]) teile.push({ w: r[1], ziel: "", nach: r[2] });
     else if (teile.length) teile[teile.length - 1].nach += r[2];
   });
-  wa = { teile: teile.map(x => Object.assign({ ein: "" }, x)), stift: "N", versuche: 0 };
-  box.innerHTML = `<div class="frage">Markiere alle Nomen, Verben und Adjektive.</div>
-    <p class="hinweis">Wähle eine Farbe und tippe dann auf die Wörter. Wörter, die nichts davon sind, bleiben weiß.</p>
-    <div class="stifte">
-      <button class="stift N an" id="stN" onclick="waStift('N')">🖍️ Nomen</button>
-      <button class="stift V" id="stV" onclick="waStift('V')">🖍️ Verb</button>
-      <button class="stift A" id="stA" onclick="waStift('A')">🖍️ Adjektiv</button>
-      <button class="stift X" id="stX" onclick="waStift('')">🧽 Radierer</button>
-    </div>
-    <div class="satz" id="satz"></div>
+  wa = { teile: teile.map(x => Object.assign({ ein: "", zeig: text ? x.w.toLowerCase() : x.w }, x)), stift: "N", versuche: 0, arten, text };
+  box.innerHTML = (text
+    ? `<div class="frage">${t.titel ? esc(t.titel) + ": " : ""}Unterstreiche alle Nomen, Verben, Adjektive, Pronomen und Artikel.</div>
+       <p class="hinweis">Der Text ist ganz klein geschrieben – du musst selbst herausfinden, was was ist! Wähle eine Farbe und tippe auf die Wörter. Alle anderen Wörter (z. B. und, mit, auf) bleiben ohne Strich.</p>`
+    : `<div class="frage">Markiere alle Nomen, Verben und Adjektive.</div>
+       <p class="hinweis">Wähle eine Farbe und tippe dann auf die Wörter. Wörter, die nichts davon sind, bleiben weiß.</p>`) + `
+    <div class="stifte">${arten.map((k, i) => `<button class="stift ${k}${i ? "" : " an"}" id="st${k}" onclick="waStift('${k}')">🖍️ ${WA[k].name}</button>`).join("")}
+      <button class="stift X" id="stX" onclick="waStift('')">🧽 Radierer</button></div>
+    <div class="satz${text ? " unter" : ""}" id="satz"></div>
+    <div id="waRichtig"></div>
     <div class="mitte" id="wapruef"><button class="btn grau klein" onclick="waZaehlen()">💡 Wie viele sind es?</button><button class="btn blau" onclick="waPruefen()">Prüfen</button></div>`;
   waMalen();
 }
-function waStift(s) { wa.stift = s; ["N", "V", "A", "X"].forEach(k => document.getElementById("st" + k).classList.toggle("an", (s || "X") === k)); }
+function waStift(s) { wa.stift = s; wa.arten.concat(["X"]).forEach(k => document.getElementById("st" + k).classList.toggle("an", (s || "X") === k)); }
 function waMalen(markiert) {
   document.getElementById("satz").innerHTML = wa.teile.map((x, i) => {
     let cls = "wa " + (x.ein || "");
     if (markiert) cls += x.ein === x.ziel ? (x.ziel ? " ok" : "") : " falsch";
-    return `<button class="${cls}" onclick="waTipp(${i})">${esc(x.w)}</button>${x.nach ? `<span class="swort">${esc(x.nach)}</span>` : ""}`;
+    return `<button class="${cls}" onclick="waTipp(${i})">${esc(x.zeig)}</button>${x.nach ? `<span class="swort">${esc(x.nach)}</span>` : ""}`;
   }).join(" ");
 }
 function waTipp(i) { if (erledigtSchon) return; const x = wa.teile[i]; x.ein = x.ein === wa.stift ? "" : wa.stift; waMalen(); }
 function waZaehlen() {
   const n = k => wa.teile.filter(x => x.ziel === k).length;
-  hinweis(`Es sind ${n("N")} Nomen, ${n("V")} Verben und ${n("A")} Adjektive.`, "tipp");
+  hinweis("Es sind " + wa.arten.map(k => `${n(k)} ${WA[k].name}`).join(", ") + ".", "tipp");
+}
+function waRichtigerText() {
+  if (!wa.text) return;
+  document.getElementById("waRichtig").innerHTML = `<p class="hinweis" style="margin:10px 0 4px">So schreibt man den Text richtig (Nomen und Satzanfänge groß!):</p><div class="muster" style="font-size:21px">${esc(wa.teile.map(x => x.w + x.nach).join(" "))}</div>`;
 }
 function waPruefen() {
   if (erledigtSchon) return;
   const falsch = wa.teile.filter(x => x.ein !== x.ziel);
   waMalen(true);
-  if (!falsch.length) { document.getElementById("wapruef").innerHTML = ""; return ergebnis(wa.versuche === 0, wa.versuche === 0 ? null : "Jetzt ist alles richtig! 👍"); }
+  if (!falsch.length) { document.getElementById("wapruef").innerHTML = ""; waRichtigerText(); return ergebnis(wa.versuche === 0, wa.versuche === 0 ? null : "Jetzt ist alles richtig! 👍"); }
   wa.versuche++;
   const x = falsch[0];
-  const tipp = x.ziel === "N" ? `„${x.w}“: Kannst du der, die oder das davor setzen?` : x.ziel === "V" ? `„${x.w}“: Kannst du ich, du, er davor setzen?` : x.ziel === "A" ? `„${x.w}“: Kannst du es steigern?` : `„${x.w}“ ist kein Nomen, Verb oder Adjektiv.`;
+  const tipp = x.ziel ? WA_TIPP[x.ziel](x.zeig) : `„${x.zeig}“ bekommt keine Farbe.`;
   hinweis(`${falsch.length === 1 ? "Ein Wort ist" : falsch.length + " Wörter sind"} noch falsch (rot umrandet). Tipp: ${tipp}`);
   if (wa.versuche >= 3) document.getElementById("wapruef").innerHTML = `<button class="btn blau" onclick="waPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="waLoesung()">Lösung zeigen</button>`;
 }
-function waLoesung() { wa.teile.forEach(x => x.ein = x.ziel); waMalen(true); document.getElementById("wapruef").innerHTML = ""; ergebnis(false, "So ist es richtig: Nomen blau, Verben orange, Adjektive grün."); }
+function waLoesung() {
+  wa.teile.forEach(x => x.ein = x.ziel); waMalen(true); document.getElementById("wapruef").innerHTML = ""; waRichtigerText();
+  ergebnis(false, "So ist es richtig: " + wa.arten.map(k => `${WA[k].name} ${WA[k].farbe}`).join(", ") + ".");
+}
 
 /* ---------- Beweise ----------
    1. Welche Wortart? 2. Beweis eintippen. */
@@ -1347,7 +1393,7 @@ function pruefung() {
   const wichtig = INHALTE.filter(k => k.wichtig);
   const nimm = (art, n) => { const out = []; wichtig.forEach(k => (k[art] || []).forEach(x => out.push(Object.assign({ _a: art, kapitel: k.titel }, x)))); return mischen(out).slice(0, n); };
   const rede = mischen(INHALTE.filter(k => k.id === "rede" || k.id === "redehinten").flatMap(k => k.zeichen.map(x => Object.assign({ _a: "zeichen", kapitel: k.titel }, x)))).slice(0, 4);
-  const liste = [].concat(nimm("quiz", 6), rede, nimm("wortarten", 2), nimm("beweise", 3), nimm("gross", 1));
+  const liste = [].concat(nimm("quiz", 6), rede, nimm("wortarten", 1), nimm("texte", 1), nimm("beweise", 3), nimm("gross", 1));
   runde(mischen(liste), "🏁 Probe-Prüfung", "pruefung()");
 }
 
