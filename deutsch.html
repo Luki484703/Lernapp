@@ -395,7 +395,9 @@ const INHALTE = [
 {
   id: "zeitformen", titel: "Zeitformen", icon: "⏰", wichtig: true,
   karten: [
-    { f: "Welche Zeitformen lernen wir?", a: "Gegenwart: ich spiele\n1. Vergangenheit: ich spielte\n2. Vergangenheit: ich habe gespielt" },
+    { f: "Welche Zeitformen lernen wir?", a: "Gegenwart: ich spiele\n1. Vergangenheit: ich spielte\n2. Vergangenheit: ich habe gespielt\nZukunft: ich werde spielen" },
+    { f: "Wie bilde ich die Zukunft?", a: "Mit werden + Grundform: ich werde spielen, du wirst spielen, er wird spielen, wir werden spielen, ihr werdet spielen, sie werden spielen." },
+    { f: "Wann benutze ich die Zukunft?", a: "Wenn etwas erst noch passiert: Morgen werde ich ins Schwimmbad gehen." },
     { f: "Wann benutze ich die Gegenwart?", a: "Wenn etwas jetzt passiert: Ich spiele gerade Fußball." },
     { f: "Wann benutze ich die 1. Vergangenheit?", a: "Wenn etwas vorbei ist – vor allem beim Schreiben (Geschichten, Berichte): Gestern spielte ich Fußball." },
     { f: "Wann benutze ich die 2. Vergangenheit?", a: "Wenn etwas vorbei ist – vor allem beim Sprechen: Gestern habe ich Fußball gespielt." },
@@ -416,6 +418,11 @@ const INHALTE = [
     { f: "„spielen“: Was ist die 2. Vergangenheit von „du spielst“?", o: ["du hast gespielt", "du bist gespielt", "du spieltest"], r: [0] },
     { f: "Welches Hilfsverb passt? „Ich ___ geschwommen.“", o: ["bin", "habe"], r: [0] },
     { f: "Welches Hilfsverb passt? „Wir ___ ein Lied gesungen.“", o: ["sind", "haben"], r: [1] },
+    { f: "Welche Zeitform ist „wir werden lachen“?", o: ["Gegenwart", "2. Vergangenheit", "Zukunft"], r: [2] },
+    { f: "Welche Zeitform ist „du wirst fahren“?", o: ["Gegenwart", "1. Vergangenheit", "Zukunft"], r: [2] },
+    { f: "Wie heißt die Zukunft von „ich spiele“?", o: ["ich werde spielen", "ich habe gespielt", "ich spielte"], r: [0] },
+    { f: "Welche Form von „werden“ passt? „Er ___ morgen kommen.“", o: ["wird", "wirst", "werde"], r: [0] },
+    { f: "Welche Form von „werden“ passt? „Ihr ___ staunen.“", o: ["werden", "werdet", "wird"], r: [1] },
     { f: "Welche Zeitform benutzt man meistens beim Schreiben einer Geschichte?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [1] }
   ],
   paare: [
@@ -431,7 +438,7 @@ const INHALTE = [
     { a: "ich trinke", b: "ich trank" }
   ],
   reihen: [
-    { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit", schritte: ["ich spiele", "ich spielte", "ich habe gespielt"] },
+    { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit – Zukunft", schritte: ["ich spiele", "ich spielte", "ich habe gespielt", "ich werde spielen"] },
     { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit", schritte: ["du läufst", "du liefst", "du bist gelaufen"] },
     { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit", schritte: ["er schreibt", "er schrieb", "er hat geschrieben"] }
   ]
@@ -491,11 +498,11 @@ const INHALTE = [
     { s: "Wann beginnt die Pause? Sie beginnt um zehn Uhr. Juhu!" },
     { s: "Mama backt einen Kuchen. Riecht das gut! Darf ich probieren?" },
     { s: "Pass auf! Die Straße ist glatt. Fahr langsam!" },
-    { s: "Wie heißt du? Ich heiße Mila. Schön, dich kennenzulernen!" },
+    { s: "Wie heißt du? Ich heiße Mila. Schön dich zu sehen!" },
     { s: "Mach das Fenster zu! Es ist kalt. Hast du deine Jacke dabei?" },
     { s: "Der Bus kommt gleich. Hast du deine Fahrkarte? Lauf schneller!" },
     { s: "Wo wohnt der Igel? Er wohnt im Laubhaufen. Leise, er schläft!" },
-    { s: "Toll, wir haben gewonnen! Wer hat das letzte Tor geschossen? Es war Tom." },
+    { s: "Wir haben gewonnen! Wer hat das letzte Tor geschossen? Es war Tom." },
     { s: "Hör auf zu reden! Wir schreiben eine Probe. Hast du einen Stift?" },
     { s: "Im Zoo gibt es Elefanten. Hast du schon einmal einen gesehen? Sie sind riesig." },
     { s: "Räum dein Zimmer auf! Wo ist meine Hose? Sie liegt unter dem Bett." }
@@ -1136,7 +1143,7 @@ function startseite() {
   const modus = (fn, ic, name, text, art) => `<button class="modus" onclick="${fn}"><span class="ic">${ic}</span><b>${name}</b><small>${text}${art ? ` (${n(art)})` : ""}</small></button>`;
   reiterAn("tabAlle");
   app.innerHTML = `
-    <button class="heutebanner" onclick="heute()">🎯 Heute üben – gezielt für die Probe<small>Zeitformen, Steigern, Satzzeichen . ? ! und die Übersicht zum Lesen</small></button>
+    <button class="heutebanner" onclick="heute()">🎯 Heute üben – gezielt für die Probe<small>Zeitformen, Steigern, Satzzeichen . ? !, wörtliche Rede und die Übersicht zum Lesen</small></button>
     <h2>1. Was möchtest du lernen?</h2>
     <p class="hinweis">Tippe auf die Themen, die du üben willst. <span class="badge">⭐ Probe</span> = kommt am Mittwoch in der Probe dran.</p>
     <div class="chips">
@@ -1151,7 +1158,7 @@ function startseite() {
       ${modus("satzzeichen()", "✒️", "Satzzeichen setzen", "Punkt, Fragezeichen, Doppelpunkt, „ “ …", "zeichen")}
       ${modus("wortartenDetektiv()", "🔍", "Wortarten-Detektiv", "Nomen, Verben, Adjektive markieren", "wortarten")}
       ${modus("textDetektiv()", "📝", "Text-Detektiv", "Kleingeschriebener Text: alle Wortarten unterstreichen", "texte")}
-      ${modus("zeitformenUeben()", "⏰", "Zeitformen", "Gegenwart, 1. und 2. Vergangenheit")}
+      ${modus("zeitformenUeben()", "⏰", "Zeitformen", "Gegenwart, 1. und 2. Vergangenheit, Zukunft")}
       ${modus("satzendeUeben()", "❗", "Punkt, ? oder !", "Satzzeichen am Satzende setzen", "ende")}
       ${modus("steigernUeben()", "📈", "Steigern", "Adjektive steigern: klug – klüger – am klügsten", "steigern")}
       ${modus("beweise()", "🕵️", "Beweise", "Wortart erkennen und beweisen", "beweise")}
@@ -1305,10 +1312,16 @@ function zeigeZeichen(t, box) {
   erledigtSchon = false;
   const z = zerlegeSatz(t.s);
   zz = { woerter: z.woerter, ziel: z.luecken, ein: z.luecken.map(() => ""), akt: 0, versuche: 0, s: t.s };
-  box.innerHTML = `<div class="frage">Setze alle fehlenden Satzzeichen ein.</div>
-    <p class="hinweis">Tippe auf eine Lücke ▢ und dann auf ein Zeichen. In eine Lücke können auch mehrere Zeichen. Leere Lücken bleiben leer.</p>
+  zz.ende = t._a === "ende"; if (zz.ende) zz.akt = 1;
+  const pal = zz.ende ? [".", "?", "!"] : ZEICHEN;
+  box.innerHTML = zz.ende
+    ? `<div class="frage">Wo endet ein Satz? Setze Punkt, Fragezeichen oder Ausrufezeichen.</div>
+       <p class="hinweis">Tippe auf eine Lücke ▢ und dann auf . ? oder ! – Leere Lücken bleiben leer.</p>`
+    : `<div class="frage">Setze alle fehlenden Satzzeichen ein.</div>
+       <p class="hinweis">Tippe auf eine Lücke ▢ und dann auf ein Zeichen. In eine Lücke können auch mehrere Zeichen. Leere Lücken bleiben leer.</p>`;
+  box.innerHTML += `
     <div class="satz" id="satz"></div>
-    <div class="palette">${ZEICHEN.map(c => `<button onclick="zzSetze('${c}')">${c}<small>${ZEICHEN_NAME[c]}</small></button>`).join("")}<button class="weg" onclick="zzWeg()">⌫<small>löschen</small></button></div>
+    <div class="palette">${pal.map(c => `<button onclick="zzSetze('${c}')">${c}<small>${ZEICHEN_NAME[c]}</small></button>`).join("")}<button class="weg" onclick="zzWeg()">⌫<small>löschen</small></button></div>
     <div class="mitte" id="zzpruef"><button class="btn blau" onclick="zzPruefen()">Prüfen</button></div>`;
   zzMalen();
 }
@@ -1317,7 +1330,7 @@ function zzMalen(markiert) {
   zz.ein.forEach((e, i) => {
     let cls = "luecke" + (e ? " voll" : "") + (i === zz.akt && !erledigtSchon ? " aktiv" : "");
     if (markiert) cls += e === zz.ziel[i] ? (e ? " ok" : " leer") : " falsch";
-    h += `<button class="${cls}" onclick="zzWaehle(${i})">${esc(e) || "&nbsp;"}</button>`;
+    if (!(zz.ende && i === 0)) h += `<button class="${cls}" onclick="zzWaehle(${i})">${esc(e) || "&nbsp;"}</button>`;
     if (i < zz.woerter.length) h += `<span class="swort">${esc(zz.woerter[i])}</span>`;
   });
   document.getElementById("satz").innerHTML = h;
@@ -1577,18 +1590,18 @@ function zeitFormen(v, i) {
   const stamm = v.gf.replace(/en$/, "");
   const pr = v.pr ? v.pr[i] : stamm + ["e", "st", "t", "en", "t", "en"][i];
   const p1 = v.p1 ? v.p1[i] : stamm + ["te", "test", "te", "ten", "tet", "ten"][i];
-  return { pr, p1, h: HILF[v.h][i], p2: v.p2 };
+  return { pr, p1, h: HILF[v.h][i], p2: v.p2, w: ["werde", "wirst", "wird", "werden", "werdet", "werden"][i], gf: v.gf };
 }
 function zeitAufgaben(n) {
   const out = [];
   for (let k = 0; k < n; k++) {
     const v = VERBEN[Math.floor(Math.random() * VERBEN.length)], i = Math.floor(Math.random() * 6);
-    out.push({ _a: "zeit", kapitel: "Zeitformen", v, i, art: Math.random() < 0.5 ? "tabelle" : "satz", zeit: Math.floor(Math.random() * 3) });
+    out.push({ _a: "zeit", kapitel: "Zeitformen", v, i, art: Math.random() < 0.5 ? "tabelle" : "satz", zeit: Math.floor(Math.random() * 4) });
   }
   return out;
 }
 function zeitformenUeben() { runde(zeitAufgaben(10).concat(mischen(typAlle("quiz").filter(q => q.kapitel === "Zeitformen")).slice(0, 2)).sort(() => Math.random() - .5), "⏰ Zeitformen", "zeitformenUeben()"); }
-const ZEIT_NAME = ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"];
+const ZEIT_NAME = ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit", "Zukunft"];
 let zt = null;
 function zeigeZeit(t, box) {
   erledigtSchon = false;
@@ -1596,39 +1609,43 @@ function zeigeZeit(t, box) {
   zt = { t, f, fehler: 0 };
   const feld = (id, platz, breit) => `<input class="eingabe" id="${id}" style="width:${breit || 200}px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${platz}" onkeydown="if(event.key==='Enter')ztPruefen()">`;
   if (t.art === "tabelle") {
-    box.innerHTML = `<div class="frage">Schreibe das Verb „${esc(t.v.gf)}“ in allen drei Zeitformen.</div>
+    box.innerHTML = `<div class="frage">Schreibe das Verb „${esc(t.v.gf)}“ in allen vier Zeitformen.</div>
       <p class="hinweis">Person: <b>${pt}</b></p>
       <div class="beweis-zeile"><span class="vor" style="min-width:190px">Gegenwart:</span>${esc(pt)} ${feld("ztPr", "…")}</div>
       <div class="beweis-zeile"><span class="vor" style="min-width:190px">1. Vergangenheit:</span>${esc(pt)} ${feld("ztP1", "…")}</div>
       <div class="beweis-zeile"><span class="vor" style="min-width:190px">2. Vergangenheit:</span>${esc(pt)} ${feld("ztH", "haben/sein", 150)} ${feld("ztP2", "ge…")}</div>
+      <div class="beweis-zeile"><span class="vor" style="min-width:190px">Zukunft:</span>${esc(pt)} ${feld("ztW", "werden", 150)} ${feld("ztGf", "Grundform")}</div>
       <div class="mitte" id="ztpruef"><button class="btn blau" onclick="ztPruefen()">Prüfen</button></div>`;
   } else {
     const wer = p === "er" ? mischen(["er", "sie", "es"])[0] : p;
-    const anfang = ["Heute", "Gestern", "Gestern"][t.zeit];
-    const satz = t.zeit === 2
+    const anfang = ["Heute", "Gestern", "Gestern", "Morgen"][t.zeit];
+    const satz = t.zeit === 3
+      ? `${anfang} ${feld("ztW", "…", 120)} ${wer} ${esc(t.v.rest)} ${feld("ztGf", "…", 170)}.`
+      : t.zeit === 2
       ? `${anfang} ${feld("ztH", "…", 120)} ${wer} ${esc(t.v.rest)} ${feld("ztP2", "…", 170)}.`
       : `${anfang} ${feld(t.zeit === 0 ? "ztPr" : "ztP1", "…", 170)} ${wer} ${esc(t.v.rest)}.`;
     box.innerHTML = `<div class="frage">Setze „${esc(t.v.gf)}“ in der <u>${ZEIT_NAME[t.zeit]}</u> ein.</div>
       <div class="satz">${satz}</div>
-      ${t.zeit === 2 ? `<p class="hinweis">Die 2. Vergangenheit hat zwei Teile: haben/sein + ge… am Ende.</p>` : ""}
+      ${t.zeit === 2 ? `<p class="hinweis">Die 2. Vergangenheit hat zwei Teile: haben/sein + ge… am Ende.</p>` : t.zeit === 3 ? `<p class="hinweis">Die Zukunft hat zwei Teile: werden + Grundform am Ende.</p>` : ""}
       <div class="mitte" id="ztpruef"><button class="btn blau" onclick="ztPruefen()">Prüfen</button></div>`;
   }
   setTimeout(() => { const e = box.querySelector("input"); if (e) e.focus(); }, 50);
 }
 function ztPruefen() {
   if (erledigtSchon) return;
-  const f = zt.f, felder = [["ztPr", f.pr], ["ztP1", f.p1], ["ztH", f.h], ["ztP2", f.p2]].filter(x => document.getElementById(x[0]));
+  const f = zt.f, felder = [["ztPr", f.pr], ["ztP1", f.p1], ["ztH", f.h], ["ztP2", f.p2], ["ztW", f.w], ["ztGf", f.gf]].filter(x => document.getElementById(x[0]));
   const ok = felder.map(x => bwFeld(x[0], x[1])).every(Boolean);
   if (ok) { document.getElementById("ztpruef").innerHTML = ""; return ergebnis(zt.fehler === 0, zt.fehler === 0 ? null : "Jetzt ist es richtig! 👍"); }
   zt.fehler++;
   const hFalsch = document.getElementById("ztH") && document.getElementById("ztH").classList.contains("falsch");
-  hinweis("Noch nicht ganz (rot). " + (hFalsch ? `Tipp: „${zt.t.v.gf}“ bildet die 2. Vergangenheit mit „${zt.t.v.h}“.` : zt.t.v.pr ? "Tipp: Das ist ein unregelmäßiges Verb – der Selbstlaut kann sich ändern." : "Tipp: 1. Vergangenheit mit -te: ich spielte."));
+  const wFalsch = ["ztW", "ztGf"].some(id => document.getElementById(id) && document.getElementById(id).classList.contains("falsch"));
+  hinweis("Noch nicht ganz (rot). " + (wFalsch ? "Tipp: Zukunft = werden (ich werde, du wirst, er wird, wir werden, ihr werdet, sie werden) + Grundform." : hFalsch ? `Tipp: „${zt.t.v.gf}“ bildet die 2. Vergangenheit mit „${zt.t.v.h}“.` : zt.t.v.pr ? "Tipp: Das ist ein unregelmäßiges Verb – der Selbstlaut kann sich ändern." : "Tipp: 1. Vergangenheit mit -te: ich spielte."));
   if (zt.fehler >= 2) document.getElementById("ztpruef").innerHTML = `<button class="btn blau" onclick="ztPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="ztLoesung()">Lösung zeigen</button>`;
 }
 function ztLoesung() {
   const f = zt.f, pt = PERSON_TEXT[PERSONEN[zt.t.i]], erst = x => [].concat(x)[0];
   document.getElementById("ztpruef").innerHTML = "";
-  ergebnis(false, `Lösung: ${pt} ${erst(f.pr)} – ${pt} ${erst(f.p1)} – ${pt} ${f.h} ${f.p2}`);
+  ergebnis(false, `Lösung: ${pt} ${erst(f.pr)} – ${pt} ${erst(f.p1)} – ${pt} ${f.h} ${f.p2} – ${pt} ${f.w} ${f.gf}`);
 }
 
 /* ---------- Satzende: . ? ! ---------- */
@@ -1647,19 +1664,27 @@ function heute() {
     <h2>🎯 Heute gezielt üben</h2>
     <p class="hinweis">Lies zuerst die Übersicht. Dann mach das gemischte Training – so oft du willst!</p>
     <div class="modi">
-      ${m("uebersicht()", "📖", "Übersicht lesen", "Woran erkenne ich Nomen, Verben, Adjektive? Zeitformen, Steigern, Satzzeichen")}
-      ${m("heuteGemischt()", "🎯", "Gemischtes Training", "12 Aufgaben: Zeitformen, Steigern und Satzzeichen . ? !")}
+      ${m("uebersicht()", "📖", "Übersicht lesen", "Woran erkenne ich Nomen, Verben, Adjektive? Zeitformen, Steigern, Satzzeichen, wörtliche Rede")}
+      ${m("heuteGemischt()", "🎯", "Gemischtes Training", "12 Aufgaben: Zeitformen, Steigern, Satzzeichen . ? ! und wörtliche Rede")}
     </div>
     <h2 style="margin-top:26px">Oder nur ein Thema:</h2>
     <div class="modi">
-      ${m("zeitformenUeben()", "⏰", "Zeitformen", "Gegenwart, 1. und 2. Vergangenheit")}
+      ${m("zeitformenUeben()", "⏰", "Zeitformen", "Gegenwart, 1. und 2. Vergangenheit, Zukunft")}
       ${m("steigernUeben()", "📈", "Steigern", "klug – klüger – am klügsten")}
       ${m("satzendeUeben()", "❗", "Punkt, ? oder !", "Satzzeichen am Satzende")}
+      ${m("heuteRede()", "💬", "Wörtliche Rede", "Begleitsatz vorne und hinten")}
       ${m("heuteWortarten()", "🔍", "Wortarten erkennen", "Nomen, Verb oder Adjektiv?")}
     </div>`;
 }
+function redeAufgaben(n) {
+  const vorne = mischen(INHALTE.find(k => k.id === "rede").zeichen), hinten = mischen(INHALTE.find(k => k.id === "redehinten").zeichen);
+  const out = [];
+  for (let k = 0; k < n; k++) { const x = k % 2 ? hinten[k >> 1] : vorne[k >> 1]; out.push(Object.assign({ _a: "zeichen", kapitel: k % 2 ? "Wörtliche Rede: Begleitsatz hinten" : "Wörtliche Rede: Begleitsatz vorne" }, x)); }
+  return out;
+}
+function heuteRede() { runde(mischen(redeAufgaben(10)), "💬 Wörtliche Rede", "heuteRede()"); }
 function heuteGemischt() {
-  const liste = [].concat(zeitAufgaben(4), mischen(typAlle("steigern")).slice(0, 4), mischen(typAlle("ende")).slice(0, 4));
+  const liste = [].concat(zeitAufgaben(3), mischen(typAlle("steigern")).slice(0, 3), mischen(typAlle("ende")).slice(0, 3), redeAufgaben(3));
   runde(mischen(liste), "🎯 Gemischtes Training", "heuteGemischt()");
 }
 function heuteWortarten() {
@@ -1693,14 +1718,15 @@ function uebersicht() {
       <ul><li><b>Pronomen</b> stehen für ein Nomen: ich, du, er, sie, es, wir, ihr, sie. <i>Lisa lacht. → Sie lacht.</i></li>
         <li><b>Artikel</b> begleiten ein Nomen: der, die, das, ein, eine (auch den, dem, einen …).</li></ul></div>
     <div class="ukarte Z"><h3>⏰ Zeitformen</h3>
-      <table><tr><th>Gegenwart</th><th>1. Vergangenheit</th><th>2. Vergangenheit</th></tr>
-        <tr><td>ich spiele</td><td>ich spielte</td><td>ich habe gespielt</td></tr>
-        <tr><td>du läufst</td><td>du liefst</td><td>du bist gelaufen</td></tr>
-        <tr><td>er schreibt</td><td>er schrieb</td><td>er hat geschrieben</td></tr>
-        <tr><td>wir fahren</td><td>wir fuhren</td><td>wir sind gefahren</td></tr></table>
+      <div style="overflow-x:auto"><table><tr><th>Gegenwart</th><th>1. Vergangenheit</th><th>2. Vergangenheit</th><th>Zukunft</th></tr>
+        <tr><td>ich spiele</td><td>ich spielte</td><td>ich habe gespielt</td><td>ich werde spielen</td></tr>
+        <tr><td>du läufst</td><td>du liefst</td><td>du bist gelaufen</td><td>du wirst laufen</td></tr>
+        <tr><td>er schreibt</td><td>er schrieb</td><td>er hat geschrieben</td><td>er wird schreiben</td></tr>
+        <tr><td>wir fahren</td><td>wir fuhren</td><td>wir sind gefahren</td><td>wir werden fahren</td></tr></table></div>
       <ul><li><b>Gegenwart:</b> passiert jetzt.</li>
         <li><b>1. Vergangenheit:</b> vorbei – vor allem beim <b>Schreiben</b>. Regelmäßig mit <b>-te</b> (spielte), unregelmäßig mit neuem Selbstlaut (lief, fuhr, ging).</li>
-        <li><b>2. Vergangenheit:</b> vorbei – vor allem beim <b>Sprechen</b>. Zwei Teile: <b>haben/sein</b> + <b>ge…</b>. Bei Bewegung meistens <b>sein</b> (ich bin gelaufen).</li></ul></div>
+        <li><b>2. Vergangenheit:</b> vorbei – vor allem beim <b>Sprechen</b>. Zwei Teile: <b>haben/sein</b> + <b>ge…</b>. Bei Bewegung meistens <b>sein</b> (ich bin gelaufen).</li>
+        <li><b>Zukunft:</b> passiert erst noch. Zwei Teile: <b>werden</b> + <b>Grundform</b>: ich werde spielen, du wirst spielen, er wird spielen.</li></ul></div>
     <div class="ukarte A"><h3>📈 Steigern</h3>
       <table><tr><th>Grundform</th><th>1. Vergleichsstufe</th><th>2. Vergleichsstufe</th></tr>
         <tr><td>klug</td><td>klüger</td><td>am klügsten</td></tr>
@@ -1710,6 +1736,12 @@ function uebersicht() {
       <ul><li>1. Vergleichsstufe: <b>…er</b> + <b>als</b>: Der Hund ist schneller <b>als</b> die Katze.</li>
         <li>Gleich: so schnell <b>wie</b>. 2. Vergleichsstufe: <b>am …sten</b>.</li>
         <li>Ausnahmen: gut – besser – am besten · viel – mehr – am meisten · gern – lieber – am liebsten</li></ul></div>
+    <div class="ukarte S"><h3>💬 Wörtliche Rede</h3>
+      <ul><li><b>Begleitsatz vorne:</b> Begleitsatz <b>:</b> <b>„</b>Rede<b>!“</b><br><i>Die Köchin ruft: „Essen ist fertig!“</i></li>
+        <li><b>Begleitsatz hinten:</b> <b>„</b>Rede<b>!“,</b> Begleitsatz<b>.</b><br><i>„Essen ist fertig!“, ruft die Köchin.</i></li>
+        <li>Bei einer <b>Aussage</b> mit Begleitsatz hinten fällt der Punkt in der Rede weg: <i>„Ich war das nicht“, stammelt der Dieb.</i></li>
+        <li>? und ! bleiben in der Rede: <i>„Wann kommst du?“, fragt Mia.</i></li>
+        <li>Anführungszeichen: am Anfang <b>unten „</b>, am Ende <b>oben “</b>. Die Rede fängt <b>groß</b> an.</li></ul></div>
     <div class="ukarte S"><h3>❗ Satzzeichen am Satzende</h3>
       <ul><li><b>Punkt .</b> nach einem Aussagesatz: <i>Mila meldet sich.</i></li>
         <li><b>Fragezeichen ?</b> nach einem Fragesatz: <i>Was möchtest du sagen?</i> (Fragewort oder Verb vorne)</li>
