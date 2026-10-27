@@ -110,6 +110,25 @@ h2{color:var(--akzent);margin:10px 0 12px}
 .codeeingabe::placeholder{font-size:20px;letter-spacing:1px;text-transform:none}
 .codeeingabe{font-family:Consolas,monospace;font-size:30px;letter-spacing:3px;text-transform:uppercase;padding:10px 14px;border:3px solid var(--orange);border-radius:14px;width:260px;max-width:100%;text-align:center}
 .feedback.tipp{color:#8a5a00}
+.reiter{display:flex;gap:6px;flex-wrap:wrap}
+.reiter button{border:none;border-radius:999px;padding:8px 16px;font-size:18px;font-family:inherit;font-weight:bold;cursor:pointer;background:rgba(255,255,255,.2);color:#fff}
+.reiter button.an{background:#fff;color:var(--akzent)}
+.heutebanner{display:block;width:100%;border:none;border-radius:20px;padding:18px;margin:0 0 22px;font:inherit;font-size:22px;font-weight:bold;color:#5a4300;background:linear-gradient(90deg,#ffe27a,#ffd04d);box-shadow:0 4px 0 #c9a514;cursor:pointer;text-align:left}
+.heutebanner small{display:block;font-weight:normal;font-size:16px}
+.uebersicht{display:grid;gap:16px}
+.ukarte{background:#fff;border-radius:20px;padding:18px 20px;box-shadow:0 4px 12px rgba(0,0,0,.08);border-left:10px solid #ccc}
+.ukarte h3{margin:0 0 8px;font-size:24px}
+.ukarte ul{margin:6px 0 0;padding-left:22px;line-height:1.55}
+.ukarte .bsp{background:#f5f8fc;border-radius:12px;padding:8px 12px;margin-top:8px;font-size:18px}
+.ukarte.N{border-color:#3b82f6} .ukarte.N h3{color:#1d4ed8}
+.ukarte.V{border-color:#f28c28} .ukarte.V h3{color:#b45309}
+.ukarte.A{border-color:#2e9e4f} .ukarte.A h3{color:#1d6b34}
+.ukarte.P{border-color:#8b5cf6} .ukarte.P h3{color:#6d28d9}
+.ukarte.Z{border-color:#0ea5b7} .ukarte.Z h3{color:#0b6f7c}
+.ukarte.S{border-color:#c8322f} .ukarte.S h3{color:#a3201d}
+.ukarte table{border-collapse:collapse;margin-top:8px;font-size:18px}
+.ukarte td,.ukarte th{border:1px solid #dde3ea;padding:5px 10px;text-align:left}
+.ukarte th{background:#f5f8fc}
 .chip.wichtig{border-color:#e0a100}
 .chip.wichtig.an{background:#e0a100}
 .badge{display:inline-block;background:var(--gelb);color:#5a4300;border-radius:999px;padding:1px 8px;font-size:13px;font-weight:bold;vertical-align:middle}
@@ -164,6 +183,7 @@ h2{color:var(--akzent);margin:10px 0 12px}
 <body>
 <header>
   <h1 onclick="startseite()">📚 Deutsch – Lernapp</h1>
+  <nav class="reiter"><button id="tabAlle" class="an" onclick="startseite()">📚 Alle Übungen</button><button id="tabHeute" onclick="heute()">🎯 Heute üben</button></nav>
   <span class="sterne" id="sterne" style="cursor:pointer" title="Zur Spielecke" onclick="spielecke()">⭐ 0</span>
 </header>
 <main id="app"></main>
@@ -373,6 +393,50 @@ const INHALTE = [
   ]
 },
 {
+  id: "zeitformen", titel: "Zeitformen", icon: "⏰", wichtig: true,
+  karten: [
+    { f: "Welche Zeitformen lernen wir?", a: "Gegenwart: ich spiele\n1. Vergangenheit: ich spielte\n2. Vergangenheit: ich habe gespielt" },
+    { f: "Wann benutze ich die Gegenwart?", a: "Wenn etwas jetzt passiert: Ich spiele gerade Fußball." },
+    { f: "Wann benutze ich die 1. Vergangenheit?", a: "Wenn etwas vorbei ist – vor allem beim Schreiben (Geschichten, Berichte): Gestern spielte ich Fußball." },
+    { f: "Wann benutze ich die 2. Vergangenheit?", a: "Wenn etwas vorbei ist – vor allem beim Sprechen: Gestern habe ich Fußball gespielt." },
+    { f: "Woraus besteht die 2. Vergangenheit?", a: "Aus zwei Teilen: haben oder sein + ge…t / ge…en.\nich habe gespielt, ich bin gelaufen." },
+    { f: "Wann nehme ich bei der 2. Vergangenheit „sein“?", a: "Meistens bei Bewegung von einem Ort zum anderen: ich bin gelaufen, gefahren, gegangen, geschwommen, gesprungen, geklettert." },
+    { f: "Wie bilde ich die 1. Vergangenheit bei regelmäßigen Verben?", a: "Mit -te: ich spielte, du spieltest, er spielte, wir spielten, ihr spieltet, sie spielten." },
+    { f: "Welche Verben ändern in der 1. Vergangenheit den Selbstlaut?", a: "Unregelmäßige Verben: laufen – lief, fahren – fuhr, schreiben – schrieb, gehen – ging, singen – sang, finden – fand, essen – aß, lesen – las." }
+  ],
+  quiz: [
+    { f: "Welche Zeitform ist „ich spielte“?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [1] },
+    { f: "Welche Zeitform ist „wir sind gelaufen“?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [2] },
+    { f: "Welche Zeitform ist „du schreibst“?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [0] },
+    { f: "Welche Zeitform ist „er fuhr“?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [1] },
+    { f: "Welche Zeitform ist „ihr habt gelacht“?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [2] },
+    { f: "Welche Zeitform ist „sie liest“?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [0] },
+    { f: "„laufen“: Was ist die 1. Vergangenheit von „ich laufe“?", o: ["ich laufte", "ich lief", "ich bin gelaufen"], r: [1] },
+    { f: "„gehen“: Was ist die 2. Vergangenheit von „wir gehen“?", o: ["wir haben gegangen", "wir sind gegangen", "wir gingen"], r: [1] },
+    { f: "„spielen“: Was ist die 2. Vergangenheit von „du spielst“?", o: ["du hast gespielt", "du bist gespielt", "du spieltest"], r: [0] },
+    { f: "Welches Hilfsverb passt? „Ich ___ geschwommen.“", o: ["bin", "habe"], r: [0] },
+    { f: "Welches Hilfsverb passt? „Wir ___ ein Lied gesungen.“", o: ["sind", "haben"], r: [1] },
+    { f: "Welche Zeitform benutzt man meistens beim Schreiben einer Geschichte?", o: ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"], r: [1] }
+  ],
+  paare: [
+    { a: "ich laufe", b: "ich lief" },
+    { a: "ich fahre", b: "ich fuhr" },
+    { a: "ich schreibe", b: "ich schrieb" },
+    { a: "ich gehe", b: "ich ging" },
+    { a: "ich singe", b: "ich sang" },
+    { a: "ich finde", b: "ich fand" },
+    { a: "ich esse", b: "ich aß" },
+    { a: "ich lese", b: "ich las" },
+    { a: "ich spiele", b: "ich spielte" },
+    { a: "ich trinke", b: "ich trank" }
+  ],
+  reihen: [
+    { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit", schritte: ["ich spiele", "ich spielte", "ich habe gespielt"] },
+    { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit", schritte: ["du läufst", "du liefst", "du bist gelaufen"] },
+    { titel: "Ordne: Gegenwart – 1. Vergangenheit – 2. Vergangenheit", schritte: ["er schreibt", "er schrieb", "er hat geschrieben"] }
+  ]
+},
+{
   id: "satzarten", titel: "Satzarten & Satzzeichen", icon: "❗", wichtig: true,
   karten: [
     { f: "Welches Satzzeichen steht am Ende eines Aussagesatzes?", a: "Ein Punkt . → Mila meldet sich." },
@@ -418,6 +482,23 @@ const INHALTE = [
     { titel: "Mache einen Fragesatz: „Ida schreibt einen Brief.“ Tippe die Wörter der Reihe nach.", schritte: ["Schreibt", "Ida", "einen", "Brief", "?"] },
     { titel: "Mache einen Fragesatz: „Emre gießt die Blumen.“", schritte: ["Gießt", "Emre", "die", "Blumen", "?"] },
     { titel: "Mache eine höfliche Frage aus: „Hilf mir!“", schritte: ["Kannst", "du", "mir", "bitte", "helfen", "?"] }
+  ],
+  ende: [
+    { s: "Heute ist Montag. Hast du deine Hausaufgaben gemacht? Beeil dich!" },
+    { s: "Der Hund bellt. Wo ist die Katze? Sie sitzt auf dem Dach." },
+    { s: "Komm sofort her! Was machst du da? Ich male ein Bild." },
+    { s: "Wir fahren in die Stadt. Kommst du mit? Das wird toll!" },
+    { s: "Wann beginnt die Pause? Sie beginnt um zehn Uhr. Juhu!" },
+    { s: "Mama backt einen Kuchen. Riecht das gut! Darf ich probieren?" },
+    { s: "Pass auf! Die Straße ist glatt. Fahr langsam!" },
+    { s: "Wie heißt du? Ich heiße Mila. Schön, dich kennenzulernen!" },
+    { s: "Mach das Fenster zu! Es ist kalt. Hast du deine Jacke dabei?" },
+    { s: "Der Bus kommt gleich. Hast du deine Fahrkarte? Lauf schneller!" },
+    { s: "Wo wohnt der Igel? Er wohnt im Laubhaufen. Leise, er schläft!" },
+    { s: "Toll, wir haben gewonnen! Wer hat das letzte Tor geschossen? Es war Tom." },
+    { s: "Hör auf zu reden! Wir schreiben eine Probe. Hast du einen Stift?" },
+    { s: "Im Zoo gibt es Elefanten. Hast du schon einmal einen gesehen? Sie sind riesig." },
+    { s: "Räum dein Zimmer auf! Wo ist meine Hose? Sie liegt unter dem Bett." }
   ],
   zeichen: [
     { s: "Heute wollen Lisa und Arel die Materialien für das neue Schuljahr besorgen." },
@@ -1036,10 +1117,10 @@ const kannVorlesen = !!window.speechSynthesis;
 function vorleseKnopf(text) { return kannVorlesen ? `<button class="vorlesen" onclick='event.stopPropagation();vorlesen(${JSON.stringify(text).replace(/'/g, "&#39;")})'>🔊 Vorlesen</button>` : ""; }
 
 function kopfleiste(titel, anteil) {
-  return `<div class="leiste"><button class="btn grau klein" onclick="startseite()">⬅ Zurück</button><h2 style="margin:0">${titel}</h2>${anteil != null ? `<div class="fortschritt"><div style="width:${Math.round(anteil * 100)}%"></div></div>` : ""}</div>`;
+  return `<div class="leiste"><button class="btn grau klein" onclick="${zurueck}">⬅ Zurück</button><h2 style="margin:0">${titel}</h2>${anteil != null ? `<div class="fortschritt"><div style="width:${Math.round(anteil * 100)}%"></div></div>` : ""}</div>`;
 }
 function fertig(titel, text, nochmal) {
-  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🏆</div><h2>${text}</h2><p>Du hast jetzt insgesamt ⭐ ${sterne} Sterne.</p><div class="mitte"><button class="btn gruen" onclick="${nochmal}">Nochmal!</button><button class="btn grau" onclick="startseite()">Zur Übersicht</button></div></div>`;
+  app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🏆</div><h2>${text}</h2><p>Du hast jetzt insgesamt ⭐ ${sterne} Sterne.</p><div class="mitte"><button class="btn gruen" onclick="${nochmal}">Nochmal!</button><button class="btn grau" onclick="${zurueck}">Zur Übersicht</button></div></div>`;
 }
 function leer(titel) {
   app.innerHTML = kopfleiste(titel) + `<div class="box ende"><div class="gross">🤷</div><p>Für die gewählten Kapitel gibt es hier noch nichts. Wähle auf der Startseite andere Kapitel aus.</p></div>`;
@@ -1053,7 +1134,9 @@ function startseite() {
   const nurProbe = !alle && INHALTE.every(k => gewaehlt.has(k.id) === !!k.wichtig);
   const n = art => sammle(art).length;
   const modus = (fn, ic, name, text, art) => `<button class="modus" onclick="${fn}"><span class="ic">${ic}</span><b>${name}</b><small>${text}${art ? ` (${n(art)})` : ""}</small></button>`;
+  reiterAn("tabAlle");
   app.innerHTML = `
+    <button class="heutebanner" onclick="heute()">🎯 Heute üben – gezielt für die Probe<small>Zeitformen, Steigern, Satzzeichen . ? ! und die Übersicht zum Lesen</small></button>
     <h2>1. Was möchtest du lernen?</h2>
     <p class="hinweis">Tippe auf die Themen, die du üben willst. <span class="badge">⭐ Probe</span> = kommt am Mittwoch in der Probe dran.</p>
     <div class="chips">
@@ -1068,6 +1151,8 @@ function startseite() {
       ${modus("satzzeichen()", "✒️", "Satzzeichen setzen", "Punkt, Fragezeichen, Doppelpunkt, „ “ …", "zeichen")}
       ${modus("wortartenDetektiv()", "🔍", "Wortarten-Detektiv", "Nomen, Verben, Adjektive markieren", "wortarten")}
       ${modus("textDetektiv()", "📝", "Text-Detektiv", "Kleingeschriebener Text: alle Wortarten unterstreichen", "texte")}
+      ${modus("zeitformenUeben()", "⏰", "Zeitformen", "Gegenwart, 1. und 2. Vergangenheit")}
+      ${modus("satzendeUeben()", "❗", "Punkt, ? oder !", "Satzzeichen am Satzende setzen", "ende")}
       ${modus("steigernUeben()", "📈", "Steigern", "Adjektive steigern: klug – klüger – am klügsten", "steigern")}
       ${modus("beweise()", "🕵️", "Beweise", "Wortart erkennen und beweisen", "beweise")}
       ${modus("grossKlein()", "🔠", "Groß oder klein?", "Satzanfänge und Nomen groß", "gross")}
@@ -1154,7 +1239,7 @@ function zeigeAufgabe() {
       <div class="feedback" id="fb"></div>
       <div class="mitte" id="weiter"></div>
     </div>`;
-  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, texte: zeigeWortarten, steigern: zeigeSteigern, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
+  ({ quiz: zeigeQuiz, zeichen: zeigeZeichen, wortarten: zeigeWortarten, texte: zeigeWortarten, steigern: zeigeSteigern, zeit: zeigeZeit, ende: zeigeZeichen, beweise: zeigeBeweis, gross: zeigeGross })[t._a](t, document.getElementById("aufgabe"));
 }
 let erledigtSchon = false;
 function ergebnis(ok, text) {
@@ -1449,6 +1534,190 @@ function stLoesung() {
   const t = st.t;
   document.getElementById("stpruef").innerHTML = "";
   ergebnis(false, "Lösung: " + (t.s ? t.s.replace("___", t.w) : `${t.g} – ${t.k1} – am ${[].concat(t.k2)[0]}`));
+}
+
+/* ---------- Zeitformen ----------
+   Die Aufgaben werden aus der Verbliste erzeugt: Person zufällig,
+   Zeitformen-Tabelle oder Satz mit Lücke. */
+const PERSONEN = ["ich", "du", "er", "wir", "ihr", "sie"];
+const PERSON_TEXT = { ich: "ich", du: "du", er: "er/sie/es", wir: "wir", ihr: "ihr", sie: "sie (mehrere)" };
+const HILF = { haben: ["habe", "hast", "hat", "haben", "habt", "haben"], sein: ["bin", "bist", "ist", "sind", "seid", "sind"] };
+// Regelmäßig: nur Grundform + Partizip (+ Hilfsverb). Unregelmäßig: Gegenwart und 1. Vergangenheit ausgeschrieben.
+const VERBEN = [
+  { gf: "spielen", p2: "gespielt", h: "haben", rest: "Fußball" },
+  { gf: "lachen", p2: "gelacht", h: "haben", rest: "laut" },
+  { gf: "kaufen", p2: "gekauft", h: "haben", rest: "ein Eis" },
+  { gf: "malen", p2: "gemalt", h: "haben", rest: "ein Bild" },
+  { gf: "zählen", p2: "gezählt", h: "haben", rest: "die Sterne" },
+  { gf: "hören", p2: "gehört", h: "haben", rest: "Musik" },
+  { gf: "kochen", p2: "gekocht", h: "haben", rest: "Suppe" },
+  { gf: "suchen", p2: "gesucht", h: "haben", rest: "den Schlüssel" },
+  { gf: "bauen", p2: "gebaut", h: "haben", rest: "ein Baumhaus" },
+  { gf: "lernen", p2: "gelernt", h: "haben", rest: "für die Probe" },
+  { gf: "machen", p2: "gemacht", h: "haben", rest: "die Hausaufgaben" },
+  { gf: "fragen", p2: "gefragt", h: "haben", rest: "die Lehrerin" },
+  { gf: "entdecken", p2: "entdeckt", h: "haben", rest: "einen Schatz" },
+  { gf: "klettern", pr: ["klettere", "kletterst", "klettert", "klettern", "klettert", "klettern"], p1: ["kletterte", "klettertest", "kletterte", "kletterten", "klettertet", "kletterten"], p2: "geklettert", h: "sein", rest: "auf den Baum" },
+  { gf: "laufen", pr: ["laufe", "läufst", "läuft", "laufen", "lauft", "laufen"], p1: ["lief", "liefst", "lief", "liefen", "lieft", "liefen"], p2: "gelaufen", h: "sein", rest: "nach Hause" },
+  { gf: "fahren", pr: ["fahre", "fährst", "fährt", "fahren", "fahrt", "fahren"], p1: ["fuhr", "fuhrst", "fuhr", "fuhren", "fuhrt", "fuhren"], p2: "gefahren", h: "sein", rest: "mit dem Rad" },
+  { gf: "gehen", pr: ["gehe", "gehst", "geht", "gehen", "geht", "gehen"], p1: ["ging", "gingst", "ging", "gingen", "gingt", "gingen"], p2: "gegangen", h: "sein", rest: "in die Schule" },
+  { gf: "schwimmen", pr: ["schwimme", "schwimmst", "schwimmt", "schwimmen", "schwimmt", "schwimmen"], p1: ["schwamm", "schwammst", "schwamm", "schwammen", "schwammt", "schwammen"], p2: "geschwommen", h: "sein", rest: "im See" },
+  { gf: "springen", pr: ["springe", "springst", "springt", "springen", "springt", "springen"], p1: ["sprang", "sprangst", "sprang", "sprangen", "sprangt", "sprangen"], p2: "gesprungen", h: "sein", rest: "ins Wasser" },
+  { gf: "schreiben", pr: ["schreibe", "schreibst", "schreibt", "schreiben", "schreibt", "schreiben"], p1: ["schrieb", "schriebst", "schrieb", "schrieben", "schriebt", "schrieben"], p2: "geschrieben", h: "haben", rest: "einen Brief" },
+  { gf: "singen", pr: ["singe", "singst", "singt", "singen", "singt", "singen"], p1: ["sang", "sangst", "sang", "sangen", "sangt", "sangen"], p2: "gesungen", h: "haben", rest: "ein Lied" },
+  { gf: "trinken", pr: ["trinke", "trinkst", "trinkt", "trinken", "trinkt", "trinken"], p1: ["trank", "trankst", "trank", "tranken", "trankt", "tranken"], p2: "getrunken", h: "haben", rest: "Apfelsaft" },
+  { gf: "rufen", pr: ["rufe", "rufst", "ruft", "rufen", "ruft", "rufen"], p1: ["rief", "riefst", "rief", "riefen", "rieft", "riefen"], p2: "gerufen", h: "haben", rest: "laut" },
+  { gf: "finden", pr: ["finde", "findest", "findet", "finden", "findet", "finden"], p1: ["fand", "fandest", "fand", "fanden", "fandet", "fanden"], p2: "gefunden", h: "haben", rest: "einen Euro" },
+  { gf: "essen", pr: ["esse", "isst", "isst", "essen", "esst", "essen"], p1: ["aß", "aßest", "aß", "aßen", "aßt", "aßen"], p2: "gegessen", h: "haben", rest: "eine Pizza" },
+  { gf: "lesen", pr: ["lese", "liest", "liest", "lesen", "lest", "lesen"], p1: ["las", ["last", "lasest"], "las", "lasen", "last", "lasen"], p2: "gelesen", h: "haben", rest: "ein Buch" },
+  { gf: "riechen", pr: ["rieche", "riechst", "riecht", "riechen", "riecht", "riechen"], p1: ["roch", "rochst", "roch", "rochen", "rocht", "rochen"], p2: "gerochen", h: "haben", rest: "den Kuchen" },
+  { gf: "haben", pr: ["habe", "hast", "hat", "haben", "habt", "haben"], p1: ["hatte", "hattest", "hatte", "hatten", "hattet", "hatten"], p2: "gehabt", h: "haben", rest: "Hunger" }
+];
+function zeitFormen(v, i) {
+  const stamm = v.gf.replace(/en$/, "");
+  const pr = v.pr ? v.pr[i] : stamm + ["e", "st", "t", "en", "t", "en"][i];
+  const p1 = v.p1 ? v.p1[i] : stamm + ["te", "test", "te", "ten", "tet", "ten"][i];
+  return { pr, p1, h: HILF[v.h][i], p2: v.p2 };
+}
+function zeitAufgaben(n) {
+  const out = [];
+  for (let k = 0; k < n; k++) {
+    const v = VERBEN[Math.floor(Math.random() * VERBEN.length)], i = Math.floor(Math.random() * 6);
+    out.push({ _a: "zeit", kapitel: "Zeitformen", v, i, art: Math.random() < 0.5 ? "tabelle" : "satz", zeit: Math.floor(Math.random() * 3) });
+  }
+  return out;
+}
+function zeitformenUeben() { runde(zeitAufgaben(10).concat(mischen(typAlle("quiz").filter(q => q.kapitel === "Zeitformen")).slice(0, 2)).sort(() => Math.random() - .5), "⏰ Zeitformen", "zeitformenUeben()"); }
+const ZEIT_NAME = ["Gegenwart", "1. Vergangenheit", "2. Vergangenheit"];
+let zt = null;
+function zeigeZeit(t, box) {
+  erledigtSchon = false;
+  const f = zeitFormen(t.v, t.i), p = PERSONEN[t.i], pt = PERSON_TEXT[p];
+  zt = { t, f, fehler: 0 };
+  const feld = (id, platz, breit) => `<input class="eingabe" id="${id}" style="width:${breit || 200}px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${platz}" onkeydown="if(event.key==='Enter')ztPruefen()">`;
+  if (t.art === "tabelle") {
+    box.innerHTML = `<div class="frage">Schreibe das Verb „${esc(t.v.gf)}“ in allen drei Zeitformen.</div>
+      <p class="hinweis">Person: <b>${pt}</b></p>
+      <div class="beweis-zeile"><span class="vor" style="min-width:190px">Gegenwart:</span>${esc(pt)} ${feld("ztPr", "…")}</div>
+      <div class="beweis-zeile"><span class="vor" style="min-width:190px">1. Vergangenheit:</span>${esc(pt)} ${feld("ztP1", "…")}</div>
+      <div class="beweis-zeile"><span class="vor" style="min-width:190px">2. Vergangenheit:</span>${esc(pt)} ${feld("ztH", "haben/sein", 150)} ${feld("ztP2", "ge…")}</div>
+      <div class="mitte" id="ztpruef"><button class="btn blau" onclick="ztPruefen()">Prüfen</button></div>`;
+  } else {
+    const wer = p === "er" ? mischen(["er", "sie", "es"])[0] : p;
+    const anfang = ["Heute", "Gestern", "Gestern"][t.zeit];
+    const satz = t.zeit === 2
+      ? `${anfang} ${feld("ztH", "…", 120)} ${wer} ${esc(t.v.rest)} ${feld("ztP2", "…", 170)}.`
+      : `${anfang} ${feld(t.zeit === 0 ? "ztPr" : "ztP1", "…", 170)} ${wer} ${esc(t.v.rest)}.`;
+    box.innerHTML = `<div class="frage">Setze „${esc(t.v.gf)}“ in der <u>${ZEIT_NAME[t.zeit]}</u> ein.</div>
+      <div class="satz">${satz}</div>
+      ${t.zeit === 2 ? `<p class="hinweis">Die 2. Vergangenheit hat zwei Teile: haben/sein + ge… am Ende.</p>` : ""}
+      <div class="mitte" id="ztpruef"><button class="btn blau" onclick="ztPruefen()">Prüfen</button></div>`;
+  }
+  setTimeout(() => { const e = box.querySelector("input"); if (e) e.focus(); }, 50);
+}
+function ztPruefen() {
+  if (erledigtSchon) return;
+  const f = zt.f, felder = [["ztPr", f.pr], ["ztP1", f.p1], ["ztH", f.h], ["ztP2", f.p2]].filter(x => document.getElementById(x[0]));
+  const ok = felder.map(x => bwFeld(x[0], x[1])).every(Boolean);
+  if (ok) { document.getElementById("ztpruef").innerHTML = ""; return ergebnis(zt.fehler === 0, zt.fehler === 0 ? null : "Jetzt ist es richtig! 👍"); }
+  zt.fehler++;
+  const hFalsch = document.getElementById("ztH") && document.getElementById("ztH").classList.contains("falsch");
+  hinweis("Noch nicht ganz (rot). " + (hFalsch ? `Tipp: „${zt.t.v.gf}“ bildet die 2. Vergangenheit mit „${zt.t.v.h}“.` : zt.t.v.pr ? "Tipp: Das ist ein unregelmäßiges Verb – der Selbstlaut kann sich ändern." : "Tipp: 1. Vergangenheit mit -te: ich spielte."));
+  if (zt.fehler >= 2) document.getElementById("ztpruef").innerHTML = `<button class="btn blau" onclick="ztPruefen()">Nochmal prüfen</button><button class="btn grau" onclick="ztLoesung()">Lösung zeigen</button>`;
+}
+function ztLoesung() {
+  const f = zt.f, pt = PERSON_TEXT[PERSONEN[zt.t.i]], erst = x => [].concat(x)[0];
+  document.getElementById("ztpruef").innerHTML = "";
+  ergebnis(false, `Lösung: ${pt} ${erst(f.pr)} – ${pt} ${erst(f.p1)} – ${pt} ${f.h} ${f.p2}`);
+}
+
+/* ---------- Satzende: . ? ! ---------- */
+function satzendeUeben() { runde(mischen(typAlle("ende")).slice(0, 8), "❗ Punkt, ? oder !", "satzendeUeben()"); }
+
+/* ---------- Reiter „Heute üben“ ---------- */
+function typAlle(art) { return INHALTE.flatMap(k => (k[art] || []).map(x => Object.assign({ _a: art, kapitel: k.titel }, x))); }
+let zurueck = "startseite()";
+function reiterAn(id) { zurueck = id === "tabHeute" ? "heute()" : "startseite()"; ["tabAlle", "tabHeute"].forEach(x => { const e = document.getElementById(x); if (e) e.classList.toggle("an", x === id); }); }
+function heute() {
+  spielStop();
+  try { speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
+  reiterAn("tabHeute");
+  const m = (fn, ic, name, text) => `<button class="modus" onclick="${fn}"><span class="ic">${ic}</span><b>${name}</b><small>${text}</small></button>`;
+  app.innerHTML = `
+    <h2>🎯 Heute gezielt üben</h2>
+    <p class="hinweis">Lies zuerst die Übersicht. Dann mach das gemischte Training – so oft du willst!</p>
+    <div class="modi">
+      ${m("uebersicht()", "📖", "Übersicht lesen", "Woran erkenne ich Nomen, Verben, Adjektive? Zeitformen, Steigern, Satzzeichen")}
+      ${m("heuteGemischt()", "🎯", "Gemischtes Training", "12 Aufgaben: Zeitformen, Steigern und Satzzeichen . ? !")}
+    </div>
+    <h2 style="margin-top:26px">Oder nur ein Thema:</h2>
+    <div class="modi">
+      ${m("zeitformenUeben()", "⏰", "Zeitformen", "Gegenwart, 1. und 2. Vergangenheit")}
+      ${m("steigernUeben()", "📈", "Steigern", "klug – klüger – am klügsten")}
+      ${m("satzendeUeben()", "❗", "Punkt, ? oder !", "Satzzeichen am Satzende")}
+      ${m("heuteWortarten()", "🔍", "Wortarten erkennen", "Nomen, Verb oder Adjektiv?")}
+    </div>`;
+}
+function heuteGemischt() {
+  const liste = [].concat(zeitAufgaben(4), mischen(typAlle("steigern")).slice(0, 4), mischen(typAlle("ende")).slice(0, 4));
+  runde(mischen(liste), "🎯 Gemischtes Training", "heuteGemischt()");
+}
+function heuteWortarten() {
+  const q = typAlle("quiz").filter(x => x.kapitel === "Wortarten erkennen & beweisen" && /Welche Wortart ist/.test(x.f) && x.o.length === 3 && x.o[2] === "Adjektiv");
+  runde(mischen(q).slice(0, 6).concat(mischen(typAlle("wortarten")).slice(0, 2)), "🔍 Wortarten erkennen", "heuteWortarten()");
+}
+function uebersicht() {
+  reiterAn("tabHeute");
+  app.innerHTML = `<div class="leiste"><button class="btn grau klein" onclick="heute()">⬅ Zurück</button><h2 style="margin:0">📖 Übersicht</h2></div>
+  <div class="uebersicht">
+    <div class="ukarte N"><h3>🏷️ Nomen – Namenwörter</h3>
+      Nomen sind Namen für <b>Menschen, Tiere, Pflanzen, Dinge</b> – und auch für <b>Gefühle und Gedanken</b>.
+      <ul><li><b>Artikel-Probe:</b> Ich kann <b>der, die, das</b> (oder ein, eine) davor setzen.</li>
+        <li><b>Mehrzahl-Probe:</b> Ich kann meistens die Mehrzahl bilden.</li>
+        <li>Nomen schreibe ich immer <b>groß</b>.</li></ul>
+      <div class="bsp">der Hund – die Hunde · die Idee – die Ideen · die Freude · der Traum – die Träume</div></div>
+    <div class="ukarte V"><h3>🏃 Verben – Tunwörter</h3>
+      Verben sagen, <b>was jemand tut</b> oder <b>was passiert</b>.
+      <ul><li><b>Personen-Probe:</b> Ich kann <b>ich, du, er</b> davor setzen – das Verb verändert sich: ich spiele, du spielst, er spielt.</li>
+        <li><b>Zeit-Probe:</b> Ich kann es in eine andere Zeit setzen: ich spiele – ich spielte – ich habe gespielt.</li>
+        <li>Die <b>Grundform</b> endet meistens auf <b>-en</b>: spielen, laufen.</li>
+        <li>Verben schreibe ich <b>klein</b>.</li></ul>
+      <div class="bsp">zählen: ich zähle, du zählst, er zählt, wir zählen, ihr zählt, sie zählen</div></div>
+    <div class="ukarte A"><h3>🎨 Adjektive – Wiewörter</h3>
+      Adjektive sagen, <b>wie</b> jemand oder etwas <b>ist</b>.
+      <ul><li><b>Steiger-Probe:</b> Ich kann es steigern: klug – klüger – am klügsten.</li>
+        <li><b>Zwischen-Probe:</b> Es passt zwischen Artikel und Nomen: der <b>kluge</b> Hund.</li>
+        <li>Frage: <b>Wie ist</b> der Hund? – klug.</li>
+        <li>Adjektive schreibe ich <b>klein</b>.</li></ul></div>
+    <div class="ukarte P"><h3>👆 Pronomen und Artikel</h3>
+      <ul><li><b>Pronomen</b> stehen für ein Nomen: ich, du, er, sie, es, wir, ihr, sie. <i>Lisa lacht. → Sie lacht.</i></li>
+        <li><b>Artikel</b> begleiten ein Nomen: der, die, das, ein, eine (auch den, dem, einen …).</li></ul></div>
+    <div class="ukarte Z"><h3>⏰ Zeitformen</h3>
+      <table><tr><th>Gegenwart</th><th>1. Vergangenheit</th><th>2. Vergangenheit</th></tr>
+        <tr><td>ich spiele</td><td>ich spielte</td><td>ich habe gespielt</td></tr>
+        <tr><td>du läufst</td><td>du liefst</td><td>du bist gelaufen</td></tr>
+        <tr><td>er schreibt</td><td>er schrieb</td><td>er hat geschrieben</td></tr>
+        <tr><td>wir fahren</td><td>wir fuhren</td><td>wir sind gefahren</td></tr></table>
+      <ul><li><b>Gegenwart:</b> passiert jetzt.</li>
+        <li><b>1. Vergangenheit:</b> vorbei – vor allem beim <b>Schreiben</b>. Regelmäßig mit <b>-te</b> (spielte), unregelmäßig mit neuem Selbstlaut (lief, fuhr, ging).</li>
+        <li><b>2. Vergangenheit:</b> vorbei – vor allem beim <b>Sprechen</b>. Zwei Teile: <b>haben/sein</b> + <b>ge…</b>. Bei Bewegung meistens <b>sein</b> (ich bin gelaufen).</li></ul></div>
+    <div class="ukarte A"><h3>📈 Steigern</h3>
+      <table><tr><th>Grundform</th><th>1. Vergleichsstufe</th><th>2. Vergleichsstufe</th></tr>
+        <tr><td>klug</td><td>klüger</td><td>am klügsten</td></tr>
+        <tr><td>schnell</td><td>schneller</td><td>am schnellsten</td></tr>
+        <tr><td>alt</td><td>älter</td><td>am ältesten</td></tr>
+        <tr><td>gut</td><td>besser</td><td>am besten</td></tr></table>
+      <ul><li>1. Vergleichsstufe: <b>…er</b> + <b>als</b>: Der Hund ist schneller <b>als</b> die Katze.</li>
+        <li>Gleich: so schnell <b>wie</b>. 2. Vergleichsstufe: <b>am …sten</b>.</li>
+        <li>Ausnahmen: gut – besser – am besten · viel – mehr – am meisten · gern – lieber – am liebsten</li></ul></div>
+    <div class="ukarte S"><h3>❗ Satzzeichen am Satzende</h3>
+      <ul><li><b>Punkt .</b> nach einem Aussagesatz: <i>Mila meldet sich.</i></li>
+        <li><b>Fragezeichen ?</b> nach einem Fragesatz: <i>Was möchtest du sagen?</i> (Fragewort oder Verb vorne)</li>
+        <li><b>Ausrufezeichen !</b> nach einem Ausruf oder einer Aufforderung: <i>Ruhe! Hört auf zu reden!</i></li>
+        <li>Nach dem Satzzeichen geht es <b>groß</b> weiter.</li></ul></div>
+  </div>
+  <div class="mitte"><button class="btn gruen" onclick="heuteGemischt()">🎯 Jetzt üben!</button></div>`;
+  window.scrollTo(0, 0);
 }
 
 /* ---------- Groß oder klein? ---------- */
